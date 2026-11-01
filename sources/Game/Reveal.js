@@ -52,106 +52,101 @@ export class Reveal
         // Step 0
         if(step === 0)
         {
-            // Intro loader => Hide circle
-            this.game.world.intro.circle.hide(() =>
-            {
-                // Grid
-                this.game.world.grid.show()
+            // Yükleme bitti: halka kapanırken (kısa) her şey hemen başlar; tıklanabilirlik halkanın kapanmasını beklemez
+            this.game.world.intro.hideLoading()
+            this.game.world.intro.circle.hide()
 
-                // Reveal
-                this.distance.value = 0
+            // Grid
+            this.game.world.grid.show()
 
-                gsap.to(
-                    this.distance,
-                    {
-                        value: 3.5,
-                        ease: 'back.out(1.7)',
-                        duration: 2 / speedMultiplier,
-                        overwrite: true,
-                    }
-                )
+            // Reveal
+            this.distance.value = 0
 
-                // View
-                this.game.view.zoom.smoothedRatio = 0.6
-                this.game.view.zoom.baseRatio = 0.6
-
-                gsap.to(
-                    this.game.view.zoom,
-                    {
-                        baseRatio: Intro.ZOOM_RATIO,
-                        // smoothedRatio: 0.4,
-                        ease: 'power1.inOut',
-                        duration: 1.25 / speedMultiplier,
-                        overwrite: true,
-                    }
-                )
-
-                // Ada kadrajda aşağı kayar (üstte yazı için yer)
-                this.game.world.intro.shiftFocus(1.25 / speedMultiplier)
-
-                // Intro loader => Show label and sound button
-                this.game.world.intro.setText()
-                this.game.world.intro.setSoundButton()
-                this.game.ticker.wait(1, () =>
+            gsap.to(
+                this.distance,
                 {
-                    this.game.world.intro.showLabel()
-                })
+                    value: 3.5,
+                    ease: 'back.out(1.7)',
+                    duration: 2 / speedMultiplier,
+                    overwrite: true,
+                }
+            )
 
-                // Cherry trees
-                if(this.game.world.cherryTrees)
-                    this.game.world.cherryTrees.leaves.seeThroughMultiplier = 0.5
+            // View
+            this.game.view.zoom.smoothedRatio = 0.6
+            this.game.view.zoom.baseRatio = 0.6
 
-                // Click
-                if(hasHash('skip'))
+            gsap.to(
+                this.game.view.zoom,
+                {
+                    baseRatio: Intro.ZOOM_RATIO,
+                    // smoothedRatio: 0.4,
+                    ease: 'power1.inOut',
+                    duration: 1.25 / speedMultiplier,
+                    overwrite: true,
+                }
+            )
+
+            // Ada kadrajda aşağı kayar (üstte yazı için yer)
+            this.game.world.intro.shiftFocus(1.25 / speedMultiplier)
+
+            // Intro loader => Show label and sound button
+            this.game.world.intro.setText()
+            this.game.world.intro.setSoundButton()
+            this.game.world.intro.showLabel()
+
+            // Cherry trees
+            if(this.game.world.cherryTrees)
+                this.game.world.cherryTrees.leaves.seeThroughMultiplier = 0.5
+
+            // Click
+            if(hasHash('skip'))
+            {
+                this.updateStep(1)
+            }
+            else
+            {
+                this.game.loadMarks.clickable = Math.round(performance.now())
+
+                // Next function
+                const next = () =>
                 {
                     this.updateStep(1)
+                    this.game.inputs.events.off('introStart', inputCallback)
+                    this.game.rayCursor.removeIntersect(intersect)
                 }
-                else
+
+                // Input callback
+                const inputCallback = () =>
                 {
-                    this.game.loadMarks.clickable = Math.round(performance.now())
-
-                    // Next function
-                    const next = () =>
-                    {
-                        this.updateStep(1)
-                        this.game.inputs.events.off('introStart', inputCallback)
-                        this.game.rayCursor.removeIntersect(intersect)
-                    }
-
-                    // Input callback
-                    const inputCallback = () =>
-                    {
-                        next()
-                    }
-
-                    // Intsect
-                    const position = this.position.clone()
-                    position.y = 0
-                    
-                    const intersect = this.game.rayCursor.addIntersect({
-                        active: true,
-                        shape: new THREE.Sphere(position, 3.5),
-                        onClick: next,
-                        onEnter: () =>
-                        {
-                            gsap.to(this, { intensityMultiplier: 1.22, duration: 0.2, overwrite: true })
-                        },
-                        onLeave: () =>
-                        {
-                            gsap.to(this, { intensityMultiplier: 1, duration: 0.2, overwrite: true })
-                        }
-                    })
-                    
-                    // Inputs (for gamepad and keyboard)
-                    this.game.inputs.addActions([
-                        { name: 'introStart', categories: [ 'intro' ], keys: [ 'Gamepad.cross', 'Keyboard.Enter', 'Keyboard.ArrowUp', 'Keyboard.ArrowDown', 'Keyboard.KeyW', 'Keyboard.KeyD' ] },
-                    ])
-
-            // { name: 'forward',               categories: [ 'wandering', 'racing', 'cinematic' ], keys: [ 'Keyboard.ArrowUp', 'Keyboard.KeyW', 'Gamepad.up', 'Gamepad.r2' ] },
-            // { name: 'right',                 categories: [ 'wandering', 'racing', 'cinematic' ], keys: [ 'Keyboard.ArrowRight', 'Keyboard.KeyD', 'Gamepad.right' ] },
-                    this.game.inputs.events.on('introStart', inputCallback)
+                    next()
                 }
-            })
+
+                // Intsect
+                const position = this.position.clone()
+                position.y = 0
+
+                const intersect = this.game.rayCursor.addIntersect({
+                    active: true,
+                    shape: new THREE.Sphere(position, 3.5),
+                    onClick: next,
+                    onEnter: () =>
+                    {
+                        gsap.to(this, { intensityMultiplier: 1.22, duration: 0.2, overwrite: true })
+                    },
+                    onLeave: () =>
+                    {
+                        gsap.to(this, { intensityMultiplier: 1, duration: 0.2, overwrite: true })
+                    }
+                })
+
+                // Inputs (for gamepad and keyboard)
+                this.game.inputs.addActions([
+                    { name: 'introStart', categories: [ 'intro' ], keys: [ 'Gamepad.cross', 'Keyboard.Enter', 'Keyboard.ArrowUp', 'Keyboard.ArrowDown', 'Keyboard.KeyW', 'Keyboard.KeyD' ] },
+                ])
+
+                this.game.inputs.events.on('introStart', inputCallback)
+            }
         }
         else if(step === 1)
         {

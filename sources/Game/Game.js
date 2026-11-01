@@ -75,6 +75,23 @@ export class Game
         const mark = (name) => { this.loadMarks[name] = Math.round(performance.now()) }
         mark('init')
 
+        // Genel yükleme ilerlemesi: dosyalar + Rapier %0-90, dünya kurulumu ve ön çizim %90-100 (Intro.updateLoading gösterir)
+        this.loadProgress = 0
+        this.loadStage = 'assets'
+        const setLoad = (progress, stage = 'assets') =>
+        {
+            this.loadProgress = Math.max(this.loadProgress, progress)
+            this.loadStage = stage
+            this.world?.intro?.updateLoading(this.loadProgress, stage)
+        }
+        const nextFrame = () => new Promise(resolve => requestAnimationFrame(() => resolve()))
+
+        // Rapier (wasm, 1.7 MB) en baştan, diğer her şeyle paralel indirilir ve derlenir
+        const loadState = { files: 0, total: 1, rapier: 0 }
+        const RAPIER_WEIGHT = 3 // yaklaşık boyut payı (dosya sayısı cinsinden)
+        const assetsProgress = () => 0.9 * (loadState.files + RAPIER_WEIGHT * loadState.rapier) / (loadState.total + RAPIER_WEIGHT)
+        const rapierPromise = import('@dimforge/rapier3d').then((module) => { loadState.rapier = 1; setLoad(assetsProgress()); return module })
+
         // Setup
         this.domElement = document.querySelector('.game')
         this.canvasElement = this.domElement.querySelector('.js-canvas')
@@ -111,34 +128,14 @@ export class Game
             [ 'respawnsReferencesModel',    `respawns/respawnsReferences${compressedModelSuffix}.glb${cb}`, 'gltf' ],
             [ 'behindTheSceneStarsTexture', `behindTheScene/stars.${compressedTextureExtension}${cb}`,      compressedTextureFormat, (resource) => { resource.colorSpace = THREE.SRGBColorSpace; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; resource.wrapS = THREE.RepeatWrapping; resource.wrapT = THREE.RepeatWrapping; } ],
             [ 'soundTexture',               `intro/sound.${compressedTextureExtension}${cb}`,               compressedTextureFormat, (resource) => { resource.minFilter = THREE.LinearFilter; resource.magFilter = THREE.LinearFilter; resource.generateMipmaps = false; resource.repeat.x = 0.5; } ],
+            [ 'loadingLabelTexture',        `intro/loadingLabel.ktx${cb}`,                                  'textureKtx' ], // yükleme metinleri (Intro.setLoading): ilk grupta, ilerleme göstergesi hemen yazılı çıksın
+            [ 'finishingLabelTexture',      `intro/finishingLabel.ktx${cb}`,                                'textureKtx' ],
+            [ 'digitsLabelTexture',         `intro/digitsLabel.ktx${cb}`,                                   'textureKtx' ],
             [ 'paletteTexture',             `palette.${compressedTextureExtension}${cb}`,                   compressedTextureFormat, (resource) => { resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; resource.colorSpace = THREE.SRGBColorSpace; } ],
 
         ])
         mark('firstBatch')
-        this.options = new Options()
-        this.respawns = new Respawns(import.meta.env.VITE_PLAYER_SPAWN || 'landing')
-        this.view = new View()
-        this.rendering.setPostprocessing()
-        this.rendering.start()
-        this.reveal = new Reveal()
-        this.noises = new Noises()
-        this.weather = new Weather()
-        this.wind = new Wind()
-        this.tracks = new Tracks()
-        this.lighting = new Lighting()
-        this.fog = new Fog()
-        this.water = new Water()
-        this.materials = new Materials()
-        this.objects = new Objects()
-        this.explosions = new Explosions()
-        this.world = new World()
-
-        mark('worldCreated')
-
-        // Load and init RAPIER
-        const rapierPromise = import('@dimforge/rapier3d')
-
-        // Load rest of resources
+        // Kalan kaynaklar: ilk grup biter bitmez, dünya nesneleri kurulurken paralel yüklenir
         const resourcesPromise = this.resourcesLoader.load(
             [
                 [ 'foliageTexture',                        `foliage/foliageSDF.${compressedTextureExtension}${cb}`,                              compressedTextureFormat, (resource) => { resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; } ],
@@ -179,11 +176,35 @@ export class Game
             ],
             (toLoad, total) =>
             {
-                this.world.intro.updateProgress(1 - toLoad / total)
+                loadState.files = total - toLoad
+                loadState.total = total
+                setLoad(assetsProgress())
             }
         )
 
+        this.options = new Options()
+        this.respawns = new Respawns(import.meta.env.VITE_PLAYER_SPAWN || 'landing')
+        this.view = new View()
+        this.rendering.setPostprocessing()
+        this.rendering.start()
+        this.reveal = new Reveal()
+        this.noises = new Noises()
+        this.weather = new Weather()
+        this.wind = new Wind()
+        this.tracks = new Tracks()
+        this.lighting = new Lighting()
+        this.fog = new Fog()
+        this.water = new Water()
+        this.materials = new Materials()
+        this.objects = new Objects()
+        this.explosions = new Explosions()
+        this.world = new World()
+
+        mark('worldCreated')
+
         const [ newResources, RAPIER ] = await Promise.all([ resourcesPromise, rapierPromise ])
+        setLoad(0.9, 'finishing')
+        await nextFrame() // "Son rötuşlar..." metni çizilsin, sonra ağır kurulum
         this.RAPIER = RAPIER
         mark('resourcesAndRapier')
         this.resources = { ...newResources, ...this.resources }
@@ -205,13 +226,18 @@ export class Game
         this.world.step(1)
         this.overlay = new Overlay()
         mark('worldBuilt')
+        setLoad(0.95, 'finishing')
+        await nextFrame()
 
         // Pre-render if quality high
         if(this.quality.level === 0 && this.rendering.renderer.backend.isWebGPUBackend)
             PreRenderer.render()
         mark('preRendered')
+        setLoad(1, 'finishing')
+        await nextFrame()
+        mark('ringFull')
 
-        this.ticker.wait(3, () =>
+        this.ticker.wait(2, () =>
         {
             mark('reveal0')
             this.reveal.updateStep(0)

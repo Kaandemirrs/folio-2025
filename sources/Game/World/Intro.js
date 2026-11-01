@@ -20,7 +20,9 @@ export class Intro
         this.setCircle()
         this.setLabel()
         this.setExtras()
+        this.setLoading()
         this.layout()
+        this.updateLoading(this.game.loadProgress ?? 0, this.game.loadStage ?? 'assets')
 
         this.game.viewport.events.on('change', this.onViewportChange = () => { this.layout() })
 
@@ -219,6 +221,7 @@ export class Intro
             }
 
         this.applyScales()
+        this.layoutLoading()
     }
 
     // Giriş: ada kadrajda aşağı kayar / oyun başlarken geri döner
@@ -286,7 +289,7 @@ export class Intro
                 dummy,
                 {
                     scale: 0,
-                    duration: 1.5 / speedMultiplier,
+                    duration: 0.9 / speedMultiplier,
                     // ease: 'back.in(1.7)',
                     ease: 'power4.in',
                     overwrite: true,
@@ -479,11 +482,11 @@ export class Intro
         }
 
         // Etiket (eskisi gibi 1 sn sonra), yazılar ve portre sırayla
-        reveal(this.label.userData, 'appear', 1)
-        reveal(this.extras.items.title, 'appear', 0.2)
-        reveal(this.extras.items.subtitle, 'appear', 0.5)
-        reveal(this.extras.items.portrait, 'appear', 0.8)
-        reveal(this.extras.items.note, 'appear', 1.3)
+        reveal(this.label.userData, 'appear', 0.4)
+        reveal(this.extras.items.title, 'appear', 0.1)
+        reveal(this.extras.items.subtitle, 'appear', 0.3)
+        reveal(this.extras.items.portrait, 'appear', 0.5)
+        reveal(this.extras.items.note, 'appear', 0.9)
     }
 
     hideLabel()
@@ -512,6 +515,142 @@ export class Intro
                 }
             )
         }
+    }
+
+
+    /**
+     * Yükleme göstergesi: halka (gerçek ilerleme) + el yazısı metin "Dünya yükleniyor... %63" → "Son rötuşlar...".
+     * İlerleme Game.js'te hesaplanır: dosyalar + Rapier %0-90, kalan %90-100 dünya kurulumu/ön çizim.
+     * Rakamlar tek bir rakam şeridi dokusundan (11 hücre: 0-9 ve %) örneklenir.
+     */
+    setLoading()
+    {
+        const PPU = 98.5
+        this.loading = { stage: 'assets', percent: -1, items: {}, digits: [], appear: 1 }
+
+        const makeMaterial = (loadedTexture, glyph = null) =>
+        {
+            const material = new THREE.MeshBasicNodeMaterial({ transparent: true, depthTest: false, depthWrite: false })
+            material.outputNode = Fn(() =>
+            {
+                const x = glyph ? uv().x.add(glyph).div(11) : uv().x
+                texture(loadedTexture, vec2(x, uv().y.oneMinus())).r.lessThan(0.5).discard()
+                return vec4(1)
+            })()
+            return material
+        }
+
+        const group = new THREE.Group()
+        group.scale.setScalar(0.0001)
+        this.game.scene.add(group)
+        this.loading.group = group
+
+        const addPlane = (width, height) =>
+        {
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicNodeMaterial({ transparent: true, depthTest: false, depthWrite: false }))
+            mesh.renderOrder = 100
+            mesh.visible = false
+            group.add(mesh)
+            return mesh
+        }
+
+        this.loading.textures = []
+        for(const [ name, resource ] of [ [ 'loading', 'loadingLabelTexture' ], [ 'finishing', 'finishingLabelTexture' ] ])
+        {
+            const loadedTexture = this.game.resources[resource]
+            const mesh = addPlane(512 / PPU, 96 / PPU)
+            mesh.material.dispose()
+            mesh.material = makeMaterial(loadedTexture)
+            this.loading.items[name] = mesh
+            this.loading.textures.push(loadedTexture)
+        }
+
+        // Rakam şeridi: 4 hücreli sıra ("%100" en uzun hâli)
+        const digitsTexture = this.game.resources.digitsLabelTexture
+        this.loading.textures.push(digitsTexture)
+        for(let i = 0; i < 4; i++)
+        {
+            const mesh = addPlane(48 / PPU, 96 / PPU)
+            mesh.material.dispose()
+            const glyph = uniform(0)
+            mesh.material = makeMaterial(digitsTexture, glyph)
+            this.loading.digits.push({ mesh, glyph })
+        }
+    }
+
+    // progress: 0-1 genel ilerleme; stage: 'assets' (yüzde gösterilir) | 'finishing'
+    updateLoading(progress, stage, force = false)
+    {
+        this.circle.progress = progress
+        const loading = this.loading
+        if(!loading)
+            return
+
+        const percent = Math.min(100, Math.floor(progress * 100))
+        if(!force && loading.stage === stage && loading.percent === percent)
+            return
+        loading.stage = stage
+        loading.percent = percent
+
+        // Aşama 1: "Dünya yükleniyor..." + %yüzde. Aşama 2: "Son rötuşlar..."
+        const assets = stage === 'assets'
+        if(loading.items.loading) loading.items.loading.visible = assets && !!loading.items.loading.material.outputNode
+        if(loading.items.finishing) loading.items.finishing.visible = !assets && !!loading.items.finishing.material.outputNode
+
+        // Yüzde: asset aşamasında genel ilerlemenin 0-90 aralığı 0-100'e açılır
+        const shown = assets ? Math.min(100, Math.round(progress / 0.9 * 100)) : 100
+        const text = '%' + shown
+        loading.digits.forEach((digit, i) =>
+        {
+            const char = assets ? text[i] : undefined
+            digit.mesh.visible = char !== undefined
+            if(char !== undefined)
+                digit.glyph.value = char === '%' ? 10 : Number(char)
+        })
+
+        this.layoutLoading()
+    }
+
+    // Yükleme metni adanın altında (odak kayması yokken kadraj)
+    layoutLoading()
+    {
+        if(!this.loading || !this.loading.group)
+            return
+
+        const view = this.game.view
+        const aspect = this.game.viewport.width / this.game.viewport.height
+        const overflow = Math.max(1, view.idealRatio / aspect) - 1
+        const radius = lerp(view.spherical.radius.edges.min, view.spherical.radius.edges.max + overflow * view.spherical.radius.nonIdealRatioOffset, 1 - view.zoom.smoothedRatio)
+        const offset = new THREE.Vector3().setFromSphericalCoords(radius, view.spherical.phi, view.spherical.theta)
+        const quaternion = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(offset, new THREE.Vector3(), new THREE.Vector3(0, 1, 0)))
+        const up = new THREE.Vector3(0, 1, 0).applyQuaternion(quaternion)
+        const halfHeight = radius * Math.tan(THREE.MathUtils.degToRad(view.camera.fov) / 2)
+        const islandY = 3.5 * Math.cos(view.spherical.phi) / halfHeight
+
+        const group = this.loading.group
+        group.position.set(this.center.x, 0, this.center.z).addScaledVector(up, (-islandY - 0.16) * halfHeight)
+        group.quaternion.copy(quaternion)
+        this.loading.layoutScale = Math.min(1, (2 * halfHeight * aspect * 0.9) / 6.4)
+
+        // Metin ve rakamlar tek satırda (≈ 4.6 + 0.3 + 4×0.49 birim)
+        const textMesh = this.loading.items.loading
+        const finishing = this.loading.items.finishing
+        textMesh.position.x = -0.9
+        finishing.position.x = 0
+        this.loading.digits.forEach((digit, i) => { digit.mesh.position.x = 1.7 + i * 0.28 })
+        group.scale.setScalar(Math.max(0.0001, this.loading.layoutScale * this.loading.appear))
+    }
+
+    hideLoading(duration = 0.25)
+    {
+        gsap.to(this.loading, {
+            appear: 0,
+            duration,
+            ease: 'power2.in',
+            overwrite: true,
+            onUpdate: () => { this.loading.group.scale.setScalar(Math.max(0.0001, this.loading.layoutScale * this.loading.appear)) },
+            onComplete: () => { this.loading.group.visible = false }
+        })
     }
 
     updateProgress(progress)
@@ -546,6 +685,9 @@ export class Intro
     destroy()
     {
         this.label.removeFromParent()
+        this.loading.group.removeFromParent()
+        this.loading.group.traverse((child) => { if(child.isMesh) { child.geometry.dispose(); child.material.dispose() } })
+        this.loading.textures?.forEach(t => t.dispose())
         this.game.viewport.events.off('change', this.onViewportChange)
 
         for(const item of Object.values(this.extras.items))

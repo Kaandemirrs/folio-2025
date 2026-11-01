@@ -59,7 +59,16 @@ for(let i = 0; i < 1200; i++)
     if(s.intro && s.progress > 0.3 && shot === 0) { shot = 1; await page.screenshot({ path: `${PREFIX}_loading.png` }) }
     await sleep(50)
 }
+let hitch = null
+if(process.env.CLICK && marks.label)
+{
+    // Tıkladıktan sonra 5 sn kare süreleri: ≥ 50 ms kareler ve en uzun kare (shader derleme takılmaları)
+    await page.evaluate(() => { window.__frames = []; let last = performance.now(); const f = () => { const n = performance.now(); window.__frames.push(n - last); last = n; requestAnimationFrame(f) }; requestAnimationFrame(f) })
+    await page.keyboard.press('Enter')
+    await sleep(6000)
+    hitch = await page.evaluate(() => { const f = window.__frames; return { frames: f.length, over50: f.filter(x => x > 50).length, over100: f.filter(x => x > 100).length, max: Math.round(Math.max(...f)) } })
+}
 let loadMarks = null
 try { loadMarks = await page.evaluate(() => window.game.loadMarks) } catch(e) {}
-console.log(JSON.stringify({ profile: PROFILE, throttle: !!process.env.THROTTLE, marks, loadMarks, errors: [...new Set(errors)].slice(0, 5) }))
+console.log(JSON.stringify({ profile: PROFILE, throttle: !!process.env.THROTTLE, marks, loadMarks, hitch, errors: [...new Set(errors)].slice(0, 5) }))
 await browser.close()
