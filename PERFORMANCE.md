@@ -27,10 +27,10 @@ Hava durumu etkisi: yağmur/kar/yaprak ölçüm sırasında kapalı (açık hava
 | `dist/` (W140 + 4 yeni MP3 sonrası) | **82 MB** | — |
 | `dist/` şimdi | 79 MB (silinen dosyalar sonrası) | **56 MB** |
 | Başlamadan önce indirilen (tıklama ekranına kadar) | 6.195 KB | **4.924 KB** (−1,3 MB) |
-| Başladıktan sonra 6 sn içinde | 7.903 KB (müzik 6,8 MB + efektler) | aynı (+1,3 MB buraya kaydı) |
+| Başladıktan sonra 6 sn içinde | 7.903 KB (müzik 6,8 MB + efektler) | 9.183 KB (ertelenen 1,3 MB buraya kaydı) |
 | JS paketi | 4,65 MB (başta) → 3,29 MB (node-polyfills + gereksiz paketler gidince) | **3,12 MB** (Tweakpane production'da girmiyor) |
 
-**59 → 82 MB'ın nedeni:** `static/sounds/musics/` altına eklenen 4 MP3 (24,4 MB; 192 kbps, 44,1 kHz stereo). Eski üç parça (`Sudo`, `Boy`, `Baguira`; 18,4 MB, 320 kbps) çalma listesinde olmadığı hâlde dist'te duruyor. Müzik şimdi dist'in 44 MB'ı.
+**59 → 82 MB'ın nedeni:** `static/sounds/musics/` altına eklenen 4 MP3 (23,8 MB; 192 kbps, 44,1 kHz stereo). Eski üç parça (`Sudo`, `Boy`, `Baguira`; 18,0 MB, 320 kbps) çalma listesinde olmadığı hâlde dist'te duruyor. Müzik şimdi dist'in 44 MB'ı.
 
 **Müzik (dosyalara dokunulmadı; karar bekliyor):**
 
@@ -40,8 +40,8 @@ Hava durumu etkisi: yağmur/kar/yaprak ölçüm sırasında kapalı (açık hava
 | Sevda-Yuklu-Kervanlar | 5.893 KB | 250 sn | 192 kbps | 4.882 KB | 3.906 KB |
 | Cimilli-Ibo-Oyna | 6.110 KB | 259 sn | 192 kbps | 5.055 KB | 4.045 KB |
 | NazlicanIM | 5.552 KB | 234 sn | 192 kbps | 4.565 KB | 3.652 KB |
-| **Toplam (4 parça)** | **24,4 MB** | | | **20,1 MB (−4,2)** | **16,1 MB (−8,2)** |
-| Sudo / Boy / Baguira (çalma listesinde yok) | 18,4 MB | | 320 kbps | silinirse **−18,4 MB** | |
+| **Toplam (4 parça)** | **23,8 MB** | | | **19,7 MB (−4,1)** | **15,7 MB (−8,1)** |
+| Sudo / Boy / Baguira (çalma listesinde yok) | 18,0 MB | | 320 kbps | silinirse **−18,0 MB** | |
 
 Hiçbiri 192 kbps'in üstünde değil, bu yüzden dönüştürme zorunlu değil; 128 kbps stereo mobil için yeterli ve ilk tıklamadaki 6,8 MB'lık müzik indirmesini 4,5 MB'a indirir. Kapak resmi (≈0,2 MB toplam) dosyalarda gömülü.
 
