@@ -7,3 +7,8 @@ export async function resolve(specifier, context, next){
     throw e
   }
 }
+// Vite'ta öznitelik olmadan çalışan JSON içe aktarmaları Node'da da çalışsın
+export async function load(url, context, next){
+  if(url.endsWith('.json')) return next(url, { ...context, importAttributes: { type: 'json' } })
+  return next(url, context)
+}

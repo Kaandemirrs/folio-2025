@@ -18,7 +18,7 @@
             "out": "static/vehicle/dogan.glb",
             "plate": { "text": "67 TF 1993", "image": "resources/references/dogan/licensePlate.png" },
             "hub": { "x": 0.82, "y": 0.52, "radiusPhysical": 0.21, "radiusVisual": 0.22 },
-            "restHeight": 0.626,
+            "restHeight": 0.64,
             "size": { "length": 2.8, "width": 1.27, "height": 0.945 },
             "renders": "resources/references/dogan/renders",
             "attribution": { "title": "DOGAN SLX", "author": "Filcomet", "authorUrl": "https://sketchfab.com/filcomet", "sourceUrl": "https://sketchfab.com/3d-models/dogan-slx-28f27606bd864611aaaa9dab90ba0ae7", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "changes": "iç mekân, tekerlekler ve kaynak plaka silindi; gövde boya/palette olarak yeniden bölündü, tekerlekler ve ışıklar yeniden kuruldu, oyuna uyarlandı" }

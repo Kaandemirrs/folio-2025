@@ -1,0 +1,21 @@
+
+== w140  (hedef dinlenme yüksekliği 0.686)
+  low  {"orijinYuksekligi":0.686,"suspansiyonBoyu":0.416,"temas":true}
+  mid  {"orijinYuksekligi":0.977,"suspansiyonBoyu":0.707,"temas":true}
+  high {"orijinYuksekligi":1.278,"suspansiyonBoyu":1.008,"temas":true}
+  normal {"hizAni":6.9,"maksEgilmeDerece":2.8,"havadaAdim":20}
+  turbo {"hizAni":41.1,"maksEgilmeDerece":5.2,"havadaAdim":20}
+
+== dogan  (hedef dinlenme yüksekliği 0.64)
+  low  {"orijinYuksekligi":0.64,"suspansiyonBoyu":0.43,"temas":true}
+  mid  {"orijinYuksekligi":0.927,"suspansiyonBoyu":0.717,"temas":true}
+  high {"orijinYuksekligi":1.195,"suspansiyonBoyu":0.985,"temas":true}
+  normal {"hizAni":6.9,"maksEgilmeDerece":5.1,"havadaAdim":20}
+  turbo {"hizAni":37.6,"maksEgilmeDerece":7.4,"havadaAdim":20}
+
+== oldSchool  (hedef dinlenme yüksekliği 0.907)
+  low  {"orijinYuksekligi":0.906,"suspansiyonBoyu":0.496,"temas":true}
+  mid  {"orijinYuksekligi":1.317,"suspansiyonBoyu":0.907,"temas":true}
+  high {"orijinYuksekligi":1.748,"suspansiyonBoyu":1.338,"temas":true}
+  normal {"hizAni":6.8,"maksEgilmeDerece":3.9,"havadaAdim":19}
+  turbo {"hizAni":41.1,"maksEgilmeDerece":11.4,"havadaAdim":19}
