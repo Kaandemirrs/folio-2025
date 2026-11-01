@@ -30,3 +30,10 @@ mkdirSync(work, { recursive: true })
 
 run(python, [ '-I', 'scripts/world/build_letters.py', '--', '--out', `${work}/letters.glb`, '--meta', `${work}/letters.json`, '--sheet', 'resources/references/world/renders/letters_sheet.png' ])
 run('node', [ 'scripts/world/patch_areas.mjs' ])
+
+// Türk bayrağı: doku → bpy (direk + bez) → WebP → Draco
+const gt = path.join(root, 'node_modules/.bin/gltf-transform')
+run('node', [ 'scripts/world/make_flag_texture.mjs' ])
+run(python, [ '-I', 'scripts/world/build_flag.py', '--', '--out', `${work}/turkishFlag.src.glb` ])
+run(gt, [ 'webp', `${work}/turkishFlag.src.glb`, 'static/props/turkishFlag.glb', '--quality', '90' ])
+run(gt, [ 'draco', 'static/props/turkishFlag.glb', 'static/props/turkishFlag-compressed.glb', '--method', 'edgebreaker', '--quantization-volume', 'mesh', '--quantize-position', '12', '--quantize-normal', '6', '--quantize-texcoord', '10', '--quantize-color', '2', '--quantize-generic', '2' ])

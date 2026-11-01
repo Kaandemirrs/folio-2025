@@ -213,6 +213,39 @@
                     "targetX": -0.9
                 }
             }
+        },
+        {
+            "name": "turkishFlag",
+            "title": "Türk Bayrağı",
+            "custom": "flag",
+            "_note": "Hazır model dosyası: scripts/world/build_flag.py üretir (npm run world:flag). Yerleştirme/rüzgâr: sources/Game/World/Flag.js. Direk çarpıştırıcısı yerel koordinattadır (orijin = direk tabanı).",
+            "world": {
+                "x": 51.75,
+                "z": 38.05
+            },
+            "colliders": [
+                {
+                    "center": [
+                        0,
+                        1.8,
+                        0
+                    ],
+                    "half": [
+                        0.07,
+                        1.8,
+                        0.07
+                    ]
+                }
+            ],
+            "attribution": {
+                "title": "Turkish Flag",
+                "author": "oguxhax1929",
+                "authorUrl": "https://sketchfab.com/oguxhax1929",
+                "sourceUrl": "https://sketchfab.com/3d-models/turkish-flag-b5cd913d6ed54bcc922d088113a7bb14",
+                "license": "CC BY 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+                "changes": "direk ve top sadeleştirildi (244 bin → 261 üçgen), bez yeniden kuruldu (resmî oranlı doku, rüzgârla dalgalanan gölgelendirici) ve oyuna uyarlandı"
+            }
         }
     ]
 }

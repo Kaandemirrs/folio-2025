@@ -29,6 +29,7 @@ import { Benches } from './Benches.js'
 import { Scenery } from './Scenery.js'
 import { Props } from './Props.js'
 import { Garage } from './Garage.js'
+import { Flag } from './Flag.js'
 
 export class World
 {
@@ -81,6 +82,7 @@ export class World
             this.areas = new Areas()
             this.props = new Props()
             this.garage = new Garage()
+            this.flag = new Flag()
         }
     }
 

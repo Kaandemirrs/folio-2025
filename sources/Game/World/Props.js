@@ -37,8 +37,12 @@ export class Props
         this.game = Game.getInstance()
         this.items = []
 
+        // custom: kendi sınıfı olan proplar (örn. bayrak, World/Flag.js); burada yerleştirilmez
         for(const prop of propsConfig.props)
-            this.items.push(this.add(prop))
+        {
+            if(!prop.custom)
+                this.items.push(this.add(prop))
+        }
 
         this.game.ticker.events.on('tick', () => { this.update() }, 14)
         this.setCredits()
@@ -119,7 +123,7 @@ export class Props
         if(!list)
             return
 
-        for(const { prop } of this.items)
+        for(const prop of propsConfig.props)
         {
             const a = prop.attribution
             if(!a)
