@@ -126,12 +126,6 @@ export default
         1
     ],
     [
-        'fan',
-        'You’re my only fan',
-        'Spawn a fan.',
-        1
-    ],
-    [
         'reset',
         'Clean your room',
         'Put back everything as it was.',
