@@ -5,3 +5,5 @@ dist
 .VSCodeCounter
 .env*
 .autosave
+scripts/props/.work
+.venv-bpy

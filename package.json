@@ -8,6 +8,7 @@
     "build": "vite build --mode production",
     "preview": "vite preview",
     "compress": "node scripts/compress.js static/",
+    "prop": "node scripts/props/build.mjs",
     "postbuild": "node scripts/prune-dist.mjs"
   },
   "author": "",

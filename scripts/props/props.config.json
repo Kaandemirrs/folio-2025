@@ -1,0 +1,190 @@
+{
+    "_readme": [
+        "Prop hattı tek config: scripts/props/build.mjs bunu okur, oyun (sources/Game/World/Props.js) aynı dosyayı import eder.",
+        "Yeni prop eklemek: 'props' dizisine bir kayıt ekle, sonra `npm run prop -- <ad>` çalıştır.",
+        "Kaynak eksenleri glTF (x sağ, y yukarı, z ön). 'clip' ve 'remove' kaynak modelin metre cinsinden koordinatlarıdır.",
+        "Çıktı koordinatları oyun birimidir (kaynak × scale). 'colliders' çıktı yerelindedir: orijin = zemin merkezi, y = 0 zemin, ön yüz +Z.",
+        "world.facingDeg: cephenin baktığı yön; dünyada +X'ten +Z'ye doğru derece (0 = +X, 90 = +Z)."
+    ],
+    "props": [
+        {
+            "name": "bakkal",
+            "title": "Türk Bakkal",
+            "source": "resources/references/examples/turk_bakkal_-_turkish_grocery_store_diorama.glb",
+            "scale": 0.62,
+            "rotationY": 0,
+            "triangles": 12000,
+            "texture": 1024,
+            "bakeDistance": 0.25,
+            "remove": [
+                {
+                    "material": "Material_254"
+                },
+                {
+                    "material": "Material_224"
+                },
+                {
+                    "material": "Material_223"
+                },
+                {
+                    "material": "Material_225"
+                }
+            ],
+            "parts": [
+                {
+                    "match": {
+                        "material": "Material_42615"
+                    },
+                    "triangles": 2200,
+                    "clip": {
+                        "yMin": 0.0
+                    },
+                    "note": "sol bina (balkonlu)",
+                    "uvWeight": 2.0,
+                    "uv": "front"
+                },
+                {
+                    "match": {
+                        "material": "Material_39890"
+                    },
+                    "triangles": 1100,
+                    "clip": {
+                        "yMin": 0.0
+                    },
+                    "note": "sağ bina cephesi",
+                    "uvWeight": 3.0,
+                    "uv": "front"
+                },
+                {
+                    "match": {
+                        "material": "Material_874"
+                    },
+                    "triangles": 900,
+                    "clip": {
+                        "yMin": 0.0
+                    },
+                    "note": "tente ve vitrin",
+                    "uvWeight": 2.2,
+                    "uv": "front"
+                },
+                {
+                    "match": {
+                        "material": "Material_39766"
+                    },
+                    "triangles": 800,
+                    "clip": {
+                        "yMin": 0.0
+                    },
+                    "note": "avlu duvarı ve kapı",
+                    "uvWeight": 0.8,
+                    "uv": "front"
+                },
+                {
+                    "match": {
+                        "material": "Material_39889"
+                    },
+                    "triangles": 60,
+                    "clip": {
+                        "yMin": -0.02
+                    },
+                    "note": "avlu zemini (üst yüz)",
+                    "uvWeight": 0.15
+                },
+                {
+                    "match": {
+                        "material": "Material_39196"
+                    },
+                    "triangles": 500,
+                    "clip": {
+                        "yMin": 0.0
+                    },
+                    "note": "çöp konteynerleri",
+                    "uvWeight": 0.6
+                },
+                {
+                    "match": {
+                        "material": "Material_39195"
+                    },
+                    "triangles": 2600,
+                    "merge": true,
+                    "note": "dondurma dolabı ve sol ürün standları (tarama)",
+                    "uvWeight": 2.2,
+                    "uv": "front"
+                },
+                {
+                    "match": {
+                        "material": "Material_18642"
+                    },
+                    "triangles": 2600,
+                    "merge": true,
+                    "note": "Coca-Cola dolabı, sağ ürün standı, dergilik (tarama)",
+                    "uvWeight": 2.2,
+                    "uv": "front"
+                },
+                {
+                    "match": {
+                        "material": "Material_383"
+                    },
+                    "triangles": 40,
+                    "clip": {
+                        "zMax": 0.95,
+                        "yMin": -0.05
+                    },
+                    "note": "ince kaldırım şeridi (yol kesildi)",
+                    "uvWeight": 0.5
+                },
+                {
+                    "match": {
+                        "material": "Material_209"
+                    },
+                    "triangles": 40,
+                    "clip": {
+                        "yMin": 0.0,
+                        "xMin": -3.76
+                    },
+                    "note": "bina kütlesi (düz bej)",
+                    "uvWeight": 0.12
+                }
+            ],
+            "colliders": [
+                {
+                    "note": "bina gövdesi",
+                    "center": [
+                        0.615,
+                        1.62,
+                        -0.47
+                    ],
+                    "half": [
+                        2.0,
+                        1.62,
+                        1.79
+                    ]
+                }
+            ],
+            "world": {
+                "x": 11.5,
+                "z": 34.2,
+                "facingDeg": 25
+            },
+            "map": {
+                "label": "Bakkal",
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            "respawn": {
+                "distance": 3.2
+            },
+            "attribution": {
+                "title": "Türk Bakkalı - Turkish Grocery Store Diorama",
+                "author": "Yacanelli",
+                "authorUrl": "https://sketchfab.com/gorkemyacan",
+                "sourceUrl": "https://sketchfab.com/3d-models/turk-bakkal-turkish-grocery-store-diorama-72cc6e44eb7848b68cec4a90d790bec6",
+                "license": "CC BY 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+                "changes": "zemin ve arka yüzler silindi, sadeleştirildi, dokular tek atlasa pişirildi ve oyuna uyarlandı"
+            }
+        }
+    ]
+}
