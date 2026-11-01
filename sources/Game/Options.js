@@ -25,7 +25,7 @@ export class Options
     {
         const element = this.element.querySelector('.js-quality-toggle')
         const text = element.querySelector('span')
-        text.textContent = this.game.quality.level === 0 ? 'High' : 'Low'
+        text.textContent = this.game.quality.level === 0 ? 'Yüksek' : 'Düşük'
 
         element.addEventListener('click', () =>
         {
@@ -34,7 +34,7 @@ export class Options
 
         this.game.quality.events.on('change', () =>
         {
-            text.textContent = this.game.quality.level === 0 ? 'High' : 'Low'
+            text.textContent = this.game.quality.level === 0 ? 'Yüksek' : 'Düşük'
         })
     }
 
@@ -72,7 +72,7 @@ export class Options
             text.textContent = 'WebGL'
 
             const tooltip = element.querySelector('.js-tooltip')
-            tooltip.innerHTML = /* html */`Your browser is <strong>not compatible</strong> with WebGPU resulting in performance loss`
+            tooltip.innerHTML = /* html */`Tarayıcın WebGPU ile <strong>uyumlu değil</strong>, bu yüzden performans düşebilir`
         }
     }
 }

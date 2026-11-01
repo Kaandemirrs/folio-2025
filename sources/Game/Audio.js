@@ -211,7 +211,7 @@ export class Audio
                 // Notification
                 const html = /* html */`
                     <div class="top">
-                        <div class="title">Now playing<br /><span class="song-name">${this.playlist.current.name}</span></div>
+                        <div class="title">Şimdi çalıyor<br /><span class="song-name">${this.playlist.current.name}</span></div>
                         <div class="music-note-icon"></div>
                     </div>
                 `

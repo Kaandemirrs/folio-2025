@@ -41,12 +41,12 @@ export class Map
     {
         this.locations = {}
         this.locations.items = [
-            { name: 'Achievements', respawnName: 'achievements', offset: { x: 0, y: -0.01 } },
+            { name: 'Başarımlar', respawnName: 'achievements', offset: { x: 0, y: -0.01 } },
             { name: 'Bowling', respawnName: 'bowling', offset: { x: -0.08, y: 0.03 } },
-            { name: 'Career', respawnName: 'career', offset: { x: 0, y: -0.06 } },
-            { name: 'Landing', respawnName: 'landing', offset: { x: 0.02, y: 0 } },
-            { name: 'Projects', respawnName: 'projects', offset: { x: 0, y: -0.02 } },
-            { name: 'Social', respawnName: 'social', offset: { x: -0.01, y: -0.04 } },
+            { name: 'Kariyer', respawnName: 'career', offset: { x: 0, y: -0.06 } },
+            { name: 'Başlangıç', respawnName: 'landing', offset: { x: 0.02, y: 0 } },
+            { name: 'Projeler', respawnName: 'projects', offset: { x: 0, y: -0.02 } },
+            { name: 'Sosyal', respawnName: 'social', offset: { x: -0.01, y: -0.04 } },
         ]
 
         for(const item of this.locations.items)

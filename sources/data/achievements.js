@@ -4,155 +4,155 @@ export default
 [
     [
         'landingLeave',
-        'I’m going on an adventure!',
-        'Get out of the landing area.',
+        'Maceraya atılıyorum!',
+        'Başlangıç alanından çık.',
         1
     ],
     [
         'areas',
-        'Traveler',
-        'Vist every area.',
+        'Gezgin',
+        'Her alanı ziyaret et.',
         6,
         true // Unique
     ],
     [
         'projects',
-        'But can you fix the wifi?',
-        'Check every project in the <strong>projects</strong> area.',
+        'Peki wifi\'ı düzeltebiliyor musun?',
+        '<strong>Projeler</strong> alanındaki her projeye göz at.',
         projectsData.length,
         true // Unique
     ],
     [
         'sea',
-        'Under the sea',
-        'Go make friend with the fishes.',
+        'Denizin dibinde',
+        'Git, balıklarla arkadaş ol.',
         1
     ],
     [
         'upsideDown',
-        'Turtle',
-        'Get upside down.',
+        'Kaplumbağa',
+        'Ters dön.',
         1
     ],
     [
         'frontFlip',
-        'Teeth first',
-        'Do a front flip and land on your 4 wheels.',
+        'Önce dişler',
+        'Öne takla at ve 4 tekerleğinin üstüne in.',
         1
     ],
     [
         'backFlip',
-        'Flip of faith',
-        'Do a back flip and land on your 4 wheels.',
+        'İmanlı takla',
+        'Geriye takla at ve 4 tekerleğinin üstüne in.',
         1
     ],
     [
         'suspensions',
         'Lowrider',
-        'Use the vehicle suspensions.',
+        'Aracın süspansiyonlarını kullan.',
         4
     ],
     [
         'honk',
-        'Honk',
-        'Honk me like one of your french driver.',
+        'Korna',
+        'İstanbul trafiğindeymiş gibi korna çal.',
         10
     ],
     [
         'explosiveCrates',
         'Great Explosion Murder God Dynamight',
-        'Blow up every explosive crate.',
+        'Tüm patlayıcı sandıkları havaya uçur.',
         20,
         true // Unique
     ],
     [
         'goHigh',
-        'Limit the sky',
-        'Reach <strong>15 meters</strong> high.',
+        'Gökyüzü sınırdı',
+        '<strong>15 metre</strong> yüksekliğe ulaş.',
         15
     ],
     [
         'strike',
-        'F*** it, dude. Let\'s go bowling',
-        'Accomplished a strike.',
+        'Boş ver dostum, hadi bowlinge gidelim',
+        'Bir strike yap.',
         1
     ],
     [
         'fullDay',
-        'Don’t you have work to do?',
-        'Spend a full day cycle here in one go.',
+        'Yapacak işin yok mu?',
+        'Tam bir gün döngüsünü kesintisiz burada geçir.',
         1
     ],
     [
         'distanceDriven',
-        'Baby step',
-        'Drive 1km.',
+        'Bebek adımları',
+        '1 km yol yap.',
         1
     ],
     [
         'distanceDriven',
-        'Are we there yet?',
-        'Drive 10km.',
+        'Daha varmadık mı?',
+        '10 km yol yap.',
         10
     ],
     [
         'distanceDriven',
-        'Honey, I’m home!',
-        'Drive 100km.',
+        'Hayatım, ben geldim!',
+        '100 km yol yap.',
         100
     ],
     [
         'weatherSnow',
-        'Do you want to build a snowman?',
-        'Witness snowy weather.',
+        'Kardan adam yapalım mı?',
+        'Karlı bir havaya tanık ol.',
         1
     ],
     [
         'weatherRain',
-        'I’m singing in the rain',
-        'Witness a rainy weather.',
+        'Yağmur altında şarkı söylüyorum',
+        'Yağmurlu bir havaya tanık ol.',
         1
     ],
     [
         'lightning',
-        '1.21 Gigawatts!',
-        'Get hit by a lightning.',
+        '1,21 Gigawatt!',
+        'Yıldırım çarpsın.',
         1
     ],
     [
         'waterfall',
-        'Gamer instinct',
-        'What did you expect? A treasure?',
+        'Oyuncu refleksi',
+        'Ne bekliyordun, hazine mi?',
         1
     ],
     [
         'reset',
-        'Clean your room',
-        'Put back everything as it was.',
+        'Odanı topla',
+        'Her şeyi eski yerine koy.',
         1
     ],
     [
         'statueDown',
-        'Revolution!',
-        'Tear that statue down.',
+        'Devrim!',
+        'Şu heykeli yık.',
         1
     ],
     [
         'konami',
-        'Up up down down…',
-        'You know the rest.',
+        'Yukarı yukarı aşağı aşağı…',
+        'Gerisini biliyorsun.',
         1
     ],
     [
         'debug',
-        'It\'s not a bug, it\'s a feature',
-        'Access the debug UI.',
+        'Bug değil, özellik',
+        'Debug arayüzüne eriş.',
         1
     ],
     [
         'hacker',
         'Hacker',
-        'This one can’t be achieved.',
+        'Buna ulaşılamaz.',
         1
     ],
 ]
