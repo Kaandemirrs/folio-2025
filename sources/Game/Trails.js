@@ -45,10 +45,11 @@ export class Trails
 
         this.setGeometry()
         
-        this.game.ticker.events.on('tick', () =>
+        this.tickCallback = () =>
         {
             this.update()
-        }, 10)
+        }
+        this.game.ticker.events.on('tick', this.tickCallback, 10)
 
         if(this.game.debug.active)
         {
@@ -137,6 +138,27 @@ export class Trails
         this.items.push(item)
         
         return item
+    }
+
+    remove(item)
+    {
+        item.mesh.removeFromParent()
+        item.mesh.material.dispose()
+        item.dataTexture.dispose()
+        this.items = this.items.filter(_item => _item !== item)
+    }
+
+    destroy()
+    {
+        this.game.ticker.events.off('tick', this.tickCallback)
+
+        for(const item of [ ...this.items ])
+            this.remove(item)
+
+        this.geometry.dispose()
+
+        if(this.debugPanel)
+            this.debugPanel.dispose()
     }
 
     update()

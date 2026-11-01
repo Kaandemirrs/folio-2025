@@ -1,6 +1,5 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
-import { VisualVehicle } from './World/VisualVehicle.js'
 
 export class KonamiCode
 {
@@ -49,19 +48,15 @@ export class KonamiCode
         document.addEventListener('keydown', callback)
     }
 
+    // Araç listesinde bir sonrakine geçer (w140 → dogan → oldSchool → w140 …)
     async activate()
     {
-        const files = [
-            'vehicle/oldSchool.glb',
-            'vehicle/w140.glb'
-        ]
-        
-        const resources = await this.game.resourcesLoader.load([
-            [ 'vehicle', `${files[this.activationCount % 2]}?cb=${this.activationCount}`, 'gltf' ],
-        ])
-            
-        this.game.world.visualVehicle.destroy()
-        this.game.world.visualVehicle = new VisualVehicle(resources.vehicle.scene)
+        const vehicles = this.game.vehicles
+        const index = vehicles.items.findIndex(vehicle => vehicle.id === vehicles.currentId)
+        const next = vehicles.items[(index + 1) % vehicles.items.length]
+
+        if(!await vehicles.select(next.id))
+            return
 
         if(this.game.world.confetti)
         {

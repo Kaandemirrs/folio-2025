@@ -5,20 +5,23 @@ import { lerp, remap, remapClamp, smallestAngle } from '../utilities/maths.js'
 
 export class PhysicsVehicle
 {
-    constructor()
+    constructor(vehicle)
     {
         this.game = Game.getInstance()
 
         this.events = new Events()
 
-        this.steeringAmplitude = 0.5
-        this.engineForceAmplitude = 300
-        this.boostMultiplier = 2
-        this.topSpeed = 5
-        this.topSpeedBoost = 40
-        this.brakeAmplitude = 35
-        this.idleBrake = 0.06
-        this.reverseBrake = 0.4
+        this.vehicle = vehicle
+
+        // Değerler araç profilinden gelir (sources/data/vehicles.js → physics)
+        this.steeringAmplitude = vehicle.physics.steeringAmplitude
+        this.engineForceAmplitude = vehicle.physics.engineForceAmplitude
+        this.boostMultiplier = vehicle.physics.boostMultiplier
+        this.topSpeed = vehicle.physics.topSpeed
+        this.topSpeedBoost = vehicle.physics.topSpeedBoost
+        this.brakeAmplitude = vehicle.physics.brakeAmplitude
+        this.idleBrake = vehicle.physics.idleBrake
+        this.reverseBrake = vehicle.physics.reverseBrake
 
         this.sideward = new THREE.Vector3(0, 0, 1)
         this.upward = new THREE.Vector3(0, 1, 0)
@@ -28,16 +31,8 @@ export class PhysicsVehicle
         this.velocity = new THREE.Vector3()
         this.direction = this.forward.clone()
         this.speed = 0
-        this.suspensionsHeights = {
-            low: 0.60,
-            mid: 0.83,
-            high: 1.10
-        }
-        this.suspensionsStiffness = {
-            low: 20,
-            mid: 30,
-            high: 40
-        }
+        this.suspensionsHeights = { ...vehicle.physics.suspensionsHeights }
+        this.suspensionsStiffness = { ...vehicle.physics.suspensionsStiffness }
 
         // Debug
         if(this.game.debug.active)
@@ -87,23 +82,20 @@ export class PhysicsVehicle
     setChassis()
     {
         this.chassis = {}
-        const object = this.game.objects.add(null, {
+        this.chassis.description = {
             type: 'dynamic',
             position: this.position,
             friction: 0.4,
             rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), Math.PI * 0),
-            colliders: [
-                { shape: 'cuboid', mass: 2.5, parameters: [ 1.45, 0.28, 0.66 ], position: { x: -0.09, y: -0.30, z: 0 }, centerOfMass: { x: 0.09, y: -0.11, z: 0 } }, // Main (mutlak ağırlık merkezi x=0: dingil ortası, y=-0.41)
-                { shape: 'cuboid', mass: 0, parameters: [ 0.8, 0.14, 0.55 ], position: { x: -0.45, y: 0.14, z: 0 } }, // Top
-                { shape: 'cuboid', mass: 0, parameters: [ 1.62, 0.27, 0.72 ], position: { x: -0.09, y: -0.30, z: 0 }, category: 'bumper' }, // Bumper
-            ],
+            colliders: this.vehicle.physics.colliders,
             canSleep: false,
             waterGravityMultiplier: 0,
             onCollision: (force, position) =>
             {
                 this.game.audio.groups.get('hitDefault').playRandomNext(force, position)
             }
-        })
+        }
+        const object = this.game.objects.add(null, this.chassis.description)
         this.chassis.physical = object.physical
         this.chassis.mass = this.chassis.physical.body.mass()
     }
@@ -138,8 +130,8 @@ export class PhysicsVehicle
 
         // Settings
         this.wheels.settings = {
-            offset: { x: 0.975, y: 0, z: 0.58 },
-            radius: 0.27,
+            offset: { ...this.vehicle.physics.wheels.offset },
+            radius: this.vehicle.physics.wheels.radius,
             directionCs: { x: 0, y: -1, z: 0 },
             axleCs: { x: 0, y: 0, z: 1 },
             frictionSlip: 0.9,
@@ -441,6 +433,49 @@ export class PhysicsVehicle
         {
             this.debugPanel.addBinding(this.flip, 'force', { label: 'flipForce', min: 0, max: 10, step: 0.01 })
         }
+    }
+
+    // Çalışma anında araç profilini değiştirir: aynı gövde, yeni çarpıştırıcılar ve tekerlek/süspansiyon ayarları.
+    // Konum ve yön korunur; hız sıfırlanır (araç yerinde yeniden kurulur).
+    setVehicle(vehicle)
+    {
+        this.vehicle = vehicle
+        const physics = vehicle.physics
+
+        // Sürüş değerleri
+        this.steeringAmplitude = physics.steeringAmplitude
+        this.engineForceAmplitude = physics.engineForceAmplitude
+        this.boostMultiplier = physics.boostMultiplier
+        this.topSpeed = physics.topSpeed
+        this.topSpeedBoost = physics.topSpeedBoost
+        this.brakeAmplitude = physics.brakeAmplitude
+        this.idleBrake = physics.idleBrake
+        this.reverseBrake = physics.reverseBrake
+        Object.assign(this.suspensionsHeights, physics.suspensionsHeights)
+        Object.assign(this.suspensionsStiffness, physics.suspensionsStiffness)
+
+        // Çarpıştırıcılar: eskileri sil, yenilerini ekle
+        const body = this.chassis.physical.body
+        for(const collider of this.chassis.physical.colliders)
+            this.game.physics.world.removeCollider(collider, false)
+
+        this.chassis.description.colliders = physics.colliders
+        this.game.physics.addColliders(this.chassis.physical, this.chassis.description)
+        this.chassis.mass = body.mass()
+
+        // Tekerlekler
+        Object.assign(this.wheels.settings.offset, physics.wheels.offset)
+        this.wheels.settings.radius = physics.wheels.radius
+        this.wheels.updateSettings()
+
+        // Yerinde durdur
+        body.setLinvel({ x: 0, y: 0, z: 0 }, true)
+        body.setAngvel({ x: 0, y: 0, z: 0 }, true)
+        body.resetForces(true)
+        body.resetTorques(true)
+        body.wakeUp()
+
+        this.events.trigger('vehicleChange', [ vehicle ])
     }
 
     moveTo(position, rotation = 0)

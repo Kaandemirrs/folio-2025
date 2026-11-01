@@ -136,6 +136,23 @@ export class Physics
         physical.body = this.world.createRigidBody(rigidBodyDesc)
 
         // Colliders
+        this.addColliders(physical, _physicalDescription)
+
+        // Original transform
+        physical.initialState = {
+            position: { x: physical.body.translation().x, y: physical.body.translation().y, z: physical.body.translation().z },
+            rotation: physical.body.rotation(),
+            sleeping: physical.body.isSleeping() 
+        }
+
+        this.physicals.push(physical)
+
+        return physical
+    }
+
+    // Gövdeye çarpıştırıcıları ekler (araç profili değişince de kullanılır)
+    addColliders(physical, _physicalDescription)
+    {
         let collidersOverwrite = {}
         if(typeof _physicalDescription.collidersOverwrite !== 'undefined')
             collidersOverwrite = _physicalDescription.collidersOverwrite
@@ -225,16 +242,7 @@ export class Physics
             physical.colliders.push(collider)
         }
 
-        // Original transform
-        physical.initialState = {
-            position: { x: physical.body.translation().x, y: physical.body.translation().y, z: physical.body.translation().z },
-            rotation: physical.body.rotation(),
-            sleeping: physical.body.isSleeping() 
-        }
-
-        this.physicals.push(physical)
-
-        return physical
+        return physical.colliders
     }
 
     update()

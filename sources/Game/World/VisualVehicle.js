@@ -10,11 +10,12 @@ import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
 
 export class VisualVehicle
 {
-    constructor(model)
+    constructor(model, vehicle = null)
     {
         this.game = Game.getInstance()
         
         this.model = model
+        this.vehicle = vehicle ?? this.game.vehicles.current
 
         this.setParts()
         this.setMainGroundTrack()
@@ -42,7 +43,13 @@ export class VisualVehicle
         {
             this.game.inputs.events.off('left', this.blinkers.leftCallback)
             this.game.inputs.events.off('right', this.blinkers.rightCallback)
+            this.blinkers.timer?.kill()
         }
+
+        this.game.achievements.events.off('rewardActiveChange', this.paints.rewardCallback)
+
+        this.boostTrails.instance.destroy()
+        this.antenna?.head?.removeFromParent()
 
         for(let partName in this.parts)
         {
@@ -55,6 +62,7 @@ export class VisualVehicle
         for(const wheel of this.wheels.items)
         {
             this.game.tracks.remove(wheel.groundTrack)
+            wheel.container.removeFromParent()
         }
     }
 
@@ -130,9 +138,17 @@ export class VisualVehicle
     {
         this.paints = {}
 
+        // Boyalar (materyaller) oyun boyunca bir kez kurulur; araç değişince yeniden kullanılır
+        if(VisualVehicle.paintChoices)
+        {
+            this.paints.choices = VisualVehicle.paintChoices
+        }
+        else
+        {
         this.paints.choices = {}
         this.paints.choices.obsidian = this.game.materials.getFromName('obsidianGradient') // Obsidyen Siyah (varsayılan)
         this.paints.choices.red = this.game.materials.getFromName('redGradient')
+        this.paints.choices.bordo = this.game.materials.createGradient('bordoGradient', '#b3173f', '#4c0b25', this.game.materials.debugPanel?.addFolder({ title: 'bordoGradient' })) // Tofaş Bordo
         this.paints.choices.orange = this.game.materials.createGradient('orangeGradient', '#ff940d', '#af0071', this.game.materials.debugPanel?.addFolder({ title: 'orangeGradient' }))
         this.paints.choices.white = this.game.materials.createGradient('whiteGradient', '#ffffff', '#b5b5b5', this.game.materials.debugPanel?.addFolder({ title: 'whiteGradient' }))
         this.paints.choices.black = this.game.materials.createGradient('blackGradient', '#626262', '#262526', this.game.materials.debugPanel?.addFolder({ title: 'blackGradient' }))
@@ -222,6 +238,9 @@ export class VisualVehicle
             }
         }
 
+        VisualVehicle.paintChoices = this.paints.choices
+        }
+
         this.paints.changeTo = (name = 'red') =>
         {
             const material = this.paints.choices[name]
@@ -238,18 +257,24 @@ export class VisualVehicle
             }
         }
         
-        // From achievemnts
-        this.paints.changeTo(this.game.achievements.rewards.current.name)
-
-        this.game.achievements.events.on('rewardActiveChange', (reward) =>
+        // Ödülden gelen boya; varsayılan ödül seçiliyse aracın kendi varsayılan boyası
+        this.paints.resolve = (reward) =>
         {
-            this.paints.changeTo(reward.name)
-        })
+            return reward === this.game.achievements.rewards.default ? this.vehicle.defaultPaint : reward.name
+        }
+
+        this.paints.changeTo(this.paints.resolve(this.game.achievements.rewards.current))
+
+        this.paints.rewardCallback = (reward) =>
+        {
+            this.paints.changeTo(this.paints.resolve(reward))
+        }
+        this.game.achievements.events.on('rewardActiveChange', this.paints.rewardCallback)
     }
 
     setMainGroundTrack()
     {
-        this.mainGroundTrack = this.game.tracks.add(new Track(1.5, 'g'))
+        this.mainGroundTrack = this.game.tracks.add(new Track(this.vehicle.tracks.main, 'g'))
     }
 
     setWheels()
@@ -282,25 +307,11 @@ export class VisualVehicle
             // Cylinder (actual wheel)
             wheel.cylinder.position.set(0, 0, 0)
 
-            // Tekerlek modelinin yarıçapı fizik yarıçapına uymuyorsa (örn. Konami ile gelen eski araç) ölçekle
-            if(typeof this.wheels.modelScale === 'undefined')
-            {
-                const size = new THREE.Box3().setFromObject(wheel.cylinder).getSize(new THREE.Vector3())
-                const modelRadius = Math.max(size.x, size.y) / 2
-                const visualRadius = this.game.physicalVehicle.wheels.settings.radius + 0.01
-                this.wheels.modelScale = modelRadius > 0 ? visualRadius / modelRadius : 1
-                if(Math.abs(this.wheels.modelScale - 1) < 0.03)
-                    this.wheels.modelScale = 1
-            }
-
-            if(this.wheels.modelScale !== 1)
-                wheel.container.scale.setScalar(this.wheels.modelScale)
-            
             if(i === 0 || i === 2)
                 wheel.container.rotation.y = Math.PI
 
             // Add new track
-            wheel.groundTrack = this.game.tracks.add(new Track(0.35, 'r'))
+            wheel.groundTrack = this.game.tracks.add(new Track(this.vehicle.tracks.wheel, 'r'))
 
             this.wheels.items.push(wheel)
         }
@@ -327,7 +338,7 @@ export class VisualVehicle
             this.parts.blinkerLeft.visible = this.game.inputs.actions.get('left').active ? on : false
             this.parts.blinkerRight.visible = this.game.inputs.actions.get('right').active ? on : false
 
-            gsap.delayedCall(0.8, blink)
+            this.blinkers.timer = gsap.delayedCall(0.8, blink)
         }
 
         const blink = () =>
@@ -343,7 +354,7 @@ export class VisualVehicle
             }
             else
             {
-                gsap.delayedCall(0.8, blink)
+                this.blinkers.timer = gsap.delayedCall(0.8, blink)
             }
         }
 
@@ -378,7 +389,7 @@ export class VisualVehicle
         this.antenna.target = new THREE.Vector3(0, 2, 0)
         this.antenna.target = new THREE.Vector3(0, 2, 0)
         this.antenna.object = this.parts.antenna
-        this.antenna.head = this.game.resources.vehicle.scene.getObjectByName('antennaHead')
+        this.antenna.head = this.model.getObjectByName('antennaHead')
         this.antenna.headAxle = this.antenna.head.children[0]
         this.antenna.headReference = this.antenna.object.getObjectByName('antennaHeadReference')
 
@@ -391,19 +402,19 @@ export class VisualVehicle
         this.boostTrails = {}
         this.boostTrails.instance = new Trails()
 
-        this.boostTrails.leftReference = new THREE.Object3D()
-        this.boostTrails.leftReference.position.set(-1.73, -0.49, -0.40) // Çift arka egzozun uçları
-        this.parts.chassis.add(this.boostTrails.leftReference)
+        // Egzoz uçları (araç profilindeki boostPoints; şasi yerel koordinatı)
+        this.boostTrails.items = []
+        for(const point of this.vehicle.boostPoints)
+        {
+            const reference = new THREE.Object3D()
+            reference.position.set(point.x, point.y, point.z)
+            this.parts.chassis.add(reference)
 
-        this.boostTrails.left = this.boostTrails.instance.create()
-        this.boostTrails.leftReference.getWorldPosition(this.boostTrails.left.position)
-    
-        this.boostTrails.rightReference = new THREE.Object3D()
-        this.boostTrails.rightReference.position.set(-1.73, -0.49, 0.40)
-        this.parts.chassis.add(this.boostTrails.rightReference)
+            const trail = this.boostTrails.instance.create()
+            reference.getWorldPosition(trail.position)
 
-        this.boostTrails.right = this.boostTrails.instance.create()
-        this.boostTrails.rightReference.getWorldPosition(this.boostTrails.right.position)
+            this.boostTrails.items.push({ reference, trail })
+        }
     }
 
     setBoostAnimation()
@@ -535,10 +546,11 @@ export class VisualVehicle
 
         // Boost trails
         const trailAlpha = physicalVehicle.goingForward && this.game.player.boosting && this.game.player.accelerating > 0 ? 1 : 0
-        this.boostTrails.leftReference.getWorldPosition(this.boostTrails.left.position)
-        this.boostTrails.left.alpha = trailAlpha
-        this.boostTrails.rightReference.getWorldPosition(this.boostTrails.right.position)
-        this.boostTrails.right.alpha = trailAlpha
+        for(const item of this.boostTrails.items)
+        {
+            item.reference.getWorldPosition(item.trail.position)
+            item.trail.alpha = trailAlpha
+        }
 
         // Boost animation
         this.boostAnimation.mix += (this.game.player.boosting ? 1 : - 1) * this.game.ticker.deltaScaled * this.boostAnimation.speed

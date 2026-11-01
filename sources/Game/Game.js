@@ -38,6 +38,8 @@ import { RayCursor } from './RayCursor.js'
 import { Water } from './Water.js'
 import { Reveal } from './Reveal.js'
 import { KonamiCode } from './KonamiCode.js'
+import { Vehicles } from './Vehicles.js'
+import { vehiclesById } from '../data/vehicles.js'
 import { Achievements } from './Achievements.js'
 import { Notifications } from './Notifications.js'
 import { Quality } from './Quality.js'
@@ -98,6 +100,7 @@ export class Game
         const compressedTextureExtension = compressed ? 'ktx' : 'png'
 
         const cb = '?cb=1'
+        const initialVehicleId = Vehicles.getSavedId()
         this.resources = await this.resourcesLoader.load([
             [ 'respawnsReferencesModel',    `respawns/respawnsReferences${compressedModelSuffix}.glb${cb}`, 'gltf' ],
             [ 'behindTheSceneStarsTexture', `behindTheScene/stars.${compressedTextureExtension}${cb}`,      compressedTextureFormat, (resource) => { resource.colorSpace = THREE.SRGBColorSpace; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; resource.wrapS = THREE.RepeatWrapping; resource.wrapT = THREE.RepeatWrapping; } ],
@@ -131,7 +134,7 @@ export class Game
             [
                 [ 'foliageTexture',                        `foliage/foliageSDF.${compressedTextureExtension}${cb}`,                              compressedTextureFormat, (resource) => { resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; } ],
                 [ 'bushesReferences',                      `bushes/bushesReferences${compressedModelSuffix}.glb${cb}`,                           'gltf' ],
-                [ 'vehicle',                               `vehicle/w140${compressedModelSuffix}.glb${cb}`,                                      'gltf' ],
+                [ `vehicle_${initialVehicleId}`,           Vehicles.getFilePath(vehiclesById.get(initialVehicleId)),                             'gltf' ],
                 [ 'flowersReferencesModel',                `flowers/flowersReferences${compressedModelSuffix}.glb${cb}`,                         'gltf' ],
                 [ 'bricksModel',                           `bricks/bricks${compressedModelSuffix}.glb${cb}`,                                     'gltf' ],
                 [ 'fencesModel',                           `fences/fences${compressedModelSuffix}.glb${cb}`,                                     'gltf' ],
@@ -178,7 +181,8 @@ export class Game
         this.terrain = new Terrain()
         this.physics = new Physics()
         this.wireframe = new PhysicsWireframe()
-        this.physicalVehicle = new PhysicsVehicle()
+        this.vehicles = new Vehicles(initialVehicleId)
+        this.physicalVehicle = new PhysicsVehicle(this.vehicles.current)
         this.zones = new Zones()
         this.player = new Player()
         this.closingManager = new ClosingManager()
