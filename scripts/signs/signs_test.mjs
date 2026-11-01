@@ -157,6 +157,22 @@ for(const name of SCENARIOS)
         info.pos = await page.evaluate(() => ({ x: +window.game.physicalVehicle.position.x.toFixed(1), z: +window.game.physicalVehicle.position.z.toFixed(1) }))
         await page.screenshot({ path: `${OUT}/horon_respawn.png` })
     }
+    else if(name === 'horonpoints')
+    {
+        const st = () => page.evaluate(() => ({ start: window.game.world.horon.startPoint.state, stop: window.game.world.horon.stopPoint.state }))
+        info.p0 = await st()
+        await page.evaluate(() => window.game.player.respawn('monkey'))
+        await sleep(9000)
+        info.p1_near = await st()
+        await page.screenshot({ path: `${OUT}/horon_point_start.png` })
+        await page.evaluate(() => window.game.world.horon.start())
+        await sleep(3000)
+        info.p2_started = await st()
+        await page.screenshot({ path: `${OUT}/horon_point_stop.png` })
+        await page.evaluate(() => window.game.world.horon.stop())
+        await sleep(3000)
+        info.p3_stopped = await st()
+    }
     else if(name === 'horonlap')
     {
         await page.evaluate(() => window.game.player.respawn('monkey'))

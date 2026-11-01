@@ -113,6 +113,7 @@ export class Horon
         this.startPoint = create('Horonu başlat', () => { this.start() })
         this.stopPoint = create('Horonu durdur', () => { this.stop() })
         this.stopPoint.hide()
+        this.stopPoint.recoveryState = InteractivePoints.STATE_HIDDEN // intro açılışında recover() ikisini birden açıp üst üste bindirmesin
     }
 
     // Müzik: dosya varsa konuma bağlı (alandan uzaklaştıkça kısılır) ve döngüde; yoksa maymunlar sessizce dans eder
