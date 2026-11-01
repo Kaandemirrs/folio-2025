@@ -144,12 +144,6 @@ export default
         1
     ],
     [
-        'debug',
-        'Bug değil, özellik',
-        'Debug arayüzüne eriş.',
-        1
-    ],
-    [
         'hacker',
         'Hacker',
         'Buna ulaşılamaz.',

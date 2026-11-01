@@ -2,15 +2,16 @@ import * as THREE from 'three/webgpu'
 import { Pane } from 'tweakpane'
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials'
 import * as CamerakitPlugin from '@tweakpane/plugin-camerakit'
+import { DEV_TOOLS, hasHash } from './utilities/dev.js'
 
 export class Debug
 {
     constructor()
     {
         
-        this.active = location.hash.match(/debug/i)
+        this.active = hasHash('debug') // Production'da hiçbir zaman açılmaz (DEV_TOOLS)
 
-        if(this.active)
+        if(DEV_TOOLS && this.active)
         {
             this.panel = new Pane()
             this.panel.registerPlugin(EssentialsPlugin)

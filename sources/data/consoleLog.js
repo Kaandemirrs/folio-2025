@@ -25,11 +25,6 @@ const text = `
 ║ LinkedIn ⇒ https://www.linkedin.com/in/kaandev/
 ╚═══════════════════════╝
 
-╔═ Debug ═══════════════╗
-║ URL'nin sonuna #debug ekleyip sayfayı yenileyerek debug moduna girebilirsin.
-║ Serbest kamerayı açıp kapatmak için [V] tuşuna bas.
-╚═══════════════════════╝
-
 ╔═ Three.js ════════════╗
 ║ Bu 3D dünyayı Three.js ile çiziyorum (sürüm: ${THREE.REVISION})
 ║ https://threejs.org/

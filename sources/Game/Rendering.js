@@ -4,6 +4,7 @@ import { bloom } from 'three/addons/tsl/display/BloomNode.js'
 import { Game } from './Game.js'
 import { cheapDOF } from './Passes/cheapDOF.js'
 import { Inspector } from 'three/addons/inspector/Inspector.js'
+import { hasHash } from './utilities/dev.js'
 
 export class Rendering
 {
@@ -59,7 +60,7 @@ export class Rendering
             return a.renderOrder - b.renderOrder
         })
 
-        if(location.hash.match(/inspector/i))
+        if(hasHash('inspector'))
         {
             this.renderer.inspector = new Inspector()
         }
@@ -132,7 +133,7 @@ export class Rendering
 
     setStats()
     {
-        if(!location.hash.match(/stats/i))
+        if(!hasHash('stats'))
             return
             
         this.stats = {}

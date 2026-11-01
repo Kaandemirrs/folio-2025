@@ -197,12 +197,6 @@ export class Game
         {
             this.reveal.updateStep(0)
         })
-
-        // Debug achievement
-        if(this.debug.active)
-        {
-            this.achievements.setProgress('debug', 1)
-        }
     }
 
     reset()

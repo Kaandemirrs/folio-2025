@@ -1,3 +1,4 @@
+import { hasHash } from './utilities/dev.js'
 import * as THREE from 'three/webgpu'
 import { color, uniform, vec2 } from 'three/tsl'
 import { Game } from './Game.js'
@@ -45,7 +46,7 @@ export class Reveal
 
     updateStep(step)
     {
-        const speedMultiplier = location.hash.match(/skip/i) ? 4 : 1
+        const speedMultiplier = hasHash('skip') ? 4 : 1
 
         // Step 0
         if(step === 0)
@@ -97,7 +98,7 @@ export class Reveal
                     this.game.world.cherryTrees.leaves.seeThroughMultiplier = 0.5
 
                 // Click
-                if(location.hash.match(/skip/i))
+                if(hasHash('skip'))
                 {
                     this.updateStep(1)
                 }

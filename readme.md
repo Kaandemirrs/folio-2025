@@ -24,7 +24,7 @@ npm run build
 
 ## Hata ayıklama
 
-Adresin sonuna `#debug` ekleyip sayfayı yenile. `#stats`, `#inspector` ve `#skip` da kullanılabilir.
+Geliştirme sunucusunda (`npm run dev`) adresin sonuna `#debug` ekleyip sayfayı yenile; `#stats`, `#inspector` ve `#skip` da kullanılabilir. Bu araçlar production build'de kapalıdır; açmak için build sırasında `VITE_DEBUG=1` tanımla.
 
 ## Kredi
 

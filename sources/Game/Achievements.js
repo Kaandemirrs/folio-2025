@@ -597,12 +597,6 @@ export class Achievements
                 landingLeaveAchievement.setProgress(1)
         }
 
-        const debugAchievement = this.groups.get('debug')
-        if(debugAchievement && this.game.debug.active)
-        {
-            debugAchievement.setProgress(1)
-        }
-
         if(this.game.world.rainLines)
             this.game.world.rainLines.achievementAchieved = false
 
