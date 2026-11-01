@@ -1,6 +1,6 @@
 // Build sonrası dist/ içinden çalışma anında istenmeyen dosyaları siler (yalnızca VITE_COMPRESSED=1 iken).
 // - texture kaynak PNG'leri (yanında .ktx veya .webp karşılığı varsa) — oyun ktx/webp ister
-// - sıkıştırılmamış .glb'ler (yanında -compressed.glb varsa); Konami kodunun ham yüklediği araçlar hariç
+// - sıkıştırılmamış .glb'ler (yanında -compressed.glb varsa)
 // Çalıştırma: `npm run build` sonrası otomatik (postbuild), elle: node scripts/prune-dist.mjs
 import 'dotenv/config'
 import fs from 'node:fs'
@@ -17,7 +17,7 @@ if(!process.env.VITE_COMPRESSED)
 }
 
 // KonamiCode.js bu dosyaları sıkıştırmasız yükler
-const KEEP_RAW_GLB = new Set(['vehicle/oldSchool.glb', 'vehicle/w140.glb'])
+const KEEP_RAW_GLB = new Set([])
 
 let removed = 0, bytes = 0
 const walk = (dir) =>
