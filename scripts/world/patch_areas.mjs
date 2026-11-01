@@ -344,9 +344,24 @@ const stepSocialDecor = (kind) => async (doc, report) =>
     report.push(`social dekor: ${items.length} ${kind === 'bushes' ? 'çalı' : 'çiçek kümesi'} eklendi`)
 }
 
+/**
+ * Adım: Bowling'deki jukebox artık ayrı prop (static/props/jukebox.glb, scripts/world/extract_jukebox.mjs); areas.glb'den silinir.
+ */
+const stepJukebox = async (doc, report) =>
+{
+    for(const name of [ 'refJukeboxPhysicalDynamic', 'refJukeboxInteractivePoint' ])
+    {
+        const node = find(doc, name)
+        if(!node)
+            throw new Error(`jukebox: ${name} bulunamadı`)
+        removeNode(node)
+    }
+    report.push('bowling: jukebox düğümleri silindi (artık Jukeboxes.js)')
+}
+
 // Hedef başına adımlar. Her hedefin kaynağı resources/original/<ad>.glb ve <ad>-compressed.glb
 const TARGETS = [
-    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial ] },
+    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox ] },
     { original: 'bushesReferences', out: 'static/bushes/bushesReferences', steps: [ stepSocialDecor('bushes') ] },
     { original: 'flowersReferences', out: 'static/flowers/flowersReferences', steps: [ stepSocialDecor('flowers') ] },
 ]

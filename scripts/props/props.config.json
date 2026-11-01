@@ -246,6 +246,84 @@
                 "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
                 "changes": "direk ve top sadeleştirildi (244 bin → 261 üçgen), bez yeniden kuruldu (resmî oranlı doku, rüzgârla dalgalanan gölgelendirici) ve oyuna uyarlandı"
             }
+        },
+        {
+            "name": "jukebox",
+            "title": "Müzik kutusu",
+            "custom": "jukebox",
+            "_note": "Model: scripts/world/extract_jukebox.mjs (areas.glb'deki bowling jukebox'ından). Çizim/etkileşim: sources/Game/World/Jukeboxes.js. Tek GLB, tek InstancedGroup; her yerleşim sabit çarpıştırıcı + 'Şarkıyı değiştir' noktası + nota parçacığı. Yerleşimler dünya koordinatında (x, z); facingDeg: ön yüzün baktığı yön (+X'ten +Z'ye derece; 45 = kamera tarafı). Çarpıştırıcı/etkileşim/nota ofsetleri model yerelinde (orijin = zemin, ön = +Z) ve scale ile çarpılır.",
+            "colliders": [
+                {
+                    "center": [
+                        0,
+                        1.683,
+                        -0.663
+                    ],
+                    "half": [
+                        1.337,
+                        1.682,
+                        0.925
+                    ]
+                }
+            ],
+            "interact": {
+                "y": 1.5,
+                "z": 1.56
+            },
+            "notes": {
+                "y": 2.45,
+                "z": 0.5
+            },
+            "placements": [
+                {
+                    "id": "landing",
+                    "note": "Başlangıç doğma noktasının solunda, çim adasının kenarı (ilk kadrajda görünür, yolu kapatmaz)",
+                    "x": 35.5,
+                    "z": 40.5,
+                    "facingDeg": 45,
+                    "scale": 0.8
+                },
+                {
+                    "id": "bakkal",
+                    "note": "Bakkalın solunda, harita kenarına yakın boşluk",
+                    "x": 7.3,
+                    "z": 37.5,
+                    "facingDeg": 45,
+                    "scale": 0.8
+                },
+                {
+                    "id": "projects",
+                    "note": "Projeler alanı girişinde, yolun çim kenarı",
+                    "x": 33.0,
+                    "z": 18.2,
+                    "facingDeg": 45,
+                    "scale": 0.8
+                },
+                {
+                    "id": "career",
+                    "note": "Kariyer alanı girişinde, bank adasının altı",
+                    "x": 22.0,
+                    "z": 8.3,
+                    "facingDeg": 45,
+                    "scale": 0.8
+                },
+                {
+                    "id": "social",
+                    "note": "İkon halkasının merkezi (kaldırılan heykelin yeri)",
+                    "x": 25.95,
+                    "z": -18.09,
+                    "facingDeg": 45,
+                    "scale": 0.8
+                },
+                {
+                    "id": "bowling",
+                    "note": "Bowling'deki orijinal yeri (artık sabit)",
+                    "x": 24.01,
+                    "z": 55.1,
+                    "facingDeg": 80,
+                    "scale": 1
+                }
+            ]
         }
     ]
 }

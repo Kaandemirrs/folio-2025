@@ -3,7 +3,7 @@ import { Game } from '../../Game.js'
 import { InteractivePoints } from '../../InteractivePoints.js'
 import { clamp, lerp, remapClamp } from '../../utilities/maths.js'
 import gsap from 'gsap'
-import { color, float, Fn, instancedBufferAttribute, instanceIndex, max, min, mix, positionGeometry, sin, step, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
+import { color, float, Fn, max, min, mix, positionGeometry, sin, step, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 import { InstancedGroup } from '../../InstancedGroup.js'
 import { Area } from './Area.js'
 
@@ -30,7 +30,6 @@ export class BowlingArea extends Area
         this.setRestart()
         this.setScreen()
         this.setBumpers()
-        this.setJukebox()
         this.setAchievement()
     }
 
@@ -406,113 +405,6 @@ export class BowlingArea extends Area
                 this.game.inputs.interactiveButtons.removeItems(['interact'])
             }
         )
-    }
-
-    setJukebox()
-    {
-        const count = 8
-
-        // Notes > Base position
-        const positionsArray = new Float32Array(count * 3)
-        for(let i = 0; i < count; i++)
-        {
-            const i3 = i * 3
-            positionsArray[i3 + 0] = (Math.random() - 0.5) * 1
-            positionsArray[i3 + 1] = (Math.random() - 0.5) * 1
-            positionsArray[i3 + 2] = (Math.random() - 0.5) * 1
-        }
-
-        const positionAttribute = new THREE.InstancedBufferAttribute(positionsArray, 3)
-
-        // Notes > Material
-        const progress = this.game.ticker.elapsedScaledUniform.mul(0.2).add(instanceIndex.toFloat().div(count)).fract().toVarying()
-        const notesColor = uniform(color('#ff994d'))
-        const notesStrength = uniform(3.5)
-
-        const outputNode = Fn(() =>
-        {
-            const baseUv = vec2(uv().x, uv().y.oneMinus())
-            const noteMask = texture(this.game.resources.jukeboxMusicNotes, baseUv).r
-            return vec4(notesColor.mul(notesStrength), noteMask)
-        })()
-
-        const positionNode = Fn(() =>
-        {
-            const newPosition = instancedBufferAttribute(positionAttribute).toVar()
-
-            newPosition.z.addAssign(progress.oneMinus().pow(3).oneMinus())
-            newPosition.y.addAssign(progress)
-            return newPosition
-        })()
-
-        const rotationNode = Fn(() =>
-        {
-            return sin(this.game.ticker.elapsedScaledUniform.mul(4).add(instanceIndex.toFloat())).add(1).mul(0.5).pow(2).oneMinus()
-        })()
-        
-        const scaleNode = Fn(() =>
-        {
-            return progress.sub(0.5).abs().mul(2).oneMinus().mul(3).min(1)
-        })()
-
-        const material = new THREE.PointsNodeMaterial({
-            outputNode: outputNode,
-            // outputNode: vec4(vec3(2), 1),
-            // opacityNode: float(0.2),
-            positionNode: positionNode,
-            rotationNode: rotationNode,
-            scaleNode: scaleNode,
-            // sizeNode: float(0.5),
-            size: 1.5, // in pixels units
-            // vertexColors: true,
-            sizeAttenuation: true,
-            alphaToCoverage: true,
-        })
-
-        // Notes > Mesh
-        const points = new THREE.Sprite(material)
-        points.count = count
-        points.position.y = 1
-        points.position.z = 0.5
-        this.references.items.get('jukebox')[0].add(points)
-
-        // Interactive point
-        this.game.interactivePoints.create(
-            this.references.items.get('jukeboxInteractivePoint')[0].position,
-            'Şarkıyı değiştir',
-            InteractivePoints.ALIGN_LEFT,
-            InteractivePoints.STATE_CONCEALED,
-            () =>
-            {
-                if(this.game.audio.mute.active)
-                    this.game.audio.mute.deactivate()
-
-                this.game.audio.playlist.next()
-            },
-            () =>
-            {
-                this.game.inputs.interactiveButtons.addItems(['interact'])
-            },
-            () =>
-            {
-                this.game.inputs.interactiveButtons.removeItems(['interact'])
-            },
-            () =>
-            {
-                this.game.inputs.interactiveButtons.removeItems(['interact'])
-            }
-        )
-
-        // Debug
-        if(this.game.debug.active)
-        {
-            const debugPanel = this.debugPanel.addFolder({
-                title: 'Jukebox',
-                expanded: false,
-            })
-            this.game.debug.addThreeColorBinding(debugPanel, notesColor.value, 'notesColor')
-            debugPanel.addBinding(notesStrength, 'value', { label: 'notesStrength', min: 0, max: 10, step: 0.001 })
-        }
     }
 
     setAchievement()

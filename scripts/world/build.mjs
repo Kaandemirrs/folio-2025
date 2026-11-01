@@ -30,6 +30,7 @@ mkdirSync(work, { recursive: true })
 
 run(python, [ '-I', 'scripts/world/build_letters.py', '--', '--out', `${work}/letters.glb`, '--meta', `${work}/letters.json`, '--sheet', 'resources/references/world/renders/letters_sheet.png' ])
 run('node', [ 'scripts/world/patch_areas.mjs' ])
+run('node', [ 'scripts/world/extract_jukebox.mjs' ])
 
 // Türk bayrağı: doku → bpy (direk + bez) → WebP → Draco
 const gt = path.join(root, 'node_modules/.bin/gltf-transform')

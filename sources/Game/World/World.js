@@ -30,6 +30,7 @@ import { Scenery } from './Scenery.js'
 import { Props } from './Props.js'
 import { Garage } from './Garage.js'
 import { Flag } from './Flag.js'
+import { Jukeboxes } from './Jukeboxes.js'
 
 export class World
 {
@@ -83,6 +84,7 @@ export class World
             this.props = new Props()
             this.garage = new Garage()
             this.flag = new Flag()
+            this.jukeboxes = new Jukeboxes()
         }
     }
 

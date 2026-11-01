@@ -79,6 +79,76 @@ for(const name of SCENARIOS)
         // Çalı/çiçekler uzaktan yüklenir, bir de ikon halkasının merkezine yakın dur
         await page.evaluate(() => { window.game.physicalVehicle.position && 0 })
     }
+    else if(name === 'topdown')
+    {
+        // Yukarıdan bakış (yerleşim seçmek için): TOPDOWN="ad:x:z,ad:x:z" verilen noktaları yukarıdan çeker
+        await weather(0.2, 0.07)
+        await page.evaluate(() => window.game.dayCycles.override.start({ progress: 0.07, fogNearRatio: 8, fogFarRatio: 12 }, 0))
+        for(const spot of (process.env.TOPDOWN || 'landing:44:38').split(','))
+        {
+            const [ label, x, z ] = spot.split(':')
+            await page.evaluate((x, z) =>
+            {
+                const game = window.game
+                game.player.respawn('landing')
+                window.__top = { x: +x, z: +z }
+                if(!window.__topInstalled)
+                {
+                    window.__topInstalled = true
+                    game.ticker.events.on('tick', () =>
+                    {
+                        if(!window.__top) return
+                        game.view.camera.position.set(window.__top.x, 55, window.__top.z + 0.001)
+                        game.view.camera.lookAt(window.__top.x, 0, window.__top.z)
+                    }, 100)
+                }
+            }, x, z)
+            await sleep(3500)
+            await page.screenshot({ path: `${OUT}/top_${label}.png` })
+        }
+    }
+    else if(name === 'markers')
+    {
+        // Aday konumlara geçici macenta sütunlar koyup normal kamerayla çeker.
+        // MARKERS="ad:x:z:facingDeg[:respawn],..." (sütun 2,8 × 3,5 × 2; ön yüz sarı şerit)
+        await weather(0.2, 0.07)
+        const spots = (process.env.MARKERS || '').split(',').filter(Boolean).map(item => { const [ label, x, z, facing, respawn ] = item.split(':'); return { label, x: +x, z: +z, facing: +facing, respawn: respawn || label } })
+        await page.evaluate(async (spots) =>
+        {
+            const url = performance.getEntriesByType('resource').map(r => r.name).find(n => /three_webgpu/.test(n))
+            const THREE = await import(url)
+            for(const spot of spots)
+            {
+                const group = new THREE.Group()
+                const body = new THREE.Mesh(new THREE.BoxGeometry(2.84, 3.5, 2), new THREE.MeshBasicMaterial({ color: '#ff00ff' }))
+                body.position.y = 1.75
+                const front = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.0, 0.1), new THREE.MeshBasicMaterial({ color: '#ffff00' }))
+                front.position.set(0, 2.2, 1.05)
+                group.add(body, front)
+                group.position.set(spot.x, 0, spot.z)
+                group.rotation.y = Math.PI / 2 - spot.facing * Math.PI / 180
+                window.game.scene.add(group)
+            }
+        }, spots)
+        for(const spot of spots)
+        {
+            await page.evaluate((name) => window.game.player.respawn(name), spot.respawn)
+            await sleep(5000)
+            await page.screenshot({ path: `${OUT}/marker_${spot.label}.png` })
+        }
+    }
+    else if(name === 'jukebox')
+    {
+        await weather(0.2, 0.07)
+        const map = { landing: 'landing', bakkal: 'bakkal', projects: 'projects', career: 'career', social: 'social', bowling: 'bowling' }
+        info.jukebox = await page.evaluate(() => ({ count: window.game.interactivePoints.items.filter(i => i.text === 'Şarkıyı değiştir').length, placements: window.game.world.jukeboxes.config.placements.map(p => p.id) }))
+        for(const [ id, respawn ] of Object.entries(map))
+        {
+            await page.evaluate((name) => window.game.player.respawn(name), respawn)
+            await sleep(5000)
+            await page.screenshot({ path: `${OUT}/jukebox_${id}.png` })
+        }
+    }
     else if(name === 'flagwind')
     {
         await page.evaluate(() => window.game.player.respawn('controls'))
