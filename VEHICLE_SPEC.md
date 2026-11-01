@@ -653,3 +653,79 @@ Geçici kopyada (repo dışı) yaptım: iç mekan, alt şasi, disk, rozetler, am
 **Neden A:** W140'ın tanınmasını sağlayan silüet (uzun gövde, düz bagaj, geniş ızgara, dik arka cam) modelden hazır geliyor; bu, referans fotoğrafsız B'ye göre en büyük risk azaltıcı. Denemede 4.400 üçgen zaten bütçe içinde. B'ye geçiş noktası: gövde decimate sonrası gölgeleme çok kötü çıkarsa, kaporta için "silüet örnekleme" yöntemiyle (modelden enine kesit alıp loft) B yapılır; bu da A ile aynı referansı kullanır.
 
 **Karar bekleyenler:** (1) tekerlek yarıçapı 0,28 mi 0,35 mi (arch boolean ister); (2) yıldız amblemi gövdede kalsın mı (kapak/ızgara, `Nameplate`); (3) ayna genişliği (ölçek sonrası aynalarla 1,57, gövde 1,45): aynalar küçültülsün mü.
+
+
+---
+
+## 11. Uygulama (Seçenek A) — sonuçlar
+
+**Üretim hattı:** `scripts/vehicle/` — `make_plate.mjs` (plaka), `make_palette.mjs` (palette PNG + KTX2), `build_w140.py` (model), `validate_vehicle.js` (doğrulama), `render_w140.py` (render), `measure_rest_height.mjs` (Rapier ölçümü). Komutlar `readme.md` sonunda.
+
+### 11.1 Model
+
+| | Değer |
+|---|---|
+| Üçgen (benzersiz / çizilen) | **3.507 / 4.263** (bütçe ≤3.700 / ≤4.500) |
+| Parçalar | `bodyPainted` 1.999 · `common` 1.212 · ışıklar 40 · plaka 4 · tekerlek 252 (14 kenar, 4 kez çizilir) |
+| Dosya (ham → Draco) | **221.904 → 32.148 bayt** (eski araç 237.616 → 34.824) |
+| Ölçü (şasi alt ağacı) | 3,251 uzunluk (egzoz ucu dahil) · 1,542 genişlik (aynalar dahil) · tavan zeminden **0,997** |
+| Gömülü texture | Yalnızca plaka (256×64 PNG, sampler Linear / mipmap) |
+
+Doğrulayıcı iki dosyada da **GEÇTİ**; eski `default.glb` üzerinde bütçe ve ölçü hataları vererek başarısız oluyor (doğrulayıcının gerçekten kontrol ettiğini gösterir).
+
+### 11.2 Palette
+
+`static/palette.png`, `resources/palette.png` ve `static/palette.ktx` güncellendi. Yeni renkler: **25** gümüş jant `#aeb2b8` · **26** koyu lastik `#1a1a1c` · **27** koyu kırmızı stop `#7a0a1c` · **28** koyu trim `#26262b` · **29** koyu krom `#8d9096` · **30** koyu cam `#22313b`.
+
+**Hücre 24 ve 31'e dokunulmadı:** `areas.glb` içinde bu hücrelere 5'er UV örneği düşüyor (siyah olarak kalmalı); diğer tüm GLB'ler (Draco'lular açılarak) tarandı, son 8 hücreyi kullanan yok. Bu yüzden 8 yerine 6 hücre kullanıldı.
+
+**KTX:** `toktx` yok; `ktx-parse` ile **ham RGBA8 sRGB KTX2** yazıldı (2.276 bayt, tek seviye). Three'nin `KTX2Loader` ham-format yolundan geçirilerek doğrulandı: `DataTexture`, sRGB, hücre renkleri doğru. Oyun palette'i zaten Nearest + mipmap'siz kullanıyor, bu yüzden eski dosyadaki mip seviyeleri gerekmiyor. `toktx` kurulursa eski yöntemle de üretilebilir.
+
+### 11.3 Fizik (eski → yeni)
+
+| Değer | Eski | Yeni |
+|---|---|---|
+| Tekerlek ofseti `x / z` | 0,90 / 0,75 | **0,975 / 0,58** |
+| Tekerlek yarıçapı (fizik / görsel) | 0,40 / 0,432 | **0,27 / 0,28** |
+| Süspansiyon dinlenme boyu low / mid / high | 0,88 / 1,23 / 1,63 | **0,60 / 0,83 / 1,10** |
+| Sertlik low / mid / high | 20 / 30 / 40 | 20 / 30 / 40 (aynı) |
+| Ana collider (yarı boyut, konum) | `[1.3, 0.4, 0.85]`, `(0, −0.1, 0)` | `[1.45, 0.28, 0.66]`, `(−0.09, −0.30, 0)` |
+| Ağırlık merkezi parametresi | `(0, −0.5, 0)` → mutlak y −0,6 | `(0.09, −0.11, 0)` → mutlak `(0, −0.41)` (dingil ortası) |
+| Kabin collider | `[0.5, 0.15, 0.65]`, `(0, 0.4, 0)` | `[0.8, 0.14, 0.55]`, `(−0.45, 0.14, 0)` |
+| Tampon collider | `[1.5, 0.5, 0.9]`, `(0.1, −0.2, 0)` | `[1.62, 0.27, 0.72]`, `(−0.09, −0.30, 0)` |
+| Dinlenme yüksekliği (low, Rapier ölçümü) | 1,096 (süspansiyon 0,696) | **0,686** (süspansiyon 0,416) |
+| Dinlenme yüksekliği mid / high | 1,507 / 1,938 | 0,977 / 1,278 |
+| Boost izi noktaları (şasi yerelinde) | `(−1.28, 0.1, ±0.55)` | `(−1.73, −0.49, ±0.40)` (çift egzoz uçları) |
+| İz (`Track`) kalınlığı | 0,5 | 0,35 |
+| Tekerlek yüksekliği üst sınırı (`wheels.maxY`) | −0,5 (sabit) | −0,2 |
+| Debug aralığı `engineForceAmplitude` / `topSpeedBoost` | max 20 / 20 | **max 600 / 80** (mevcut 300 / 40 kırpılmıyor) |
+
+`REST_HEIGHT = 0.686` değeri `build_w140.py` içindeki şasi yüksekliğidir ve `measure_rest_height.mjs` ölçümünden gelir; fizik değişirse betik tekrar çalıştırılıp bu değer güncellenmelidir. İlk ölçümde COM x'te −0,09 kaldığı için ön süspansiyon 0,441'e çıkıyordu (araç burun-yukarı); `centerOfMass.x = 0.09` ile düzeltildi, dört tekerlek de 0,416.
+
+**Rapier sürüş testi** (aynı kurulum, tam gaz 4 sn sonra 3 sn tam direksiyon 0,5 rad; oyunun gerçek direksiyon azaltmasını içermez):
+
+| | hız | en fazla yatma |
+|---|---:|---:|
+| Eski, normal | 6,8 | 6,0° |
+| Eski, turbo | 27,6 | **64,8°** (neredeyse devriliyor) |
+| W140, normal | 6,9 | 2,8° |
+| W140, turbo | 41,1 | **5,2°** |
+
+W140 aynı sert dönüşte çok daha az yatıyor; ağırlık merkezi yüksekliği (−0,41 … 0,0 arası denendi) sonucu değiştirmiyor (5–7°). Yani araç eskisinden belirgin biçimde daha az devrilecek. Devrilme ve takla başarımları (`frontFlip`, `backFlip`, `upsideDown`) bundan etkilenebilir; oyunda denenmeli.
+
+### 11.4 Kod değişiklikleri
+
+- `Game.js`: `vehicle/w140[-compressed].glb`. `KonamiCode.js`: `['vehicle/oldSchool.glb', 'vehicle/w140.glb']`.
+- `PhysicsVehicle.js`: tablodaki değerler.
+- `VisualVehicle.js`: boost noktaları, `Track(0.35)`, `wheels.maxY = −0.2`, **tekerlek yarıçapı otomatik ölçeği** (modeldeki yarıçap fizik+0,01'e uymuyorsa konteyner ölçeklenir; W140'ta 1,0; Konami ile gelen eski araçta ≈0,65, yoksa tekerlekler yere ≈0,16 gömülürdü), `paints.choices.obsidian`.
+- `Materials.js`: `obsidianGradient` (`#34343b → #0c0c0f`). `index.html`: yeni ilk ödül `obsidian` (`data-default`), `red` artık kilitli ödül; `obsidian.webp/png` (80×80 gradyan). Ödül sayısı 6 → 7, eşikler yeniden dağılır (0, 4, 8, 13, 17, 21, 25 başarım).
+- **Plaka materyali:** Ek kod gerekmedi. `Materials.createFromMaterial()` (`Materials.js`) bilinmeyen adlı Standard materyali, `map` varsa `texture(map).rgb` ile `MeshDefaultMaterial`'a çeviriyor; texture'ın örnekleyicisi (Linear, mipmap) korunuyor.
+- **Atıf:** Sahne Arkası sekmesi, `readme.md`, `resources/references/w140/ATTRIBUTION.md`.
+
+### 11.5 Bilinen sınırlar
+
+- **Konami (`oldSchool`):** tekerlek ölçeklense de eski gövde 1,9 genişliğinde, yeni iz 1,16; tekerlekler gövdenin içinde kalır. Yeni fiziğe uyarlamak ayrı iş.
+- Eski `default*.glb` dosyaları (`static/vehicle/`) artık kullanılmıyor, silinmedi.
+- Dönen tekerlek şablonu: dış yüz −Z'ye bakar (Bölüm 4.2); sol/sağ aynalama `VisualVehicle.js:283-284` ile.
+- Çamurluk kemeri tekerlek 0,28 için yaklaşık 0,305'e genişletildi (köşe itme); kemer içi dört koyu iç çamurlukla kapatıldı.
+- Renderlar Workbench ile; oyunun TSL aydınlatması (gece/gündüz) yok.

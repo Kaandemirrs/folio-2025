@@ -93,7 +93,7 @@ export class PhysicsVehicle
             friction: 0.4,
             rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), Math.PI * 0),
             colliders: [
-                { shape: 'cuboid', mass: 2.5, parameters: [ 1.45, 0.28, 0.66 ], position: { x: -0.09, y: -0.30, z: 0 }, centerOfMass: { x: 0, y: -0.11, z: 0 } }, // Main
+                { shape: 'cuboid', mass: 2.5, parameters: [ 1.45, 0.28, 0.66 ], position: { x: -0.09, y: -0.30, z: 0 }, centerOfMass: { x: 0.09, y: -0.11, z: 0 } }, // Main (mutlak ağırlık merkezi x=0: dingil ortası, y=-0.41)
                 { shape: 'cuboid', mass: 0, parameters: [ 0.8, 0.14, 0.55 ], position: { x: -0.45, y: 0.14, z: 0 } }, // Top
                 { shape: 'cuboid', mass: 0, parameters: [ 1.62, 0.27, 0.72 ], position: { x: -0.09, y: -0.30, z: 0 }, category: 'bumper' }, // Bumper
             ],
