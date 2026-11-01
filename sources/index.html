@@ -60,8 +60,8 @@
         <div class="js-touch-buttons touch-buttons">
             <div class="js-overlay overlay"></div>
             <div class="list">
-                <button data-name="interact" class="js-button interact">Interact</button>
-                <button data-name="unstuck" class="js-button unstuck">Unstuck</button>
+                <button data-name="interact" class="js-button interact">Etkileşim</button>
+                <button data-name="unstuck" class="js-button unstuck">Kurtul</button>
                 <button data-name="previous" class="js-button previous"></button>
                 <button data-name="next" class="js-button next"></button>
                 <button data-name="open" class="js-button open"></button>
@@ -198,16 +198,16 @@
                         <!-- Options -->
                         <div class="js-content content options-content">
                             <div class="content-inner">
-                                <div class="title">Options</div>
+                                <div class="title">Ayarlar</div>
                                 <table class="options">
                                     <tbody>
                                         <tr>
                                             <td>
-                                                Audio 
+                                                Ses
                                             </td>
                                             <td>
                                                 <button class="js-audio-toggle audio-toggle button is-small has-tooltip">
-                                                    <div class="tooltip">Toggles sound</div>
+                                                    <div class="tooltip">Sesi açar / kapatır</div>
                                                     <img class="icon icon-audio audio-on" src="ui/audio/audioOn.svg" loading="lazy">
                                                     <img class="icon icon-audio audio-off" src="ui/audio/audioOff.svg" loading="lazy">
                                                 </button>
@@ -215,44 +215,44 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                Quality 
+                                                Kalite
                                             </td>
                                             <td>
                                                 <button class="js-quality-toggle quality-toggle button is-small has-tooltip">
-                                                    <div class="tooltip">Toggles some effects</div>
-                                                    <span>Low</span>
+                                                    <div class="tooltip">Bazı efektleri açar / kapatır</div>
+                                                    <span>Düşük</span>
                                                 </button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                I'm stuck!
+                                                Sıkıştım!
                                             </td>
                                             <td>
                                                 <button class="js-respawn button is-small has-tooltip">
-                                                    <div class="tooltip">Teleports you to the closest respawn</div>
-                                                    Respawn
+                                                    <div class="tooltip">Seni en yakın yeniden doğma noktasına ışınlar</div>
+                                                    Yeniden doğ
                                                 </button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                Reset
+                                                Sıfırla
                                             </td>
                                             <td>
                                                 <button class="js-reset button is-small has-tooltip">
-                                                    <div class="tooltip">Resets every object</div>
-                                                    Reset
+                                                    <div class="tooltip">Tüm nesneleri başlangıç yerine koyar</div>
+                                                    Sıfırla
                                                 </button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                Renderer
+                                                Render
                                             </td>
                                             <td>
                                                 <button class="js-renderer button is-small is-disabled is-success has-tooltip">
-                                                    <div class="js-tooltip tooltip">Best for performance</div>
+                                                    <div class="js-tooltip tooltip">Performans için en iyisi</div>
                                                     <span>WebGPU</span>
                                                 </button>
                                             </td>
@@ -272,21 +272,21 @@
                                             <span class="icon-container">
                                                 <span class="icon icon-mouse-keyboard"></span>
                                             </span>
-                                            <span class="label">Mouse Keyboard</span>
+                                            <span class="label">Fare Klavye</span>
                                         </button>
                                         <button class="js-tabs-navigation-item tab" data-tabs-name="touch">
                                             <div class="active-background"></div>
                                             <span class="icon-container">
                                                 <span class="icon icon-touch"></span>
                                             </span>
-                                            <span class="label">Mobile Tablet</span>
+                                            <span class="label">Mobil Tablet</span>
                                         </button>
                                         <button class="js-tabs-navigation-item tab" data-tabs-name="gamepad">
                                             <div class="active-background"></div>
                                             <span class="icon-container">
                                                 <span class="icon icon-gamepad"></span>
                                             </span>
-                                            <span class="label">Gamepad</span>
+                                            <span class="label">Oyun Kolu</span>
                                         </button>
                                     </div>
                                     <div class="js-tabs-content text text-small tabs-content">
@@ -297,48 +297,48 @@
                                                 <table>
                                                     <tbody>
                                                         <tr>
-                                                            <td><span class="key">WASD</span> or <span class="key">ARROWS</span></td>
-                                                            <td>Move around</td>
+                                                            <td><span class="key">WASD</span> veya <span class="key">OK TUŞLARI</span></td>
+                                                            <td>Hareket et</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">SHIFT</span></td>
-                                                            <td>Boost</td>
+                                                            <td>Turbo</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">CTRL LEFT</span> or <span class="key">B</span></td>
-                                                            <td>Brake</td>
+                                                            <td><span class="key">SOL CTRL</span> veya <span class="key">B</span></td>
+                                                            <td>Fren</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">SPACE</span></td>
-                                                            <td>Jump</td>
+                                                            <td><span class="key">BOŞLUK</span></td>
+                                                            <td>Zıpla</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">ENTER</span></td>
-                                                            <td>Interact</td>
+                                                            <td>Etkileşim</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">M</span></td>
-                                                            <td>Map</td>
+                                                            <td>Harita</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">L</span></td>
-                                                            <td>Mute</td>
+                                                            <td>Sesi kapat</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">R</span></td>
-                                                            <td>Respawn</td>
+                                                            <td>Yeniden doğ</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">NUM KEYS</span>/<span class="key">NUM PAD</span></td>
-                                                            <td>Activate hydraulics</td>
+                                                            <td><span class="key">SAYI TUŞLARI</span>/<span class="key">NUMPAD</span></td>
+                                                            <td>Hidrolikleri çalıştır</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">LEFT CLICK (DRAG)</span></td>
-                                                            <td>Move camera</td>
+                                                            <td><span class="key">SOL TIK (SÜRÜKLE)</span></td>
+                                                            <td>Kamerayı hareket ettir</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">H</span></td>
-                                                            <td>Honk</td>
+                                                            <td>Korna</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -351,16 +351,16 @@
                                                 <table>
                                                     <tbody>
                                                         <tr>
-                                                            <td><span class="key">One finger</span></td>
-                                                            <td>Move the car</td>
+                                                            <td><span class="key">Tek parmak</span></td>
+                                                            <td>Arabayı sür</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">Two fingers</span></td>
-                                                            <td>Move camera / zoom</td>
+                                                            <td><span class="key">İki parmak</span></td>
+                                                            <td>Kamerayı hareket ettir / yakınlaştır</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">Tap (on the car)</span></td>
-                                                            <td>Jump</td>
+                                                            <td><span class="key">Dokun (arabaya)</span></td>
+                                                            <td>Zıpla</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -378,73 +378,73 @@
                                                                 <span class="is-gamepad-button is-xbox key">B</span>
                                                                 <span class="is-gamepad-button is-playstation is-icon circle"></span>
                                                             </td>
-                                                            <td>Boost</td>
+                                                            <td>Turbo</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <span class="is-gamepad-button is-xbox key">Y</span>
                                                                 <span class="is-gamepad-button is-playstation is-icon triangle"></span>
                                                             </td>
-                                                            <td>Jump</td>
+                                                            <td>Zıpla</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <span class="is-gamepad-button is-xbox key">X</span>
                                                                 <span class="is-gamepad-button is-playstation is-icon square"></span>
                                                             </td>
-                                                            <td>Brake</td>
+                                                            <td>Fren</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <span class="is-gamepad-button is-xbox key">A</span>
                                                                 <span class="is-gamepad-button is-playstation is-icon cross"></span>
                                                             </td>
-                                                            <td>Interact / Exit</td>
+                                                            <td>Etkileşim / Çıkış</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <span class="is-gamepad-button is-xbox key">LT</span>
                                                                 <span class="is-gamepad-button is-playstation key">L2</span>
                                                             </td>
-                                                            <td>Accelerate</td>
+                                                            <td>Gaz</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <span class="is-gamepad-button is-xbox key">RT</span>
                                                                 <span class="is-gamepad-button is-playstation key">R2</span>
                                                             </td>
-                                                            <td>Backward accelerate</td>
+                                                            <td>Geri gaz</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
                                                                 <span class="is-gamepad-button is-xbox key">LB / RB</span>
                                                                 <span class="is-gamepad-button is-playstation key">L1 / R1</span>
                                                             </td>
-                                                            <td>Hydraulics</td>
+                                                            <td>Hidrolik</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">Joystick Left</span></td>
-                                                            <td>Turn wheels</td>
+                                                            <td><span class="key">Sol çubuk</span></td>
+                                                            <td>Tekerlekleri çevir</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">Joystick Left (press)</span></td>
-                                                            <td>Honk</td>
+                                                            <td><span class="key">Sol çubuk (bas)</span></td>
+                                                            <td>Korna</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">Joystick Right</span></td>
-                                                            <td>Move camera</td>
+                                                            <td><span class="key">Sağ çubuk</span></td>
+                                                            <td>Kamerayı hareket ettir</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><span class="key">Joystick Right (press)</span></td>
-                                                            <td>Zoom in/out</td>
+                                                            <td><span class="key">Sağ çubuk (bas)</span></td>
+                                                            <td>Yakınlaştır / uzaklaştır</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">Select</span></td>
-                                                            <td>Reset</td>
+                                                            <td>Sıfırla</td>
                                                         </tr>
                                                         <tr>
                                                             <td><span class="key">Start</span></td>
-                                                            <td>Pause</td>
+                                                            <td>Duraklat</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -458,51 +458,51 @@
                         <!-- Achievements -->
                         <div class="js-content content achievements-content">
                             <div class="content-inner">
-                                <div class="title">Achievements</div>
+                                <div class="title">Başarımlar</div>
                                 <div class="js-global-progress global-progress">
                                     <span class="ratio"><span class="js-current current"></span> / <span class="js-total total"></span></span>
-                                    <span class="js-time time">2h 30min 15s</span>
+                                    <span class="js-time time">2sa 30dk 15sn</span>
                                 </div>
                                 <div class="rewards-container">
-                                    <div class="title">Rewards</div>
+                                    <div class="title">Ödüller</div>
                                     <div class="rewards">
                                         <button class="js-reward reward has-tooltip" data-name="red" data-default>
-                                            <div class="js-tooltip tooltip">Unlock at <strong></strong></div>
+                                            <div class="js-tooltip tooltip"><strong></strong> başarımda açılır</div>
                                             <img class="picture" src="ui/achievements/rewards/red.webp" loading="lazy">
                                             <div class="lock">
                                                 <img class="lock-icon" src="ui/lock.svg" loading="lazy">
                                             </div>
                                         </button>
                                         <button class="js-reward reward has-tooltip is-locked" data-name="orange">
-                                            <div class="js-tooltip tooltip">Unlock at <strong></strong></div>
+                                            <div class="js-tooltip tooltip"><strong></strong> başarımda açılır</div>
                                             <img class="picture" src="ui/achievements/rewards/orange.webp" loading="lazy">
                                             <div class="lock">
                                                 <img class="lock-icon" src="ui/lock.svg" loading="lazy">
                                             </div>
                                         </button>
                                         <button class="js-reward reward has-tooltip is-locked" data-name="white">
-                                            <div class="js-tooltip tooltip">Unlock at <strong></strong></div>
+                                            <div class="js-tooltip tooltip"><strong></strong> başarımda açılır</div>
                                             <img class="picture" src="ui/achievements/rewards/white.webp" loading="lazy">
                                             <div class="lock">
                                                 <img class="lock-icon" src="ui/lock.svg" loading="lazy">
                                             </div>
                                         </button>
                                         <button class="js-reward reward has-tooltip is-locked" data-name="black">
-                                            <div class="js-tooltip tooltip">Unlock at <strong></strong></div>
+                                            <div class="js-tooltip tooltip"><strong></strong> başarımda açılır</div>
                                             <img class="picture" src="ui/achievements/rewards/black.webp" loading="lazy">
                                             <div class="lock">
                                                 <img class="lock-icon" src="ui/lock.svg" loading="lazy">
                                             </div>
                                         </button>
                                         <button class="js-reward reward has-tooltip is-locked" data-name="flames">
-                                            <div class="js-tooltip tooltip">Unlock at <strong></strong></div>
+                                            <div class="js-tooltip tooltip"><strong></strong> başarımda açılır</div>
                                             <img class="picture" src="ui/achievements/rewards/flames.webp" loading="lazy">
                                             <div class="lock">
                                                 <img class="lock-icon" src="ui/lock.svg" loading="lazy">
                                             </div>
                                         </button>
                                         <button class="js-reward reward has-tooltip is-locked" data-name="abyssal">
-                                            <div class="js-tooltip tooltip">Unlock at <strong></strong></div>
+                                            <div class="js-tooltip tooltip"><strong></strong> başarımda açılır</div>
                                             <img class="picture" src="ui/achievements/rewards/abyssal.webp" loading="lazy">
                                             <div class="lock">
                                                 <img class="lock-icon" src="ui/lock.svg" loading="lazy">
@@ -515,7 +515,7 @@
                                 <div class="horizontal-group">
                                 
                                     <button class="js-button-reset button button-reset">
-                                        Reset achievements
+                                        Başarımları sıfırla
                                     </button>
                                     
                                 </div>
@@ -525,35 +525,28 @@
                         <!-- Behind the scene -->
                         <div class="js-content content behindTheScene-content">
                             <div class="content-inner">
-                                <div class="title">Behind the scene</div>
+                                <div class="title">Sahne Arkası</div>
                                 <p class="text">
-                                    Thank you for visiting my portfolio!
-                                    <br />If you are curious about the stack and how I built this project, here’s everything you need to know.
+                                    Portfolyomu ziyaret ettiğin için teşekkürler!
+                                    <br />Bu sitenin nasıl yapıldığını merak ediyorsan, bilmen gerekenler burada.
                                 </p>
-                                
-                                <h2 class="title">Three.js</h2>
+
+                                <h2 class="title">Temel proje</h2>
                                 <p class="text">
-                                    <a href="https://threejs.org" target="_blank" rel="noreferrer">Three.js</a> is the library I’m using to render this 3D world.
-                                    <br />It was created by <strong>mr.doob</strong> (<a href="https://x.com/mrdoob" target="_blank" rel="noreferrer">X</a>, <a href="http://github.com/mrdoob" target="_blank" rel="noreferrer">GitHub</a>), followed by hundreds of awesome developers, one of which being Sunag (<a href="https://x.com/sea3dformat" target="_blank" rel="noreferrer">X</a>, <a href="https://github.com/sunag" target="_blank" rel="noreferrer">GitHub</a>) who added <a href="https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language" target="_blank" rel="noreferrer">TSL</a>, enabling the use of both WebGL and WebGPU, making this portfolio possible.
+                                    Bu site, Bruno Simon'un <a href="https://github.com/brunosimon/folio-2025" target="_blank" rel="noreferrer">folio-2025</a> projesi temel alınarak geliştirildi.
+                                    <br />Proje <a href="https://choosealicense.com/licenses/mit/" target="_blank" rel="noreferrer">MIT lisanslı</a> açık kaynak bir çalışma. Dünyanın, fiziğin ve çizim altyapısının büyük kısmı ona ait. Bruno'nun kendi sitesine de <a href="https://bruno-simon.com" target="_blank" rel="noreferrer">buradan</a> göz atabilirsin.
                                 </p>
-                                
-                                <h2 class="title">Three.js Journey</h2>
+
+                                <h2 class="title">Three.js, TSL ve Rapier</h2>
                                 <p class="text">
-                                    If you want to learn Three.js, I got you covered with this <a href="https://threejs-journey.com" target="_blank" rel="noreferrer">huge course</a>.
-                                    <br />It contains everything you need to start building awesome stuff with Three.js (and much more).
+                                    3D dünyayı <a href="https://threejs.org" target="_blank" rel="noreferrer">Three.js</a> ile çiziyorum. Hem WebGL hem WebGPU ile çalışmayı mümkün kılan <a href="https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language" target="_blank" rel="noreferrer">TSL</a> sayesinde site, tarayıcın destekliyorsa WebGPU kullanıyor. Fizik tarafını <a href="https://rapier.rs" target="_blank" rel="noreferrer">Rapier</a> yönetiyor.
                                 </p>
-                                
-                                <h2 class="title">Devlogs</h2>
+
+                                <h2 class="title">Kaynak kod</h2>
                                 <p class="text">
-                                    I’ve been making devlogs since the very start of this portfolio and you can find them all on my <a href="https://www.youtube.com/playlist?list=PL5nApUt6Z8sTZxEsEMd8x89OCKCAAfNL0" target="_blank" rel="noreferrer">Youtube channel</a>.
+                                    Bu sitenin kodu <a href="https://github.com/Kaandemirrs/folio-2025" target="_blank" rel="noreferrer">GitHub</a>'da, <a href="https://choosealicense.com/licenses/mit/" target="_blank" rel="noreferrer">MIT lisansı</a> altında duruyor. Orijinal proje: <a href="https://github.com/brunosimon/folio-2025" target="_blank" rel="noreferrer">github.com/brunosimon/folio-2025</a>.
                                 </p>
-                                
-                                <h2 class="title">Source code</h2>
-                                <p class="text">
-                                    The code is available on <a href="https://github.com/brunosimon/folio-2025" target="_blank" rel="noreferrer">GitHub</a> under <a href="https://choosealicense.com/licenses/mit/" target="_blank" rel="noreferrer">MIT license</a>. Even the Blender files are there, so have fun!
-                                    <br />For security reasons, I’m not sharing the server code, but the portfolio works without it.
-                                </p>
-                                
+
                                 <h2 class="title">Musics</h2>
                                 <p class="text">
                                     The music you hear was made especially for this portfolio by the awesome Kounine (<a href="https://linktr.ee/Kounine" target="_blank" rel="noreferrer">Linktree</a>).
@@ -561,15 +554,18 @@
                                     <br />Download them <a href="https://github.com/brunosimon/folio-2025/tree/main/static/sounds/musics" target="_blank" rel="noreferrer">here</a>.
                                 </p>
 
-                                <h2 class="title">Some more links</h2>
+                                <h2 class="title">Ses efektleri ve yazı tipleri</h2>
+                                <p class="text">
+                                    Ses efektleri ve yazı tipleri orijinal projeden geliyor.
+                                </p>
                                 <ul class="text">
-                                    <li>Physics library ⇒ <a href="https://rapier.rs" target="_blank" rel="noreferrer">Rapier</a></li>
-                                    <li>Audio library ⇒ <a href="https://howlerjs.com" target="_blank" rel="noreferrer">Howler.js</a></li>
-                                    <li>Fonts ⇒ <a href="https://fonts.google.com/specimen/Amatic+SC" target="_blank" rel="noreferrer">Amatic SC</a> & <a href="https://fonts.google.com/specimen/Nunito?query=Nunito" target="_blank" rel="noreferrer">Nunito</a></li>
+                                    <li>Fizik kütüphanesi ⇒ <a href="https://rapier.rs" target="_blank" rel="noreferrer">Rapier</a></li>
+                                    <li>Ses kütüphanesi ⇒ <a href="https://howlerjs.com" target="_blank" rel="noreferrer">Howler.js</a></li>
+                                    <li>Yazı tipleri ⇒ <a href="https://fonts.google.com/specimen/Amatic+SC" target="_blank" rel="noreferrer">Amatic SC</a> &amp; <a href="https://fonts.google.com/specimen/Nunito?query=Nunito" target="_blank" rel="noreferrer">Nunito</a></li>
                                 </ul>
 
                                 <p class="text text-faded text-align-right">
-                                    — Bruno
+                                    — Kaan
                                 </p>
                             </div>
                         </div>
