@@ -144,6 +144,19 @@ for(const name of SCENARIOS)
         await sleep(3500)
         info.m4_far = await state()
     }
+    else if(name === 'map')
+    {
+        await page.evaluate(() => window.game.modals.open('map'))
+        await sleep(3500)
+        await page.screenshot({ path: `${OUT}/horon_map.png` })
+        info.pins = await page.evaluate(() => window.game.map.locations.items.map(i => i.name + ':' + i.respawnName))
+        await page.evaluate(() => window.game.modals.close())
+        await sleep(1500)
+        await page.evaluate(() => window.game.player.respawn('monkey'))
+        await sleep(8000)
+        info.pos = await page.evaluate(() => ({ x: +window.game.physicalVehicle.position.x.toFixed(1), z: +window.game.physicalVehicle.position.z.toFixed(1) }))
+        await page.screenshot({ path: `${OUT}/horon_respawn.png` })
+    }
     else if(name === 'projects')
     {
         await page.evaluate(() => window.game.player.respawn('projects'))

@@ -1,3 +1,5 @@
+import propsConfig from '../../scripts/props/props.config.json'
+
 // "Müzik" alanı: horon tepen maymunlar (World/Horon.js). Konum, diziliş ve müzik yolu buradan değiştirilir.
 export default {
     // Horon müziği. Telifli kayıt repoya girmez (.gitignore): geliştirmede vite.config.js bunu
@@ -11,7 +13,8 @@ export default {
     playlistVolume: 0.2, // Audio.js playlist ses seviyesi
 
     // Dünya konumu (x, z) ve grubun baktığı yön: +X'ten +Z'ye derece. Sol üstteki orman adasında açıklık.
-    world: { x: -68, z: -46.5, facingDeg: 20 },
+    // (props.config.json > monkey.world; harita pini ve ışınlanma noktası da oradan gelir)
+    world: propsConfig.props.find(prop => prop.name === 'monkey').world,
 
     // Diziliş: 4 maymun yan yana, hafif yay (uçlar izleyiciye doğru), uçlar içe döner
     count: 4,

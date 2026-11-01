@@ -637,7 +637,22 @@
                 "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
                 "changes": "parmak kemikleri birleştirildi (58 → 22 kemik), üçgen sayısı ≈3.900'e indirildi, doku 256 px'e küçültülüp stilize edildi, kök hareketi silinip animasyon döngüye alındı"
             },
-            "lazy": true
+            "lazy": true,
+            "world": {
+                "x": -68,
+                "z": -46.5,
+                "facingDeg": 20
+            },
+            "respawn": {
+                "distance": 9
+            },
+            "map": {
+                "label": "Müzik",
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
         }
     ]
 }
