@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "compress": "node scripts/compress.js static/",
     "prop": "node scripts/props/build.mjs",
+    "vehicle": "node scripts/vehicle/build.mjs",
     "postbuild": "node scripts/prune-dist.mjs"
   },
   "author": "",

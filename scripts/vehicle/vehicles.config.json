@@ -1,0 +1,27 @@
+{
+    "_readme": "Araç üretim yapılandırması. Çalıştırma: npm run vehicle -- <id> (BPY_PYTHON gerekir). Fizik/profil değerleri sources/data/vehicles.js içinde; tekerlek konumu ve yarıçapı buradan okunur (tek kaynak).",
+    "vehicles": {
+        "w140": {
+            "recipe": "w140",
+            "source": "resources/references/w140/mercedes_s-class.glb",
+            "out": "static/vehicle/w140.glb",
+            "plate": { "text": "33 AK 661", "image": "resources/references/w140/licensePlate.png" },
+            "hub": { "x": 0.975, "y": 0.58, "radiusPhysical": 0.27, "radiusVisual": 0.28 },
+            "restHeight": 0.686,
+            "size": { "length": 3.23, "width": 1.45, "height": 1.0 },
+            "renders": "resources/references/w140/renders",
+            "attribution": { "title": "Mercedes S-Class", "author": "dmas", "authorUrl": "https://sketchfab.com/dmastero", "sourceUrl": "https://sketchfab.com/3d-models/mercedes-s-class-581e6ce2ba48448a96dc3512d9385bc2", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/" }
+        },
+        "dogan": {
+            "recipe": "dogan",
+            "source": "resources/references/examples/dogan_slx.glb",
+            "out": "static/vehicle/dogan.glb",
+            "plate": { "text": "67 TF 1993", "image": "resources/references/dogan/licensePlate.png" },
+            "hub": { "x": 0.82, "y": 0.52, "radiusPhysical": 0.21, "radiusVisual": 0.22 },
+            "restHeight": 0.626,
+            "size": { "length": 2.8, "width": 1.27, "height": 0.945 },
+            "renders": "resources/references/dogan/renders",
+            "attribution": { "title": "DOGAN SLX", "author": "Filcomet", "authorUrl": "https://sketchfab.com/filcomet", "sourceUrl": "https://sketchfab.com/3d-models/dogan-slx-28f27606bd864611aaaa9dab90ba0ae7", "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/", "changes": "iç mekân, tekerlekler ve kaynak plaka silindi; gövde boya/palette olarak yeniden bölündü, tekerlekler ve ışıklar yeniden kuruldu, oyuna uyarlandı" }
+        }
+    }
+}
