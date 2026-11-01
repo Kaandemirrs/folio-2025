@@ -33,6 +33,10 @@ export class ClosingManager
                 else if(this.game.world.areas?.projects && (this.game.world.areas?.projects.state === ProjectsArea.STATE_OPEN || this.game.world.areas?.projects.state === ProjectsArea.STATE_OPENING))
                     this.game.world.areas.projects.close()
 
+                // Landing proje panosu => Kapat
+                else if(this.game.world.projectBoard?.viewer?.isActive)
+                    this.game.world.projectBoard.viewer.close()
+
                 // Garaj => Kapat
                 else if(this.game.world.garage && (this.game.world.garage.state === Garage.STATE_OPEN || this.game.world.garage.state === Garage.STATE_OPENING))
                     this.game.world.garage.close()

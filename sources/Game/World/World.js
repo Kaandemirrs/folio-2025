@@ -32,6 +32,7 @@ import { Garage } from './Garage.js'
 import { Flag } from './Flag.js'
 import { Jukeboxes } from './Jukeboxes.js'
 import { Signs } from './Signs.js'
+import { ProjectBoard } from './ProjectBoard.js'
 
 export class World
 {
@@ -87,6 +88,7 @@ export class World
             this.flag = new Flag()
             this.jukeboxes = new Jukeboxes()
             this.signs = new Signs()
+            this.projectBoard = new ProjectBoard()
         }
     }
 

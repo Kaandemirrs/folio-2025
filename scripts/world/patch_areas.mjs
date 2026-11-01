@@ -379,9 +379,27 @@ const stepJukebox = async (doc, report) =>
     report.push('bowling: jukebox düğümleri silindi (artık Jukeboxes.js)')
 }
 
+/**
+ * Adım: Landing'deki "Kontroller" zemin sanatı (oyun kolu, telefon, gizmo, klavye plakası) kalkar; yerine
+ * World/ProjectBoard.js proje panosu gelir. Kontroller menüde kalır (Menu 'controls'). Etkileşim noktası da silinir.
+ */
+const stepControls = async (doc, report) =>
+{
+    const names = [ 'gamepadPhysicalDynamic.001', 'gizmoPhysicalDynamic', 'phonePhysicalDynamic.001', 'Plane.002', 'Plane.004', 'refControlsInteractivePoint' ]
+    const landing = find(doc, 'landing')
+    for(const name of names)
+    {
+        const node = landing.listChildren().find(child => child.getName() === name)
+        if(!node)
+            throw new Error(`controls: ${name} bulunamadı`)
+        removeNode(node)
+    }
+    report.push(`landing: Kontroller zemin sanatı silindi (${names.join(', ')})`)
+}
+
 // Hedef başına adımlar. Her hedefin kaynağı resources/original/<ad>.glb ve <ad>-compressed.glb
 const TARGETS = [
-    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox ] },
+    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls ] },
     { original: 'bushesReferences', out: 'static/bushes/bushesReferences', steps: [ stepSocialDecor('bushes') ] },
     { original: 'flowersReferences', out: 'static/flowers/flowersReferences', steps: [ stepSocialDecor('flowers') ] },
 ]

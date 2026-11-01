@@ -65,6 +65,45 @@ for(const name of SCENARIOS)
             await page.screenshot({ path: `${OUT}/crop_${id}.png`, clip })
         }
     }
+    else if(name === 'board')
+    {
+        await page.evaluate(() =>
+        {
+            const base = window.game.respawns.getByName('landing')
+            const position = base.position.clone()
+            position.set(60, 4, 38)
+            window.game.respawns.items.set('tmp', { name: 'tmp', position, rotation: 0 })
+            window.game.player.respawn('tmp')
+        })
+        await sleep(7000)
+        await page.screenshot({ path: `${OUT}/board_landing.png` })
+        await page.evaluate(() => window.game.world.projectBoard.viewer.open())
+        await sleep(4000)
+        await page.screenshot({ path: `${OUT}/board_open.png` })
+        await page.keyboard.press('ArrowRight')
+        await sleep(2500)
+        await page.screenshot({ path: `${OUT}/board_next.png` })
+        info.board = await page.evaluate(() => ({ state: window.game.world.projectBoard.viewer.state, index: window.game.world.projectBoard.viewer.navigation.index, image: window.game.world.projectBoard.viewer.imageIndex }))
+        await page.keyboard.press('Escape')
+        await sleep(2500)
+        info.boardAfterEsc = await page.evaluate(() => window.game.world.projectBoard.viewer.state)
+        await page.screenshot({ path: `${OUT}/board_closed.png` })
+    }
+    else if(name === 'projects')
+    {
+        await page.evaluate(() => window.game.player.respawn('projects'))
+        await sleep(6000)
+        await page.evaluate(() => window.game.world.areas.projects.open())
+        await sleep(4000)
+        await page.screenshot({ path: `${OUT}/projects_open.png` })
+        await page.keyboard.press('ArrowRight')
+        await sleep(2500)
+        info.projects = await page.evaluate(() => { const a = window.game.world.areas.projects; return { state: a.state, index: a.navigation.index, image: a.images.index } })
+        await page.screenshot({ path: `${OUT}/projects_next.png` })
+        await page.keyboard.press('Escape')
+        await sleep(2500)
+        info.projectsAfterEsc = await page.evaluate(() => ({ state: window.game.world.areas.projects.state, menu: window.game.menu.state, modals: window.game.modals.state, filters: [ ...window.game.inputs.filters ] }))
+    }
     else if(name === 'landing')
     {
         await page.evaluate(() => window.game.player.respawn('landing'))

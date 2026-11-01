@@ -8,15 +8,20 @@ import { add, color, float, Fn, If, luminance, mix, mul, normalWorld, positionGe
 import { Inputs } from '../../Inputs/Inputs.js'
 import { MeshDefaultMaterial } from '../../Materials/MeshDefaultMaterial.js'
 import { Area } from './Area.js'
+import { ProjectViewer } from '../ProjectViewer.js'
 
 export class ProjectsArea extends Area
 {
-    static DIRECTION_PREVIOUS = 1
-    static DIRECTION_NEXT = 2
-    static STATE_OPEN = 3
-    static STATE_OPENING = 4
-    static STATE_CLOSED = 5
-    static STATE_CLOSING = 6
+    static DIRECTION_PREVIOUS = ProjectViewer.DIRECTION_PREVIOUS
+    static DIRECTION_NEXT = ProjectViewer.DIRECTION_NEXT
+    static STATE_OPEN = ProjectViewer.STATE_OPEN
+    static STATE_OPENING = ProjectViewer.STATE_OPENING
+    static STATE_CLOSED = ProjectViewer.STATE_CLOSED
+    static STATE_CLOSING = ProjectViewer.STATE_CLOSING
+
+    // Görüntüleme durumu ortak ProjectViewer'da tutulur
+    get state() { return this.viewer.state }
+    get navigation() { return this.viewer.navigation }
 
     constructor(model)
     {
@@ -31,16 +36,13 @@ export class ProjectsArea extends Area
             })
         }
         
-        this.state = ProjectsArea.STATE_CLOSED
-
+        this.setViewer()
         this.setSounds()
         this.setInteractivePoint()
-        this.setInputs()
         this.setCinematic()
         this.setShadeMix()
         this.setTexts()
         this.setHover()
-        this.setNavigation()
         this.setImages()
         this.setPagination()
         this.setAttributes()
@@ -109,67 +111,32 @@ export class ProjectsArea extends Area
         )
     }
 
-    setInputs()
+    setViewer()
     {
-        // this.game.inputs.events.on('backward', () =>
-        // {
-        //     this.close()
-        // })
-
-        this.game.inputs.events.on('left', (action) =>
-        {
-            if(action.active)
-                this.previous()
-        })
-
-        this.game.inputs.events.on('right', (action) =>
-        {
-            if(action.active)
-                this.next()
-        })
-
-        this.game.inputs.events.on('forward', (action) =>
-        {
-            if(action.active && !action.activeKeys.has('Gamepad.r2'))
-                this.previous()
-        })
-
-        this.game.inputs.events.on('backward', (action) =>
-        {
-            if(action.active && !action.activeKeys.has('Gamepad.l2'))
-                this.next()
-        })
-
-        this.game.inputs.events.on('interact', (action) =>
-        {
-            if(!action.active && this.state === ProjectsArea.STATE_OPEN)
-            {
-                this.url.open()
+        this.viewer = new ProjectViewer({
+            projects: projectsData,
+            getCinematic: () => this.cinematic,
+            hooks: {
+                onOpen: () => { this.onOpen() },
+                onClose: () => { this.onClose() },
+                onProjectChange: (direction) =>
+                {
+                    this.attributes.update()
+                    this.adjacents.update()
+                    this.title.update(direction)
+                    this.url.update(direction)
+                    this.distinctions.update()
+                },
+                onImageChange: (direction) =>
+                {
+                    this.images.update(direction)
+                    this.pagination.update()
+                },
+                onNavigate: () =>
+                {
+                    this.blackBoard.active = false
+                },
             }
-        })
-
-        this.game.inputs.interactiveButtons.events.on('previous', () =>
-        {
-            if(this.state === ProjectsArea.STATE_OPEN)
-                this.previous()
-        })
-
-        this.game.inputs.interactiveButtons.events.on('next', () =>
-        {
-            if(this.state === ProjectsArea.STATE_OPEN)
-                this.next()
-        })
-
-        this.game.inputs.interactiveButtons.events.on('open', () =>
-        {
-            if(this.state === ProjectsArea.STATE_OPEN)
-                this.url.open()
-        })
-
-        this.game.inputs.interactiveButtons.events.on('close', () =>
-        {
-            if(this.state === ProjectsArea.STATE_OPEN)
-                this.close()
         })
     }
 
@@ -320,22 +287,14 @@ export class ProjectsArea extends Area
         this.hover.activeMaterial.outputNode = vec4(this.hover.baseColor.mul(1.5), float(1))
     }
 
-    setNavigation()
-    {
-        this.navigation = {}
-        this.navigation.index = 0
-        this.navigation.current = null
-        this.navigation.next = null
-        this.navigation.previous = null
-    }
-
     setImages()
     {
         this.images = {}
         this.images.initiated = false
         this.images.width = 1920 * 0.5
         this.images.height = 1080 * 0.5
-        this.images.index = 0
+        // Görsel sırası ortak görüntüleyicide tutulur
+        Object.defineProperty(this.images, 'index', { get: () => this.viewer.imageIndex, set: (value) => { this.viewer.imageIndex = value } })
         this.images.direction = ProjectsArea.DIRECTION_NEXT
         this.images.resources = new Map()
         this.images.loadProgress = uniform(0)
@@ -1030,10 +989,7 @@ export class ProjectsArea extends Area
         // Open
         this.url.open = () =>
         {
-            if(this.navigation.current.url)
-            {
-                window.open(this.navigation.current.url, '_blank')
-            }
+            this.viewer.openUrl()
         }
     }
 
@@ -1295,31 +1251,16 @@ export class ProjectsArea extends Area
 
     open()
     {
-        if(this.state === ProjectsArea.STATE_OPEN || this.state === ProjectsArea.STATE_OPENING)
-            return
+        this.viewer.open()
+    }
 
-        // State
-        this.state = ProjectsArea.STATE_OPENING
+    close()
+    {
+        this.viewer.close()
+    }
 
-        if(this.stateTransition)
-            this.stateTransition.kill()
-
-        this.stateTransition = gsap.delayedCall(1.5, () =>
-        {
-            this.state = ProjectsArea.STATE_OPEN
-            this.stateTransition = null
-        })
-
-        // Inputs filters
-        this.game.inputs.filters.delete('wandering')
-        this.game.inputs.filters.add('cinematic')
-
-        // View cinematic
-        this.game.view.cinematic.start(this.cinematic.position, this.cinematic.target)
-
-        // Interactive point
-        this.game.interactivePoints.temporaryHide()
-
+    onOpen()
+    {
         // Shade mix
         gsap.to(this.shadeMix.images.mixUniform, { value: this.shadeMix.images.max, duration: 2, ease: 'power2.inOut', overwrite: true })
         gsap.to(this.shadeMix.texts.mixUniform, { value: this.shadeMix.texts.max, duration: 2, ease: 'power2.inOut', overwrite: true })
@@ -1334,62 +1275,19 @@ export class ProjectsArea extends Area
         // Cursor
         for(const item of this.pagination.items)
             item.intersect.active = item.visible
-            
+
         this.adjacents.next.intersect.active = true
         this.adjacents.previous.intersect.active = true
         this.pagination.previousIntersect.active = true
         this.pagination.nextIntersect.active = true
         this.url.intersect.active = true
-
-        // Deactivate physical vehicle
-        this.game.physicalVehicle.deactivate()
-
-        // Buttons
-        this.game.inputs.interactiveButtons.clearItems()
-        this.game.inputs.interactiveButtons.addItems(['previous', 'next', 'open', 'close'])
-
-        // Sound
-        const sound = this.game.audio.groups.get('click')
-        if(sound)
-            sound.play(true)
-
-        // Achievements
-        this.game.achievements.setProgress('projects', this.navigation.current.title)
     }
 
-    close()
+    onClose()
     {
-        if(this.state === ProjectsArea.STATE_CLOSED || this.state === ProjectsArea.STATE_CLOSING)
-            return
-
-        // State
-        this.state = ProjectsArea.STATE_CLOSING
-
-        if(this.stateTransition)
-            this.stateTransition.kill()
-
-        this.stateTransition = gsap.delayedCall(1.5, () =>
-        {
-            this.state = ProjectsArea.STATE_CLOSED
-            this.stateTransition = null
-        })
-
-        // Input filters
-        this.game.inputs.filters.delete('cinematic')
-        this.game.inputs.filters.add('wandering')
-
-        // View cinematic
-        this.game.view.cinematic.end()
-
         // Shade mix
         gsap.to(this.shadeMix.images.mixUniform, { value: this.shadeMix.images.min, duration: 1.5, ease: 'power2.inOut', overwrite: true })
         gsap.to(this.shadeMix.texts.mixUniform, { value: this.shadeMix.texts.min, duration: 1.5, ease: 'power2.inOut', overwrite: true })
-
-        // Interactive point
-        gsap.delayedCall(1, () =>
-        {
-            this.game.interactivePoints.recover()
-        })
 
         // Cursor
         for(const item of this.pagination.items)
@@ -1400,137 +1298,16 @@ export class ProjectsArea extends Area
         this.pagination.previousIntersect.active = false
         this.pagination.nextIntersect.active = false
         this.url.intersect.active = false
-
-        // Activate physical vehicle
-        this.game.physicalVehicle.activate()
-            
-        // Buttons
-        this.game.inputs.interactiveButtons.clearItems([])
-
-        // Sound
-        const sound = this.game.audio.groups.get('click')
-        if(sound)
-            sound.play(false)
     }
 
-    previous()
-    {
-        if(this.images.index > 0)
-            this.previousImage()
-        else
-            this.previousProject(false)
-    }
-
-    previousImage()
-    {
-        if(this.state === ProjectsArea.STATE_CLOSED || this.state === ProjectsArea.STATE_CLOSING)
-            return
-
-        this.changeImage(this.images.index - 1, ProjectsArea.DIRECTION_PREVIOUS)
-
-        this.blackBoard.active = false
-    }
-
-    previousProject(firstImage = false)
-    {
-        if(this.state === ProjectsArea.STATE_CLOSED || this.state === ProjectsArea.STATE_CLOSING)
-            return
-
-        this.changeProject(this.navigation.index - 1, ProjectsArea.DIRECTION_PREVIOUS, firstImage)
-
-        this.blackBoard.active = false
-    }
-
-    next()
-    {
-        if(this.images.index < this.navigation.current.images.length - 1)
-            this.nextImage()
-        else
-            this.nextProject()
-    }
-
-    nextImage()
-    {
-        if(this.state === ProjectsArea.STATE_CLOSED || this.state === ProjectsArea.STATE_CLOSING)
-            return
-
-        this.changeImage(this.images.index + 1, ProjectsArea.DIRECTION_NEXT)
-
-        this.blackBoard.active = false
-    }
-
-    nextProject()
-    {
-        if(this.state === ProjectsArea.STATE_CLOSED || this.state === ProjectsArea.STATE_CLOSING)
-            return
-
-        this.changeProject(this.navigation.index + 1, ProjectsArea.DIRECTION_NEXT)
-
-        this.blackBoard.active = false
-    }
-
-    changeProject(index = 0, direction = ProjectsArea.DIRECTION_NEXT, firstImage = false, silent = false)
-    {
-        // Loop index
-        let loopIndex = index
-
-        if(loopIndex > projectsData.length - 1)
-            loopIndex = 0
-        else if(loopIndex < 0)
-            loopIndex = projectsData.length - 1
-
-        // Save
-        this.navigation.index = loopIndex
-        this.navigation.current = projectsData[this.navigation.index]
-        this.navigation.previous = projectsData[(this.navigation.index - 1) < 0 ? projectsData.length - 1 : this.navigation.index - 1]
-        this.navigation.next = projectsData[(this.navigation.index + 1) % projectsData.length]
-
-        // Update components
-        this.attributes.update()
-        this.adjacents.update()
-        this.title.update(direction)
-        this.url.update(direction)
-        this.distinctions.update()
-
-        // Change image
-        let imageIndex = null
-        if(firstImage)
-            imageIndex = 0
-        else
-            imageIndex = direction === ProjectsArea.DIRECTION_NEXT ? 0 : this.navigation.current.images.length - 1
-
-        // Sound
-        if(!silent)
-        {
-            this.game.audio.groups.get('click').play()
-            this.game.audio.groups.get('assemble').play()
-        }
-
-        this.changeImage(imageIndex, direction, silent)
-
-        // Achievements
-        if(this.state === ProjectsArea.STATE_OPEN)
-            this.game.achievements.setProgress('projects', this.navigation.current.title)
-    }
-
-    changeImage(imageIndex = 0, direction = null, silent = false)
-    {
-        if(direction === null)
-            direction = imageIndex > this.images.index ? ProjectsArea.DIRECTION_NEXT : ProjectsArea.DIRECTION_PREVIOUS
-
-        this.images.index = imageIndex
-
-        // Update components
-        this.images.update(direction)
-        this.pagination.update()
-
-        // Sounds
-        if(!silent)
-        {
-            this.game.audio.groups.get('click').play()
-            this.game.audio.groups.get('slide').play()
-        }
-    }
+    previous() { this.viewer.previous() }
+    previousImage() { this.viewer.previousImage() }
+    previousProject(firstImage = false) { this.viewer.previousProject(firstImage) }
+    next() { this.viewer.next() }
+    nextImage() { this.viewer.nextImage() }
+    nextProject() { this.viewer.nextProject() }
+    changeProject(index = 0, direction = ProjectsArea.DIRECTION_NEXT, firstImage = false, silent = false) { this.viewer.changeProject(index, direction, firstImage, silent) }
+    changeImage(imageIndex = 0, direction = null, silent = false) { this.viewer.changeImage(imageIndex, direction, silent) }
 
     update()
     {

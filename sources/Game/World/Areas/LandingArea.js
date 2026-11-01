@@ -1,6 +1,5 @@
 import * as THREE from 'three/webgpu'
 import { color, float, Fn, instancedArray, mix, normalWorld, positionGeometry, step, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
-import { Inputs } from '../../Inputs/Inputs.js'
 import { InteractivePoints } from '../../InteractivePoints.js'
 import { Area } from './Area.js'
 import gsap from 'gsap'
@@ -16,7 +15,6 @@ export class LandingArea extends Area
 
         this.setLetters()
         this.setKiosk()
-        this.setControls()
         this.setBonfire()
         this.setAchievement()
     }
@@ -69,53 +67,6 @@ export class LandingArea extends Area
         // {
         //     interactivePoint.show()
         // })
-    }
-
-    setControls()
-    {
-        // Interactive point
-        const interactivePoint = this.game.interactivePoints.create(
-            this.references.items.get('controlsInteractivePoint')[0].position,
-            'Kontroller',
-            InteractivePoints.ALIGN_RIGHT,
-            InteractivePoints.STATE_CONCEALED,
-            () =>
-            {
-                this.game.inputs.interactiveButtons.clearItems()
-                this.game.menu.open('controls')
-                interactivePoint.hide()
-            },
-            () =>
-            {
-                this.game.inputs.interactiveButtons.addItems(['interact'])
-            },
-            () =>
-            {
-                this.game.inputs.interactiveButtons.removeItems(['interact'])
-            },
-            () =>
-            {
-                this.game.inputs.interactiveButtons.removeItems(['interact'])
-            }
-        )
-
-        // Menu instance
-        const menuInstance = this.game.menu.items.get('controls')
-
-        menuInstance.events.on('close', () =>
-        {
-            interactivePoint.show()
-        })
-
-        menuInstance.events.on('open', () =>
-        {
-            if(this.game.inputs.mode === Inputs.MODE_GAMEPAD)
-                menuInstance.tabs.goTo('gamepad')
-            else if(this.game.inputs.mode === Inputs.MODE_MOUSEKEYBOARD)
-                menuInstance.tabs.goTo('mouse-keyboard')
-            else if(this.game.inputs.mode === Inputs.MODE_TOUCH)
-                menuInstance.tabs.goTo('touch')
-        })
     }
 
     setBonfire()
