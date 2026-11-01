@@ -31,6 +31,7 @@ import { Props } from './Props.js'
 import { Garage } from './Garage.js'
 import { Flag } from './Flag.js'
 import { Jukeboxes } from './Jukeboxes.js'
+import { Signs } from './Signs.js'
 
 export class World
 {
@@ -85,6 +86,7 @@ export class World
             this.garage = new Garage()
             this.flag = new Flag()
             this.jukeboxes = new Jukeboxes()
+            this.signs = new Signs()
         }
     }
 

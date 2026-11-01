@@ -324,6 +324,275 @@
                     "scale": 1
                 }
             ]
+        },
+        {
+            "name": "signs",
+            "title": "Tabelalar",
+            "custom": "signs",
+            "_note": [
+                "Model: scripts/signs/build_signs.mjs üretir (npm run signs). Çizim/fizik: sources/Game/World/Signs.js.",
+                "Her yerleşim: x, z; texts = tahtalara yazılacak metinler (sırayla, üstten alta); variant: signPlank (tek tahta) | signDouble (iki tahta) | signRight / signLeft (ok).",
+                "Ok tabelalarda 'target' (respawn adı: projects, career, social, achievements, bowling, bakkal, lab, landing ...) verilirse ok o yöne bakar; sağ/sol varyant ve dönüş otomatik seçilir (yazı kameraya dönük kalacak şekilde). 'target' yoksa facingDeg kullanılır.",
+                "facingDeg: tabela yüzünün baktığı yön, dünyada +X'ten +Z'ye derece (45 = kamera tarafı).",
+                "variants.*.boards: tahta üzerindeki yazı alanı (model yerelinde x, y merkezi ve genişlik/yükseklik); yazı sığacak şekilde küçülür, gerekirse iki satıra bölünür.",
+                "variants.*.colliders: direk + tahta kutuları (model yerelinde).",
+                "cameraTiltDeg: hedefli (ok) tabelalarda yazının kameraya dönmesi için ok yönünden en fazla bu kadar (derece) sapılır."
+            ],
+            "mass": 8,
+            "resetDistance": 45,
+            "textColor": "#2b180c",
+            "uppercase": true,
+            "variants": {
+                "signPlank": {
+                    "arrow": null,
+                    "boards": [
+                        {
+                            "x": 0,
+                            "y": 1.36,
+                            "w": 1.0,
+                            "h": 0.58
+                        }
+                    ],
+                    "colliders": [
+                        {
+                            "center": [
+                                0,
+                                0.9,
+                                0
+                            ],
+                            "half": [
+                                0.1,
+                                0.9,
+                                0.057
+                            ]
+                        },
+                        {
+                            "center": [
+                                -0.005,
+                                1.36,
+                                0.058
+                            ],
+                            "half": [
+                                0.7,
+                                0.4,
+                                0.026
+                            ]
+                        }
+                    ]
+                },
+                "signDouble": {
+                    "arrow": null,
+                    "boards": [
+                        {
+                            "x": -0.03,
+                            "y": 1.39,
+                            "w": 1.0,
+                            "h": 0.27
+                        },
+                        {
+                            "x": -0.03,
+                            "y": 1.0,
+                            "w": 1.0,
+                            "h": 0.27
+                        }
+                    ],
+                    "colliders": [
+                        {
+                            "center": [
+                                0,
+                                0.9,
+                                0
+                            ],
+                            "half": [
+                                0.1,
+                                0.9,
+                                0.057
+                            ]
+                        },
+                        {
+                            "center": [
+                                -0.03,
+                                1.18,
+                                0.058
+                            ],
+                            "half": [
+                                0.656,
+                                0.4,
+                                0.026
+                            ]
+                        }
+                    ]
+                },
+                "signRight": {
+                    "arrow": "right",
+                    "boards": [
+                        {
+                            "x": 0.12,
+                            "y": 1.32,
+                            "w": 0.8,
+                            "h": 0.5
+                        }
+                    ],
+                    "colliders": [
+                        {
+                            "center": [
+                                0,
+                                0.9,
+                                0
+                            ],
+                            "half": [
+                                0.1,
+                                0.9,
+                                0.057
+                            ]
+                        },
+                        {
+                            "center": [
+                                0.043,
+                                1.32,
+                                0.058
+                            ],
+                            "half": [
+                                0.733,
+                                0.36,
+                                0.026
+                            ]
+                        }
+                    ]
+                },
+                "signLeft": {
+                    "arrow": "left",
+                    "boards": [
+                        {
+                            "x": -0.12,
+                            "y": 1.32,
+                            "w": 0.8,
+                            "h": 0.5
+                        }
+                    ],
+                    "colliders": [
+                        {
+                            "center": [
+                                0,
+                                0.9,
+                                0
+                            ],
+                            "half": [
+                                0.1,
+                                0.9,
+                                0.057
+                            ]
+                        },
+                        {
+                            "center": [
+                                -0.043,
+                                1.32,
+                                0.058
+                            ],
+                            "half": [
+                                0.733,
+                                0.36,
+                                0.026
+                            ]
+                        }
+                    ]
+                }
+            },
+            "placements": [
+                {
+                    "id": "landingTown",
+                    "note": "Landing: doğma noktasının sağında, ilk ekranda. Yazı: yer adları",
+                    "x": 44.5,
+                    "z": 34.5,
+                    "facingDeg": 45,
+                    "variant": "signDouble",
+                    "texts": [
+                        "Zonguldak",
+                        "Kozlu"
+                    ]
+                },
+                {
+                    "id": "landingDirections",
+                    "note": "Landing: ilk ekranda, yön gösteren tahtalar (ok yönü hedefe göre otomatik)",
+                    "x": 46,
+                    "z": 39,
+                    "facingDeg": 45,
+                    "variant": "signDouble",
+                    "texts": [
+                        {
+                            "text": "Projeler",
+                            "target": "projects"
+                        },
+                        {
+                            "text": "Bakkal",
+                            "target": "bakkal"
+                        }
+                    ]
+                },
+                {
+                    "id": "bakkal",
+                    "note": "Bakkal önünde",
+                    "x": 20,
+                    "z": 38.5,
+                    "facingDeg": 45,
+                    "variant": "signDouble",
+                    "texts": [
+                        "İhsaniye",
+                        "Kozlu"
+                    ]
+                },
+                {
+                    "id": "career",
+                    "note": "Kariyer alanı, zaman çizelgesinin başı",
+                    "x": 24.5,
+                    "z": 2.5,
+                    "facingDeg": 45,
+                    "variant": "signPlank",
+                    "texts": [
+                        "Beykent Üniversitesi"
+                    ]
+                },
+                {
+                    "id": "junctionAchievements",
+                    "note": "Yol ayrımı: landing'den köprü yönüne (kuzeydoğu), Başarımlar yönü",
+                    "x": 51,
+                    "z": 29,
+                    "target": "achievements",
+                    "texts": [
+                        "Başarımlar"
+                    ]
+                },
+                {
+                    "id": "junctionBowling",
+                    "note": "Yol ayrımı: landing'den güneybatıya, Bowling yönü",
+                    "x": 36,
+                    "z": 44.5,
+                    "target": "bowling",
+                    "texts": [
+                        "Bowling"
+                    ]
+                },
+                {
+                    "id": "junctionSocial",
+                    "note": "Yol ayrımı: kariyerden güneye inerken Sosyal yönü",
+                    "x": 26,
+                    "z": -8.5,
+                    "target": "social",
+                    "texts": [
+                        "Sosyal"
+                    ]
+                }
+            ],
+            "attribution": {
+                "title": "Stylized wood signs",
+                "author": "Pasindu.Anjana",
+                "authorUrl": "https://sketchfab.com/Pasindu.Anjana",
+                "sourceUrl": "https://sketchfab.com/3d-models/stylized-wood-signs-d529ec8478304d45a5048e15cf9cc9db",
+                "license": "CC BY 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+                "changes": "düğüm dönüşleri köşelere pişirildi, doku 256 px WebP'ye küçültüldü, sağa ok tahtası yansıtılarak sola ok elde edildi, yazılar oyunda çizilir"
+            },
+            "cameraTiltDeg": 12
         }
     ]
 }
