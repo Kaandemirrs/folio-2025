@@ -5,5 +5,3 @@ dist
 .VSCodeCounter
 .env*
 .autosave
-.wav
-!static/sounds/music/*.wav
