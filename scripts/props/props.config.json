@@ -593,6 +593,39 @@
                 "changes": "düğüm dönüşleri köşelere pişirildi, doku 256 px WebP'ye küçültüldü, sağa ok tahtası yansıtılarak sola ok elde edildi, yazılar oyunda çizilir"
             },
             "cameraTiltDeg": 12
+        },
+        {
+            "name": "monkey",
+            "title": "Horon maymunları",
+            "custom": "horon",
+            "source": "resources/references/examples/simio_monkey_dancing.glb",
+            "_note": [
+                "Model: node scripts/horon/build_monkey.mjs (iskeletli prop hattı). Çizim/etkileşim: sources/Game/World/Horon.js, ayarlar: sources/data/horon.js."
+            ],
+            "build": {
+                "height": 1.9,
+                "triangles": 3900,
+                "simplifyError": 0.05,
+                "removeBones": "Hand(Thumb|Index|Middle|Ring)|_End_|_rootJoint",
+                "texture": 256,
+                "textureBlur": 0.6,
+                "textureSaturation": 1.25,
+                "textureBrightness": 1.12,
+                "loop": {
+                    "start": 0,
+                    "end": 13.0667,
+                    "blend": 0.2
+                }
+            },
+            "attribution": {
+                "title": "Simio Monkey dancing",
+                "author": "pepetrincado",
+                "authorUrl": "https://sketchfab.com/pepetrincado",
+                "sourceUrl": "https://sketchfab.com/3d-models/simio-monkey-dancing-3ba199e0a78546598f868e86d78495a0",
+                "license": "CC BY 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+                "changes": "parmak kemikleri birleştirildi (58 → 22 kemik), üçgen sayısı ≈3.900'e indirildi, doku 256 px'e küçültülüp stilize edildi, kök hareketi silinip animasyon döngüye alındı"
+            }
         }
     ]
 }
