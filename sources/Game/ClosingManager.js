@@ -3,6 +3,7 @@ import { Inputs } from './Inputs/Inputs.js'
 import { Menu } from './Menu.js'
 import { Modals } from './Modals.js'
 import { ProjectsArea } from './World/Areas/ProjectsArea.js'
+import { Garage } from './World/Garage.js'
 
 export class ClosingManager
 {
@@ -31,6 +32,10 @@ export class ClosingManager
                 // Projects => Close
                 else if(this.game.world.areas?.projects && (this.game.world.areas?.projects.state === ProjectsArea.STATE_OPEN || this.game.world.areas?.projects.state === ProjectsArea.STATE_OPENING))
                     this.game.world.areas.projects.close()
+
+                // Garaj => Kapat
+                else if(this.game.world.garage && (this.game.world.garage.state === Garage.STATE_OPEN || this.game.world.garage.state === Garage.STATE_OPENING))
+                    this.game.world.garage.close()
 
                 // Nothing opened and used the keyboard Escape key => Open default modal
                 else if(action.activeKeys.has('Keyboard.Escape'))

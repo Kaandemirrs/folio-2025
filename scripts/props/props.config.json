@@ -174,7 +174,10 @@
                 }
             },
             "respawn": {
-                "distance": 4.6
+                "local": {
+                    "x": 2.0,
+                    "z": 6.6
+                }
             },
             "attribution": {
                 "title": "Türk Bakkalı - Turkish Grocery Store Diorama",
@@ -184,6 +187,31 @@
                 "license": "CC BY 4.0",
                 "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
                 "changes": "zemin ve arka yüzler silindi, sadeleştirildi, dokular tek atlasa pişirildi ve oyuna uyarlandı"
+            },
+            "garage": {
+                "_note": "Yerel koordinatlar: x = cephe boyunca sağ (cepheye bakınca), z = cepheden dışarı; metre.",
+                "label": "Garaj",
+                "interact": {
+                    "x": 0.2,
+                    "z": 3.4
+                },
+                "parking": {
+                    "x": 3.5,
+                    "z": 3.4,
+                    "yawDeg": 0
+                },
+                "showcase": {
+                    "x": -1.7,
+                    "z": 5.6,
+                    "radius": 1.9,
+                    "camera": {
+                        "x": 1.4,
+                        "y": 4.6,
+                        "z": 7.4
+                    },
+                    "targetY": 0.4,
+                    "targetX": -0.9
+                }
             }
         }
     ]

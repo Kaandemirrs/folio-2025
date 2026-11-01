@@ -18,6 +18,20 @@ export class Props
         return Math.PI * 0.5 - THREE.MathUtils.degToRad(prop.world.facingDeg ?? 0)
     }
 
+    // Prop'un yerel (x sağ, z dışarı) koordinatını dünya koordinatına çevirir
+    static localToWorld(prop, x, z, y = 0)
+    {
+        const rotationY = Props.getRotationY(prop)
+        const cos = Math.cos(rotationY)
+        const sin = Math.sin(rotationY)
+
+        return new THREE.Vector3(
+            prop.world.x + x * cos + z * sin,
+            (prop.world.y ?? 0) + y,
+            prop.world.z - x * sin + z * cos
+        )
+    }
+
     constructor()
     {
         this.game = Game.getInstance()

@@ -1,6 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
 import propsConfig from '../../scripts/props/props.config.json'
+import { Props } from './World/Props.js'
 
 export class Respawns
 {
@@ -55,15 +56,26 @@ export class Respawns
                 continue
 
             const theta = (prop.world.facingDeg ?? 0) * Math.PI / 180
-            const distance = prop.respawn.distance
+            let position = null
+
+            if(prop.respawn.local)
+            {
+                position = Props.localToWorld(prop, prop.respawn.local.x, prop.respawn.local.z)
+            }
+            else
+            {
+                position = new THREE.Vector3(
+                    prop.world.x + Math.cos(theta) * prop.respawn.distance,
+                    0,
+                    prop.world.z + Math.sin(theta) * prop.respawn.distance
+                )
+            }
+            position.y = 4
+
             this.items.set(prop.name, {
                 name: prop.name,
-                position: new THREE.Vector3(
-                    prop.world.x + Math.cos(theta) * distance,
-                    4,
-                    prop.world.z + Math.sin(theta) * distance
-                ),
-                rotation: Math.PI - theta
+                position: position,
+                rotation: Math.PI - theta // cepheye bakar
             })
         }
     }

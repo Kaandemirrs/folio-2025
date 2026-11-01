@@ -224,6 +224,25 @@ export class Objects
         return this.add(...this.getFromModel(_model, _visualDescription, _physicalDescription))
     }
 
+    // Nesneyi tamamen kaldırır (görsel + fizik gövdesi); araç park yeri gibi dinamik içerik için
+    remove(object)
+    {
+        if(object.physical)
+        {
+            this.game.physics.world.removeRigidBody(object.physical.body)
+            this.game.physics.physicals = this.game.physics.physicals.filter(_physical => _physical !== object.physical)
+        }
+
+        if(object.visual)
+            object.visual.object3D.removeFromParent()
+
+        this.list.forEach((_object, key) =>
+        {
+            if(_object === object)
+                this.list.delete(key)
+        })
+    }
+
     resetObject(object)
     {
         if(

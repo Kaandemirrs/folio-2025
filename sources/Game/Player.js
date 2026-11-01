@@ -338,8 +338,14 @@ export class Player
             localStorage.removeItem('distanceDriven')
             this.distanceDriven.value = 0
             this.distanceDriven.floored = 0
+            this.distanceDriven.dogan = 0
+            localStorage.removeItem('distanceDrivenDogan')
         }
-        
+
+        // Doğan SLX ile yapılan yol ("Tofaş Sevdası" başarımı)
+        const localDoganDistance = localStorage.getItem('distanceDrivenDogan')
+        this.distanceDriven.dogan = localDoganDistance ? parseFloat(localDoganDistance) || 0 : 0
+        this.distanceDriven.doganFloored = Math.floor(this.distanceDriven.dogan)
     }
 
     setUnstuck()
@@ -665,6 +671,24 @@ export class Player
             this.distanceDriven.floored = flooredDistanceDriven
         }
         
+        // Doğan ile yol
+        if(this.game.vehicles.currentId === 'dogan')
+        {
+            this.distanceDriven.dogan += this.game.physicalVehicle.xzSpeed * this.game.ticker.deltaScaled
+            const flooredDogan = Math.floor(this.distanceDriven.dogan)
+
+            if(flooredDogan !== this.distanceDriven.doganFloored)
+            {
+                localStorage.setItem('distanceDrivenDogan', flooredDogan)
+                this.distanceDriven.doganFloored = flooredDogan
+            }
+
+            const doganKm = Math.floor(this.distanceDriven.dogan / 1000)
+            const doganGroup = this.game.achievements.groups.get('doganDistance')
+            if(doganGroup && doganKm > doganGroup.progress)
+                this.game.achievements.setProgress('doganDistance', doganKm)
+        }
+
         // Achievement
         const distanceDrivenKm = Math.floor(this.distanceDriven.value / 1000)
 

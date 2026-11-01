@@ -28,6 +28,7 @@ import { Fences } from './Fences.js'
 import { Benches } from './Benches.js'
 import { Scenery } from './Scenery.js'
 import { Props } from './Props.js'
+import { Garage } from './Garage.js'
 
 export class World
 {
@@ -79,6 +80,7 @@ export class World
             this.scenery = new Scenery()
             this.areas = new Areas()
             this.props = new Props()
+            this.garage = new Garage()
         }
     }
 

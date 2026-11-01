@@ -102,6 +102,12 @@ export default
         100
     ],
     [
+        'doganDistance',
+        'Tofaş Sevdası',
+        'Doğan SLX ile 1 km yol yap.',
+        1
+    ],
+    [
         'weatherSnow',
         'Kardan adam yapalım mı?',
         'Karlı bir havaya tanık ol.',

@@ -236,7 +236,8 @@ def run(cfg, opts):
     mat_palette = W.make_material('palette', (0.5, 0.5, 0.5))
     mat_white = W.make_material('emissiveWhiteRadialGradient', (1, 1, 1))
     mat_orange = W.make_material('emissiveOrangeRadialGradient', (1, 0.17, 0))
-    mat_plate = W.make_material('licensePlate', (1, 1, 1), image_path=os.path.join(W.ROOT, cfg['plate']['image']))
+    mat_plate = W.make_material('licensePlateDogan', (1, 1, 1)  # ad araca özel: oyunda materyaller ada göre paylaşılır
+                                  , image_path=os.path.join(W.ROOT, cfg['plate']['image']))
 
     chassis = bpy.data.objects.new('chassis', None)
     bpy.context.scene.collection.objects.link(chassis)
