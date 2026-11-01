@@ -157,6 +157,18 @@ for(const name of SCENARIOS)
         info.pos = await page.evaluate(() => ({ x: +window.game.physicalVehicle.position.x.toFixed(1), z: +window.game.physicalVehicle.position.z.toFixed(1) }))
         await page.screenshot({ path: `${OUT}/horon_respawn.png` })
     }
+    else if(name === 'horonlap')
+    {
+        await page.evaluate(() => window.game.player.respawn('monkey'))
+        await sleep(8000)
+        await page.evaluate(() => window.game.world.horon.start())
+        for(let i = 0; i <= 44; i++)
+        {
+            await page.evaluate((i) => { const a = i / 40 * Math.PI * 2; window.game.physicalVehicle.moveTo({ x: -68 + Math.cos(a) * 14, y: 3, z: -46.5 + Math.sin(a) * 14 }, 0) }, i)
+            await sleep(120)
+        }
+        info.lap = await page.evaluate(() => ({ lapState: window.game.world.horon.lap, playing: window.game.world.horon.music.playing, pos: window.game.physicalVehicle.position.toArray(), horon: window.game.achievements.groups.get('horon').progress, areas: [ ...window.game.achievements.groups.get('areas').progress ] }))
+    }
     else if(name === 'projects')
     {
         await page.evaluate(() => window.game.player.respawn('projects'))

@@ -12,7 +12,7 @@ export default
         'areas',
         'Gezgin',
         'Her alanı ziyaret et.',
-        6,
+        7, // Başlangıç, Kariyer, Projeler, Sosyal, Başarımlar, Bowling ve Müzik (horon)
         true // Unique
     ],
     [
@@ -21,6 +21,12 @@ export default
         '<strong>Projeler</strong> alanındaki her projeye göz at.',
         projectsData.length,
         true // Unique
+    ],
+    [
+        'horon',
+        'Horona katıl',
+        'Horon çalarken maymunların etrafında bir tur at.',
+        1
     ],
     [
         'sea',

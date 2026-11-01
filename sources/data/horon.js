@@ -9,6 +9,7 @@ export default {
     musicPath: import.meta.env.DEV ? '/horon-dev.mp3' : 'sounds/horon/horon.mp3',
     musicName: 'Zakara Horon Havası (Karadeniz Horonu)',
     musicVolume: 0.7,
+    lapRadius: 28, // "Horona katıl" başarımı: bu yarıçap içinde horon çalarken maymunların etrafında tam tur
     listenDistance: 40, // bu mesafeden sonra horon durur, playlist geri gelir
     playlistVolume: 0.2, // Audio.js playlist ses seviyesi
 

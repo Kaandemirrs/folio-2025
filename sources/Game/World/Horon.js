@@ -224,6 +224,38 @@ export class Horon
         }
     }
 
+    // Başarımlar: alana varış ("Gezgin"), horon çalarken etrafında tur ("Horona katıl")
+    updateAchievements(player, distance)
+    {
+        if(distance < 12)
+            this.game.achievements.setProgress('areas', 'horon')
+
+        // Tur: oyuncunun maymunlara göre açısı birikir (yön değişirse geri sayar); yarıçap dışına çıkınca ya da horon durunca sıfırlanır
+        this.lap ??= { angle: null, sum: 0 }
+        if(!this.music.playing || distance > this.config.lapRadius)
+        {
+            this.lap.angle = null
+            this.lap.sum = 0
+            return
+        }
+
+        const angle = Math.atan2(player.z - this.center.z, player.x - this.center.x)
+        if(this.lap.angle !== null)
+        {
+            let delta = angle - this.lap.angle
+            if(delta > Math.PI) delta -= Math.PI * 2
+            if(delta < - Math.PI) delta += Math.PI * 2
+            this.lap.sum += delta
+
+            if(Math.abs(this.lap.sum) >= Math.PI * 2 * 0.97)
+            {
+                this.game.achievements.setProgress('horon', 1)
+                this.lap.sum = 0
+            }
+        }
+        this.lap.angle = angle
+    }
+
     // Yaklaşınca modeli yükle (ilk yüklemeye girmez)
     load()
     {
@@ -352,6 +384,8 @@ export class Horon
     {
         const player = this.game.physicalVehicle.position
         const distance = Math.hypot(player.x - this.center.x, player.z - this.center.z)
+
+        this.updateAchievements(player, distance)
 
         // Çok uzaklaşınca horon durur, playlist kaldığı yerden döner
         if(this.music.playing && distance > this.config.listenDistance)
