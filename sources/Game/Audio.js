@@ -152,8 +152,20 @@ export class Audio
                 path: 'sounds/musics/Kullenen-Ask-1986.mp3',
                 name: 'Cengiz Kurtoğlu - Küllenen Aşk (1986)'
             },
+            {
+                path: 'sounds/musics/Sevda-Yuklu-Kervanlar.mp3',
+                name: 'Timuçin Esen - Sevda Yüklü Kervanlar'
+            },
+            {
+                path: 'sounds/musics/NazlicanIM.mp3',
+                name: 'NazlıcanıM'
+            },
+            {
+                path: 'sounds/musics/Cimilli-Ibo-Oyna.mp3',
+                name: 'Cimilli İbo - Oyna (Hızlı Horon Kemençe)'
+            },
         ]
-        this.playlist.index = (Math.floor(Date.now() / 1000 / 60 / 3) % this.playlist.songs.length) // Different music every X minutes
+        this.playlist.index = 0 // İlk parçadan başla; sonrası sırayla (jukebox ile atlanabilir)
         // this.playlist.index = -1 // Different music every X minutes
         this.playlist.current = null
         this.playlist.switching = false
