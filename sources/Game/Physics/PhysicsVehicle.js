@@ -29,9 +29,9 @@ export class PhysicsVehicle
         this.direction = this.forward.clone()
         this.speed = 0
         this.suspensionsHeights = {
-            low: 0.88,
-            mid: 1.23,
-            high: 1.63
+            low: 0.60,
+            mid: 0.83,
+            high: 1.10
         }
         this.suspensionsStiffness = {
             low: 20,
@@ -48,10 +48,10 @@ export class PhysicsVehicle
             })
 
             this.debugPanel.addBinding(this, 'steeringAmplitude', { min: 0, max: Math.PI * 0.5, step: 0.01 })
-            this.debugPanel.addBinding(this, 'engineForceAmplitude', { min: 1, max: 20, step: 1 })
+            this.debugPanel.addBinding(this, 'engineForceAmplitude', { min: 1, max: 600, step: 1 })
             this.debugPanel.addBinding(this, 'boostMultiplier', { min: 1, max: 5, step: 0.01 })
             this.debugPanel.addBinding(this, 'topSpeed', { min: 0, max: 20, step: 0.1 })
-            this.debugPanel.addBinding(this, 'topSpeedBoost', { min: 0, max: 20, step: 0.1 })
+            this.debugPanel.addBinding(this, 'topSpeedBoost', { min: 0, max: 80, step: 0.1 })
             this.debugPanel.addBinding(this, 'brakeAmplitude', { min: 0, max: 200, step: 0.01 })
             this.debugPanel.addBinding(this, 'idleBrake', { min: 0, max: 1, step: 0.001 })
             this.debugPanel.addBinding(this, 'reverseBrake', { min: 0, max: 1, step: 0.001 })
@@ -93,9 +93,9 @@ export class PhysicsVehicle
             friction: 0.4,
             rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), Math.PI * 0),
             colliders: [
-                { shape: 'cuboid', mass: 2.5, parameters: [ 1.3, 0.4, 0.85 ], position: { x: 0, y: -0.1, z: 0 }, centerOfMass: { x: 0, y: -0.5, z: 0 } }, // Main
-                { shape: 'cuboid', mass: 0, parameters: [ 0.5, 0.15, 0.65 ], position: { x: 0, y: 0.4, z: 0 } }, // Top
-                { shape: 'cuboid', mass: 0, parameters: [ 1.5, 0.5, 0.9 ], position: { x: 0.1, y: -0.2, z: 0 }, category: 'bumper' }, // Bumper
+                { shape: 'cuboid', mass: 2.5, parameters: [ 1.45, 0.28, 0.66 ], position: { x: -0.09, y: -0.30, z: 0 }, centerOfMass: { x: 0, y: -0.11, z: 0 } }, // Main
+                { shape: 'cuboid', mass: 0, parameters: [ 0.8, 0.14, 0.55 ], position: { x: -0.45, y: 0.14, z: 0 } }, // Top
+                { shape: 'cuboid', mass: 0, parameters: [ 1.62, 0.27, 0.72 ], position: { x: -0.09, y: -0.30, z: 0 }, category: 'bumper' }, // Bumper
             ],
             canSleep: false,
             waterGravityMultiplier: 0,
@@ -138,8 +138,8 @@ export class PhysicsVehicle
 
         // Settings
         this.wheels.settings = {
-            offset: { x: 0.90, y: 0, z: 0.75 },
-            radius: 0.4,
+            offset: { x: 0.975, y: 0, z: 0.58 },
+            radius: 0.27,
             directionCs: { x: 0, y: -1, z: 0 },
             axleCs: { x: 0, y: 0, z: 1 },
             frictionSlip: 0.9,

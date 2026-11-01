@@ -31,6 +31,7 @@ export class Materials
         this.createEmissiveGradient('emissiveWhiteRadialGradient', '#ffffff', '#666666', 2.7, false, this.debugPanel?.addFolder({ title: 'emissiveWhiteRadialGradient' }))
         
         this.createGradient('redGradient', '#ff3a3a', '#721551', this.debugPanel?.addFolder({ title: 'redGradient' }))
+        this.createGradient('obsidianGradient', '#34343b', '#0c0c0f', this.debugPanel?.addFolder({ title: 'obsidianGradient' }))
     }
 
     createPalette()

@@ -131,6 +131,7 @@ export class VisualVehicle
         this.paints = {}
 
         this.paints.choices = {}
+        this.paints.choices.obsidian = this.game.materials.getFromName('obsidianGradient') // Obsidyen Siyah (varsayılan)
         this.paints.choices.red = this.game.materials.getFromName('redGradient')
         this.paints.choices.orange = this.game.materials.createGradient('orangeGradient', '#ff940d', '#af0071', this.game.materials.debugPanel?.addFolder({ title: 'orangeGradient' }))
         this.paints.choices.white = this.game.materials.createGradient('whiteGradient', '#ffffff', '#b5b5b5', this.game.materials.debugPanel?.addFolder({ title: 'whiteGradient' }))
@@ -257,6 +258,7 @@ export class VisualVehicle
         this.wheels = {}
         this.wheels.items = []
         this.wheels.steering = 0
+        this.wheels.maxY = -0.2 // Tekerlek merkezi şasi merkezinin en fazla bu kadar altına çıkabilir
 
         // Create wheels
         for(let i = 0; i < 4; i++)
@@ -279,12 +281,26 @@ export class VisualVehicle
             
             // Cylinder (actual wheel)
             wheel.cylinder.position.set(0, 0, 0)
+
+            // Tekerlek modelinin yarıçapı fizik yarıçapına uymuyorsa (örn. Konami ile gelen eski araç) ölçekle
+            if(typeof this.wheels.modelScale === 'undefined')
+            {
+                const size = new THREE.Box3().setFromObject(wheel.cylinder).getSize(new THREE.Vector3())
+                const modelRadius = Math.max(size.x, size.y) / 2
+                const visualRadius = this.game.physicalVehicle.wheels.settings.radius + 0.01
+                this.wheels.modelScale = modelRadius > 0 ? visualRadius / modelRadius : 1
+                if(Math.abs(this.wheels.modelScale - 1) < 0.03)
+                    this.wheels.modelScale = 1
+            }
+
+            if(this.wheels.modelScale !== 1)
+                wheel.container.scale.setScalar(this.wheels.modelScale)
             
             if(i === 0 || i === 2)
                 wheel.container.rotation.y = Math.PI
 
             // Add new track
-            wheel.groundTrack = this.game.tracks.add(new Track(0.5, 'r'))
+            wheel.groundTrack = this.game.tracks.add(new Track(0.35, 'r'))
 
             this.wheels.items.push(wheel)
         }
@@ -376,14 +392,14 @@ export class VisualVehicle
         this.boostTrails.instance = new Trails()
 
         this.boostTrails.leftReference = new THREE.Object3D()
-        this.boostTrails.leftReference.position.set(-1.28, 0.1, -0.55)
+        this.boostTrails.leftReference.position.set(-1.73, -0.49, -0.40) // Çift arka egzozun uçları
         this.parts.chassis.add(this.boostTrails.leftReference)
 
         this.boostTrails.left = this.boostTrails.instance.create()
         this.boostTrails.leftReference.getWorldPosition(this.boostTrails.left.position)
     
         this.boostTrails.rightReference = new THREE.Object3D()
-        this.boostTrails.rightReference.position.set(-1.28, 0.1, 0.55)
+        this.boostTrails.rightReference.position.set(-1.73, -0.49, 0.40)
         this.parts.chassis.add(this.boostTrails.rightReference)
 
         this.boostTrails.right = this.boostTrails.instance.create()
@@ -451,7 +467,7 @@ export class VisualVehicle
   
             const suspensionLength = physicalWheel.suspensionLength
             let wheelY = physicalWheel.basePosition.y - suspensionLength
-            wheelY = Math.min(wheelY, -0.5)
+            wheelY = Math.min(wheelY, this.wheels.maxY)
 
             visualWheel.container.position.x = physicalWheel.basePosition.x
             visualWheel.container.position.y += (wheelY - visualWheel.container.position.y) * 25 * this.game.ticker.deltaScaled
@@ -459,7 +475,7 @@ export class VisualVehicle
 
             if(visualWheel.suspension)
             {
-                const suspensionScale = Math.abs(visualWheel.container.position.y) - 0.5
+                const suspensionScale = Math.max(0.001, Math.abs(visualWheel.container.position.y) - 0.5)
                 visualWheel.suspension.scale.y = suspensionScale
             }
 
