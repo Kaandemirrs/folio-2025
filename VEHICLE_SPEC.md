@@ -483,4 +483,173 @@ bpy.ops.export_scene.gltf(
 - **Konami** eski araca/Bruno'nun arabasına geri dönebilir (Bölüm 4.1).
 - **Önek eşleşmesi:** `parts` anahtarında son eşleşen düğüm kazanıyor; ad çakışması sessiz hata.
 - **Fizik değerleri doğrulanmadı;** oyunda ayarlanmalı.
-- **Referans görsel yok;** oran ve detay için gerekli.
+- **Referans görsel yok;** oran ve detay için gerekli. (Bölüm 10'da hazır model geldi, bu madde artık geçerli değil.)
+
+---
+
+## 10. Hazır model analizi (`resources/references/w140/mercedes_s-class.glb`)
+
+**Kapsam:** Yalnızca analiz. Oyun dosyalarına dokunulmadı; render ve decimate denemesi geçici kopyada yapıldı. Ham araçlar (`bpy` 5.2.3, Workbench render) Bölüm 1'deki sanal ortamla çalıştı.
+
+**Not:** Klasörde `source/` alt klasörü, lisans veya readme dosyası **yok**; yalnızca tek GLB var (9,5 MB). Lisans bilgisi GLB'nin içindeki metadata'dan okundu (Bölüm 10.3).
+
+### 10.1 Genel özellikler
+
+| Özellik | Değer |
+|---|---|
+| Dosya boyutu | **9.480.268 bayt (9,5 MB)**; 5,27 MB'ı gömülü texture |
+| Üretici | Sketchfab-0.18.0 (`mer_sclass_95.obj.cleaner.materialmerger.gles`) |
+| Eklenti | `KHR_materials_specular` |
+| Üçgen / vertex | **108.408 üçgen / 80.150 vertex** (mevcut oyun aracı: 3.720 üçgen) |
+| Mesh / materyal / texture | 28 mesh (materyal başına birleştirilmiş), 28 materyal, 32 PNG texture |
+| Animasyon / skin | Yok |
+| Düğümler | `Sketchfab_model` → `mer_sclass_95.obj.cleaner.materialmerger.gles` → `Object_2 … Object_30`. Transform yok (hepsi birim) |
+| **Birim** | Metre (gerçek ölçek) |
+| **Eksen** | **Y-yukarı** (glTF standardı). **Ön yön −Z**, arka +Z, sağ/sol ±X |
+| Zemin | Lastik altı **y = −0,211** (model yerde durmuyor, orijin y=0'da) |
+| Orijin | Yaklaşık dingil mesafesinin ortası (z ≈ 0,03), zemin değil |
+
+**Bounding box (glTF koordinatları):** x −1,041…1,041 · y −0,211…1,300 · z −2,370…2,689.
+
+| Ölçü | Model | Gerçek W140 S320L | Not |
+|---|---:|---:|---|
+| Uzunluk (Z) | **5,06** | 5,21 | Anten ve plaka tutucu dahil |
+| Genişlik (X), aynalarla | 2,08 | 2,0 (aynalarla) | Gövde aynasız ≈ 1,84–1,89 |
+| Yükseklik (zeminden) | **1,51** | 1,49 | Tavan 1,25 + 0,211 = **1,46**; üst 1,30 antenin ucu (`Plastic`) |
+| Dingil mesafesi | **3,05** (z −1,50 ↔ +1,55) | 3,14 | |
+| Tekerlek merkezi iz genişliği | **1,53** (x ±0,765) | ≈1,6 | |
+| Lastik | yarıçap **0,34**, genişlik **0,251**, hub yüksekliği y=0,13 | | |
+
+Render'larda plaka **"S MB600"**: model aslında **S600 (W140, 1995 sonrası ön/arka)** görünümünde, S320L'ye çok yakın gövde. Fark: farlar ve izler S600/S500 ile aynı; S320L ayrımı yalnızca rozet ve motor.
+
+### 10.2 Parçalar (en büyük 15 mesh)
+
+| # | Mesh | Materyal | Üçgen | Vertex | Ada sayısı | Oyunda |
+|--:|---|---|---:|---:|---:|---|
+| 1 | `Object_17` | `Paint` (gövde kabuğu) | **33.786** | 20.877 | 182 | **Gerekli** (boyalı gövde) |
+| 2 | `Object_25` | `Interiors` | 9.846 | 9.388 | 769 | **Görünmez**, sil |
+| 3 | `Object_27` | `material` (sağ jantlar, x>0) | 9.588 | 7.728 | 448 | Jant (yeniden inşa) |
+| 4 | `Object_28` | `material` (sol jantlar, x<0) | 9.588 | 7.723 | 447 | Jant (yeniden inşa) |
+| 5 | `Object_7` | `Chrome` (ızgara, çerçeveler) | 8.898 | 6.480 | 162 | Sadeleştir |
+| 6 | `Object_30` | `Tire` (4 lastik) | 5.712 | 3.120 | 4 | Yeniden inşa |
+| 7 | `Object_18` | `Plastic` (siyah trim, tampon alt, anten) | 5.606 | 4.055 | 111 | Sadeleştir |
+| 8 | `Object_21` | `Rubber` (cam contası, sileceğin parçaları) | 4.540 | 3.502 | 92 | Çok sadeleştir veya sil |
+| 9 | `Object_15` | `Headlights` (far içi) | 3.464 | 2.692 | 78 | Basit panel |
+| 10 | `Object_22` | `Taillights` | 2.660 | 2.148 | 88 | Basit panel |
+| 11 | `Object_23` | `Window_Glass` | 1.874 | 1.123 | 8 | Düz paneller (≈140 tri) |
+| 12 | `Object_11` | `Glass_Inner_Taillights` | 1.760 | 1.400 | 48 | Sil (üst katman) |
+| 13 | `Object_9` | `Glass_Headlights` | 1.468 | 1.056 | 14 | Sil (üst katman) |
+| 14 | `Object_10` | `Glass_Inner_Headlights` | 1.468 | 1.132 | 34 | Sil |
+| 15 | `Object_24` | `Badges_Wheel` (göbek kapağı) | 1.060 | 860 | 64 | Sil |
+
+Kalan küçük mesh'ler: `Nameplate` 1.032 (yıldız amblemleri), `Black` 1.016, `Badges_Body_01` 962, `Chassis` 905, `Glass_Taillights_Red` 744, `Glass_Taillights_Clear` 576, `Rotor` 512, `Badges_Body_02` 385, `Glass_Taillights_Amber` 278, `Plastic2` 168, `Chrome_Mirror` 164, `Reverselights` 164, `Plastic_Rim` 160, `Badges_Interior` 24.
+
+### 10.3 Ayrı mı? Merkezler? Dönebilir mi?
+
+| Soru | Cevap |
+|---|---|
+| **Tekerlekler ayrı obje mi?** | **Hayır.** Materyal başına birleştirilmiş. Ancak geometri olarak 4 net ada: `Tire` meshinde 4 ada (780 tri/adet), jantlar `Object_27` (sağ iki jant) ve `Object_28` (sol iki jant) içinde, her biri birkaç ada (örn. 1.547 + 400 + 265 tri). Koordinatla ayrıştırılabilir: merkez ve yarıçaptan kesin. |
+| **Tekerlek merkezleri** | Hub y=**0,13**; sağ/sol x=**±0,765** (jant yüzü ±0,85…0,87); ön **z=−1,50**, arka **z=+1,55** |
+| **Dönebilir mi?** | Evet: tekerlekler X ekseni etrafında eş eksenli ve simetrik (ada boyutları ve konumları birebir). Ayrılıp hub orijinli parçaya çevrilirse oyundaki `wheelContainer → wheelCylinder` düzenine oturur. Ön/arka z farkı (0,05) önemsiz. Animasyon/skin yok. |
+| Gövde | `Paint` tek mesh (kaporta, kapılar, bagaj, çamurluklar, aynaların kabuğu dahil) |
+| Camlar | `Window_Glass` (8 ada: ön, arka, yan camlar), alfa **BLEND**; ayrıca far/stop için 3+4 ayrı cam katmanı |
+| Farlar | `Headlights` (iç yapı) + `Glass_Headlights` + `Glass_Inner_Headlights`. Merkez `x ±0,49…0,64`, `y≈0,45`, `z≈−2,12` |
+| Stop lambaları | `Taillights` + `Glass_Taillights_Red` (stop) + `Glass_Inner_Taillights` + `Glass_Taillights_Clear`; merkez `x ±0,63`, `y≈0,61`, `z≈2,51` |
+| Geri vites | `Reverselights` (`x ±0,64`, `y≈0,49`, `z≈2,59`) |
+| Sinyaller | **Arka:** `Glass_Taillights_Amber` (`x ±0,67`, `y≈0,65`, `z≈2,54`). **Ön sinyal ayrı değil**, far dokusunun içinde |
+| İç mekan | `Interiors` (koltuk, direksiyon, göstergeler) 9.846 üçgen + `Badges_Interior` |
+| Motor | **Yok.** Modellenmemiş |
+| Alt şasi | `Chassis` (905 tri; 271'lik tek parça taban plakası, y≈0,05, 4,7 m) |
+| Egzoz | **Yok** (arka görünümde egzoz borusu görülmüyor): çift arka egzoz sizin kararınız olduğu için **eklenecek** |
+
+**Oyunda görünmeyecek:** `Interiors` (9.846), `Chassis` (905), `Rotor` (512), `Badges_*` (1.060 + 962 + 385 + 24), `Nameplate` (1.032), `Plastic_Rim` (160), üst cam katmanları (`Glass_Headlights`, `Glass_Inner_*`, `Glass_Taillights_Clear`: ≈ 5.270). Doğrudan silinebilecek: **≈ 20.000 üçgen (%18)**.
+
+### 10.4 Materyal ve texture
+
+| Özet | Değer |
+|---|---|
+| Materyal | 28: PBR (metalik/pürüzlülük), 7 tanesi alfa **BLEND** (camlar) |
+| Texture | 32 PNG gömülü, toplam **5,27 MB** |
+| Çözünürlük | 1024² × 6 · 512² × 18 · 256² × 8 |
+| En büyük | `Tire` base 1,45 MB, `Tire` normal 0,98 MB, `Tire` MR 0,33 MB; `Paint`/`Chrome` base 0,21 MB (ortak), MR 0,21 MB |
+| Paint | taban rengi (0,10, 0,10, 0,10) yani zaten çok koyu (siyah), metalik 0,84, `specularFactor 0.1` |
+
+Oyunda hiçbiri kullanılmayacak: `MeshDefaultMaterial` yalnızca ad üzerinden renk/palette kuruyor (Bölüm 5.1). Texture'lar silinir; renkler palette hücrelerine atanır.
+
+### 10.5 Lisans (modeldeki metadata)
+
+Ayrı lisans dosyası yok; GLB `asset.extras` alanında yazanlar:
+
+| Alan | Değer |
+|---|---|
+| Başlık | Mercedes S-Class |
+| Yazar | **dmas** (https://sketchfab.com/dmastero) |
+| Lisans | **CC-BY-4.0** (http://creativecommons.org/licenses/by/4.0/) |
+| Kaynak | https://sketchfab.com/3d-models/mercedes-s-class-581e6ce2ba48448a96dc3512d9385bc2 |
+
+**Ne zorunlu (CC BY 4.0):** yazar adı, başlık, kaynak bağlantısı, lisans bağlantısı ve **değişiklik yapıldığının belirtilmesi** (sadeleştirme, yeniden boyama, ölçek). Ticari kullanım ve türev serbest; ek kısıtlama koyulamaz.
+
+**Önerim:** "Sahne Arkası" sekmesine, `readme.md`'ye ve `resources/references/w140/` içine bir atıf notu ekle. Örnek: *"Araç modeli: 'Mercedes S-Class' — dmas, CC BY 4.0, Sketchfab; sadeleştirilip yeniden boyandı."*
+
+**Riskler (hukuki değerlendirme değildir):**
+- Dosya adı `mer_sclass_95.obj` bir **oyun içi araç dosyası** izlenimi veriyor; lisansı yükleyen kişi CC-BY olarak beyan etmiş, ben **kaynağının gerçekten ona ait olduğunu doğrulayamam**.
+- Model Mercedes yıldız amblemi ve gerçek model plakası taşıyor (`Nameplate`, `Badges_*`). Marka işareti kişisel portfolyo için tipik olarak sorun yaratmaz, ancak ticari kullanıma çıkacaksan düşün; amblemi sadeleştirmede atmak riski azaltır.
+
+### 10.6 Hızlı decimate denemesi ve render'lar
+
+Geçici kopyada (repo dışı) yaptım: iç mekan, alt şasi, disk, rozetler, amblem ve üst cam katmanları silindi; kalan her mesh için planar dissolve (4°) sonra collapse decimate; her materyal düz palette rengine atandı (gövde `#1c1c21`, krom `#c8c2c1`, trim `#4a413c`, cam `#3dbbe7`, far `#fff2e8`, stop `#c30e3a`, lastik `#1e0603`, jant `#c8c2c1`).
+
+| | Önce | Sonra (deneme) |
+|---|---:|---:|
+| Üçgen | 108.408 | **4.422** (gövde `Paint` 1.900, lastikler 479, jantlar 640, krom 450, plastik 300, cam 140, diğer ≈ 510) |
+| Dosya (ham GLB, düz renk, tekerlekler gövdeyle birleşik) | 9,48 MB | **204.568 bayt** |
+| Texture | 32 PNG (5,27 MB) | 0 |
+
+**Render dosyaları** (`resources/references/w140/renders/`, Blender Workbench, 1200 × 700):
+
+| Görünüm | Önce | Sonra |
+|---|---|---|
+| Yan | [before_side.png](resources/references/w140/renders/before_side.png) | [after_side.png](resources/references/w140/renders/after_side.png) |
+| Ön | [before_front.png](resources/references/w140/renders/before_front.png) | [after_front.png](resources/references/w140/renders/after_front.png) |
+| Arka | [before_rear.png](resources/references/w140/renders/before_rear.png) | [after_rear.png](resources/references/w140/renders/after_rear.png) |
+| 3/4 ön | [before_three_quarter.png](resources/references/w140/renders/before_three_quarter.png) | [after_three_quarter.png](resources/references/w140/renders/after_three_quarter.png) |
+
+**Gözlem (render'lardan):**
+- **Silüet çok iyi korunuyor:** yan profil, tavan çizgisi, kaput, bagaj, ızgara ve far/stop yerleşimi tanınıyor.
+- **Kötü giden:** tekerlekler sekizgen, jant deseni kayıp (yeniden inşa şart); yan panellerde kapı çizgileri dalgalı, bazı kaporta yüzeyleri "erimiş" görünüyor; sinyal ve far içi detay bulanık.
+- Cam rengi `#3dbbe7` fazla parlak; daha koyu mavi-gri (yeni palette hücresi) gerekir.
+- Siyah boyada yüzey hataları çoğunlukla gizleniyor; ama siyahta okunabilirlik için palette'in açık detayları şart (Bölüm 5.3).
+
+### 10.7 Seçenek karşılaştırması
+
+**Hedef ölçüler (kararın):** 3,23 × 1,45 × 1,00 (U × G × Y). Modele uygulanacak eksen ölçekleri: uzunluk **×0,640** (3,23/5,05), genişlik **×0,767** (1,45/1,89), yükseklik **×0,685** (1,00/1,46). Sonuçlar: dingil mesafesi 3,05 × 0,640 = **1,95** ve iz 1,53 × 0,767 = **1,17**; yani Bölüm 6.2'deki 1,95 / 1,16 değerlerine **birebir** oturuyor. Modelin eksenleri oyuna çevrilmeli: model ön −Z → oyun ön **+X** (Y ekseni etrafında −90° dönüş).
+
+| | **A) Sadeleştirme** | **B) Yeniden inşa (bpy)** |
+|---|---|---|
+| Yöntem | Modelden sil → decimate → palette ata; tekerlek/ışık/camı yeniden kur | Modeli yalnızca ölçü/silüet referansı yap; profil + enine kesitlerden low-poly gövde üret |
+| Görsel sonuç | Gerçek W140 silüetine çok yakın; panel çizgileri bozuk, yüzeyler biraz "eriyik" | Temiz, düz yüzeyli, oyunun diline uygun; W140'a benzerlik elde edilen profile bağlı |
+| Üçgen (benzersiz / çizilen) | **≈ 3.500–3.700 / ≈ 4.400** (denemede toplam 4.422 + 4 tekerlek ayrı sayımı) | ≈ 2.500–3.200 / ≈ 3.800–4.200 |
+| Dosya (ham → Draco) | ≈ 150–205 KB → **≈ 30–45 KB** (`default.glb` 237 KB → 34,8 KB ile karşılaştır) | ≈ 120–170 KB → ≈ 25–35 KB |
+| Çaba | **Düşük-orta** (betik 1 tur; denemenin %70'i hazır) | **Yüksek** (şekil iterasyonu, çok sayıda render turu) |
+| Hız (tekrar üretilebilirlik) | Yüksek: aynı betik yeniden çalışır | Orta |
+| Başlıca riskler | (1) decimate'ten kalan düzensiz normal/üçgenler, ince parçaların (silecek, anten) bozulması; (2) UV'lerin yeniden üretilmesi gerek (gradyan/alev/palette); (3) ön sinyal ayrı değil, yeni üretilmeli; (4) **lisans/kaynak belirsizliği** (CC-BY atfı zorunlu, orijinin oyun dosyası olma ihtimali); (5) çamurluk kemerleri 0,34 yarıçaplı tekerlek için kesilmiş, büyütülmüş tekerlek çakışır | (1) benzerlik riski; (2) gövdede kemer, kaput kavisi ve "yüzgeç" gibi W140 karakteri kaybedilebilir; (3) çok iterasyon; (4) modele bakarak yapılırsa hukuken yine türev sayılabilir, atıf yine önerilir |
+
+**Tekerlek çakışması (A için en önemli teknik risk):** Modelin çamurluk kemeri yarıçapı yaklaşık 0,34 × 0,685 = 0,23 (ölçek sonrası). Önceki karar olan görsel yarıçap **0,35** bu kemere sığmaz; ya kemerler boolean ile büyütülüp gövde yükseltilmeli ya da tekerlek **≈ 0,28 görsel / 0,27 fizik** yapılmalı. Bu seçimi sen vermelisin: 0,28 için süspansiyon dinlenme boyları yaklaşık 0,60 / 0,83 / 1,10 olur (Bölüm 6.2'deki 0,73 / 1,02 / 1,35 yerine).
+
+### 10.8 Önerim: **A**, tekerlek/ışık/camlar yeniden inşa ederek
+
+1. **Gövde:** `Paint` → planar dissolve + collapse, ≈ 2.000–2.400 üçgen; `bodyPainted` olarak adlandır; UV0 (V = yükseklik) ve UV1 (yan projeksiyon) **koordinattan hesaplanır**, açma gerekmez.
+2. **Krom + plastik + kauçuk + siyah:** tek `common` mesh'inde birleştir, ≈ 700–900 üçgen; palette hücreleri (krom `#c8c2c1`, trim `#4a413c`/`#575a5e`).
+3. **Camlar:** `Window_Glass` düz paneller (≈ 140 üçgen); opak koyu mavi-gri palette hücresi.
+4. **Farlar:** modeldeki far adalarının sınırlarına oturan 2 basit panel; `headlights` (`emissiveWhiteRadialGradient`).
+5. **Stop, geri vites, sinyal:** `Glass_Taillights_Red` / `Reverselights` / `Glass_Taillights_Amber` adalarını ayrı küçük paneller yap: `stopLights`, `backLights`, `blinkerLeft/Right`. **Ön sinyalleri** far köşelerine yeni küçük paneller olarak ekle.
+6. **Tekerlek:** sıfırdan, 12–16 kenarlı lastik + jant (yaklaşık 250–300 üçgen), hub orijinli `wheelContainer → wheelCylinder → wheel`; jant yüzü −Z'ye bakar.
+7. **Egzoz:** arka tampon altında **çift** küçük silindir; boost izi noktaları da buraya (≈ `(−1,6, −0,3, ±0,45)`).
+8. **Atıf:** Sahne Arkası ve readme.
+9. **Palette:** son 8 boş hücre (24–31) yeterli. İhtiyaç: koyu cam (≈ `#22313b`), gümüş jant (≈ `#aeb2b8`), koyu lastik (`#1a1a1c`), koyu kırmızı stop (≈ `#7a0a1c`), "obsidyen" gövde için ayrı palette gerekmez (gradyan paint materyali). Beyaz far (`#fff2e8`), krom (`#c8c2c1`), amber (`#e4a90c`) zaten var.
+10. **Boya:** "Obsidyen Siyah" varsayılan yeni boya: gradyan yaklaşık üst `#34343b` → alt `#0c0c0f`; `Achievements.js`/`VisualVehicle.js` tarafında varsayılan boya olarak tanımlanacak (kod aşaması).
+11. **Konami:** `KonamiCode.js:54-57` listesi `['vehicle/oldSchool.glb', 'vehicle/w140.glb']` olacak (varsayılan oyun zaten `w140`, ilk Konami oldSchool'a, ikinci W140'a döner).
+
+**Neden A:** W140'ın tanınmasını sağlayan silüet (uzun gövde, düz bagaj, geniş ızgara, dik arka cam) modelden hazır geliyor; bu, referans fotoğrafsız B'ye göre en büyük risk azaltıcı. Denemede 4.400 üçgen zaten bütçe içinde. B'ye geçiş noktası: gövde decimate sonrası gölgeleme çok kötü çıkarsa, kaporta için "silüet örnekleme" yöntemiyle (modelden enine kesit alıp loft) B yapılır; bu da A ile aynı referansı kullanır.
+
+**Karar bekleyenler:** (1) tekerlek yarıçapı 0,28 mi 0,35 mi (arch boolean ister); (2) yıldız amblemi gövdede kalsın mı (kapak/ızgara, `Nameplate`); (3) ayna genişliği (ölçek sonrası aynalarla 1,57, gövde 1,45): aynalar küçültülsün mü.
