@@ -10,14 +10,14 @@
  * - Doku: tek atlas, 256 px WebP, hafif stilize (PBR haritaları atılır).
  * - Animasyon: kök hareketi (kalça x/z) silinir, döngü kesiti (loop.start..loop.end) 30 fps'e örneklenir, son kare ilk kareye
  *   yumuşakça karıştırılarak dikişsiz döngü yapılır. Bekleme pozu (kollar yana açık) otomatik seçilir (extras.idleTime).
- * - Çıktı: static/props/monkey.glb ve monkey-compressed.glb (Draco; animasyon/skin dokunulmaz).
+ * - Çıktı: static/props/monkey.glb (Draco yok: skin indeksleri nicemlenirse bozulur; model zaten alana yaklaşınca yüklenir).
  */
 import { readFileSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Document, NodeIO } from '@gltf-transform/core'
 import { ALL_EXTENSIONS, EXTTextureWebP } from '@gltf-transform/extensions'
-import { draco, weld, simplify } from '@gltf-transform/functions'
+import { weld, simplify } from '@gltf-transform/functions'
 import { MeshoptSimplifier } from '../../node_modules/@gltf-transform/cli/node_modules/meshoptimizer/index.module.js'
 import draco3d from 'draco3dgltf'
 import sharp from 'sharp'
@@ -314,7 +314,5 @@ meshNode.setExtras({ idleTime, duration: times[frameCount - 1], bones: newJoints
 const outDir = path.join(root, 'static/props')
 mkdirSync(outDir, { recursive: true })
 await io.write(path.join(outDir, 'monkey.glb'), doc)
-await doc.transform(draco({ method: 'edgebreaker', quantizationVolume: 'mesh', quantizePosition: 14, quantizeNormal: 8, quantizeTexcoord: 12, quantizeColor: 8, quantizeGeneric: 12 }))
-await io.write(path.join(outDir, 'monkey-compressed.glb'), doc)
 
 console.log(JSON.stringify({ kemik: newJoints.length, ücgenÖnce: trianglesBefore, ücgenSonra: finalTriangles, ölçek: scale, süre: times[frameCount - 1], kare: frameCount, bekleme: { zaman: idleTime, kare: bestFrame } }, null, 1))

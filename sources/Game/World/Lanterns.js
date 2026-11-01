@@ -1,5 +1,7 @@
 import { Game } from '../Game.js'
 import { InstancedGroup } from '../InstancedGroup.js'
+import * as THREE from 'three/webgpu'
+import horonConfig from '../../data/horon.js'
 
 export class Lanterns
 {
@@ -9,6 +11,16 @@ export class Lanterns
 
         // Base and references
         const [ base, references ] = InstancedGroup.getBaseAndReferencesFromInstances(this.game.resources.lanternsModel.scene.children)
+
+        // Horon alanı fenerleri (sources/data/horon.js > lanterns): aynı fener modelinin ek yerleşimleri
+        for(const lantern of horonConfig.lanterns)
+        {
+            const extra = references[0].clone()
+            extra.position.set(lantern.x, references[0].position.y, lantern.z)
+            extra.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), lantern.rotation ?? 0)
+            extra.needsUpdate = true
+            references.push(extra)
+        }
 
         // Setup base
         for(const child of base.children)

@@ -11,8 +11,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new', args: ['--enable-unsafe-webgpu', '--ignore-gpu-blocklist', '--use-angle=metal'] })
 const page = await browser.newPage()
 const errors = []
-page.on('pageerror', e => errors.push(e.message.slice(0, 300)))
-page.on('console', m => { if(m.type() === 'error') errors.push(m.text().slice(0, 300)) })
+page.on('pageerror', e => errors.push((e.stack || e.message).slice(0, 500)))
+page.on('console', m => { if(m.type() === 'error' || m.text().startsWith('HORON')) errors.push(m.text().slice(0, 200) + ' @ ' + JSON.stringify(m.stackTrace().slice(0, 3))) })
 await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: +(process.env.DSF || 1) })
 
 await page.goto(`http://127.0.0.1:${PORT}/${process.env.QUALITY ? '#' + process.env.QUALITY : ''}`, { waitUntil: 'load' })
@@ -88,6 +88,26 @@ for(const name of SCENARIOS)
         await sleep(2500)
         info.boardAfterEsc = await page.evaluate(() => window.game.world.projectBoard.viewer.state)
         await page.screenshot({ path: `${OUT}/board_closed.png` })
+    }
+    else if(name === 'horon')
+    {
+        await page.evaluate(() =>
+        {
+            const base = window.game.respawns.getByName('landing')
+            const position = base.position.clone()
+            position.set(-59.5, 4, -43.4)
+            window.game.respawns.items.set('tmp', { name: 'tmp', position, rotation: Math.PI })
+            window.game.player.respawn('tmp')
+        })
+        await sleep(9000)
+        await page.screenshot({ path: `${OUT}/horon_idle.png` })
+        info.horonLoaded = await page.evaluate(() => !!window.game.world.horon.loaded)
+        await page.evaluate(() => window.game.world.horon.setDancing(true))
+        await sleep(2500)
+        await page.screenshot({ path: `${OUT}/horon_dance1.png` })
+        await sleep(1700)
+        await page.screenshot({ path: `${OUT}/horon_dance2.png` })
+        info.horonStats = await page.evaluate(() => { const r = window.game.rendering.renderer; r.info.reset?.(); return null })
     }
     else if(name === 'projects')
     {

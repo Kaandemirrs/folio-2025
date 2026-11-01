@@ -158,7 +158,7 @@ export class Game
                 [ 'cherryTreesVisualModel',                `cherryTrees/cherryTreesVisual${compressedModelSuffix}.glb${cb}`,                     'gltf' ],
                 [ 'cherryTreesReferencesModel',            `cherryTrees/cherryTreesReferences${compressedModelSuffix}.glb${cb}`,                 'gltf' ],
                 [ 'sceneryModel',                          `scenery/scenery${compressedModelSuffix}.glb${cb}`,                                   'gltf' ],
-                ...propsConfig.props.map(prop => [ `prop_${prop.name}`, `props/${prop.name}${compressedModelSuffix}.glb${cb}`, 'gltf' ]),
+                ...propsConfig.props.filter(prop => !prop.lazy).map(prop => [ `prop_${prop.name}`, `props/${prop.name}${compressedModelSuffix}.glb${cb}`, 'gltf' ]),
                 [ 'areasModel',                            `areas/areas${compressedModelSuffix}.glb${cb}`,                                       'gltf' ],
                 [ 'poleLightsModel',                       `poleLights/poleLights${compressedModelSuffix}.glb${cb}`,                             'gltf' ],
                 [ 'tornadoPathReferencesModel',            `tornado/tornadoPathReferences${compressedModelSuffix}.glb${cb}`,                     'gltf' ],

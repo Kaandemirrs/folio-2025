@@ -581,6 +581,17 @@
                     "texts": [
                         "Sosyal"
                     ]
+                },
+                {
+                    "id": "horon",
+                    "note": "Müzik alanı: horon maymunlarının önünde",
+                    "x": -62.2,
+                    "z": -47,
+                    "facingDeg": 20,
+                    "variant": "signPlank",
+                    "texts": [
+                        "Horon"
+                    ]
                 }
             ],
             "attribution": {
@@ -610,7 +621,7 @@
                 "texture": 256,
                 "textureBlur": 0.6,
                 "textureSaturation": 1.25,
-                "textureBrightness": 1.12,
+                "textureBrightness": 1.35,
                 "loop": {
                     "start": 0,
                     "end": 13.0667,
@@ -625,7 +636,8 @@
                 "license": "CC BY 4.0",
                 "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
                 "changes": "parmak kemikleri birleştirildi (58 → 22 kemik), üçgen sayısı ≈3.900'e indirildi, doku 256 px'e küçültülüp stilize edildi, kök hareketi silinip animasyon döngüye alındı"
-            }
+            },
+            "lazy": true
         }
     ]
 }
