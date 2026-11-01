@@ -3,6 +3,13 @@ import { Game } from './Game.js'
 
 export class Respawns
 {
+    // GLB değişmeden filtrelenen respawn noktaları (alan adı, küçük harfle)
+    static EXCLUDED = new Set([
+        'lab', 'circuit', 'altar', 'cookie', 'toilet', 'timemachine', 'behindthescene', // kaldırılan alanlar
+        'onlyfans', // kaldırılan OnlyFans şakası (sosyal alan)
+        'test',
+    ])
+
     constructor(defaultName = 'landing')
     {
         this.game = Game.getInstance()
@@ -17,6 +24,10 @@ export class Respawns
 
         for(const child of this.game.resources.respawnsReferencesModel.scene.children)
         {
+            // Kaldırılan alanların (ve test noktasının) respawn'ları boş arsaya ışınlamasın
+            if(Respawns.EXCLUDED.has(child.name.replace(/^respawn/i, '').toLowerCase()))
+                continue
+
             child.rotation.reorder('YXZ')
 
             let name = child.name.replace(/^respawn(.+)$/i, '$1')
@@ -44,7 +55,7 @@ export class Respawns
 
     getDefault()
     {
-        return this.items.get(this.defaultName)
+        return this.items.get(this.defaultName) ?? this.items.get('landing') // VITE_PLAYER_SPAWN kaldırılan bir alana işaret ediyorsa
     }
 
     getClosest(position)
