@@ -8,12 +8,26 @@ const presets = {
     dawn:  { revealColor: new THREE.Color('#ff9d9d'), revealIntensity: 4.85, electricField: 0.25, temperature: 0, lightColor: new THREE.Color('#ffa882'), lightIntensity: 1.2, shadowColor: new THREE.Color('#db004f'), fogColorA: new THREE.Color('#f885ff'), fogColorB: new THREE.Color('#ff7d24'), fogNearRatio: 0.3, fogFarRatio: 1.25 },
 }
 
+// Hep gündüz: ışık, renk, sis ve güneş açısı bu sabit anın anahtar karelerinden okunur (day ön ayarı, gölgeler
+// harflerin ve yapıların hacmini gösterecek kadar uzun). Gerçek ilerleme (absoluteProgress) akmaya devam eder:
+// hava durumu gürültüsü, kar birikimi ve "fullDay" süresi ona bağlı. VITE_DAY_CYCLE_PROGRESS doluysa eski davranış:
+// ilerleme o değere sabitlenir ve gece/gündüz o ana göre çalışır.
+const DAY_PROGRESS = 0.07
+const alwaysDay = !import.meta.env.VITE_DAY_CYCLE_PROGRESS
+
 export class DayCycles extends Cycles
 {
     constructor()
     {
         const forcedProgress = import.meta.env.VITE_DAY_CYCLE_PROGRESS ? parseFloat(import.meta.env.VITE_DAY_CYCLE_PROGRESS) : null
         super('🕜 Day Cycles', 4 * 60, forcedProgress, false)
+
+        this.alwaysDay = alwaysDay
+    }
+
+    resolveProgress(progress)
+    {
+        return alwaysDay ? DAY_PROGRESS : progress
     }
 
     get presets()
@@ -63,6 +77,15 @@ export class DayCycles extends Cycles
 
     getIntervalDescriptions()
     {
+        // Gece aralıkları tanımlı kalır (Audio, Map, PoleLights okuyor) ama hiç tetiklenmez
+        if(alwaysDay)
+        {
+            return [
+                { name: 'night', start: 0, end: 0 },
+                { name: 'deepNight', start: 0, end: 0 },
+            ]
+        }
+
         return [
             { name: 'night', start: 0.25, end: 0.7 },
             { name: 'deepNight', start: 0.35, end: 0.6 },

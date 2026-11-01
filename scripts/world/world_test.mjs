@@ -42,6 +42,33 @@ for(const name of SCENARIOS)
         await page.screenshot({ path: `${OUT}/landing_flag.png` })
         info.landing = await page.evaluate(() => ({ calls: window.game.rendering.renderer.info.render.calls, triangles: window.game.rendering.renderer.info.render.triangles }))
     }
+    else if(name === 'day')
+    {
+        // Gündüz adayları: her ilerleme için üç nokta
+        for(const progress of (process.env.DAYS || '0.02,0.07,0.12,0.95').split(',').map(Number))
+        {
+            await weather(0.15, progress)
+            for(const spot of [ 'landing', 'projects', 'bakkal' ])
+            {
+                await page.evaluate((spot) => window.game.player.respawn(spot), spot)
+                await sleep(4500)
+                await page.screenshot({ path: `${OUT}/day_${progress}_${spot}.png` })
+            }
+        }
+    }
+    else if(name === 'natural')
+    {
+        // Gerçek saatle: gün döngüsü sabit gündüz kalıyor mu, hava durumu akıyor mu?
+        await page.evaluate(() => window.game.player.respawn('landing'))
+        await sleep(4000)
+        info.natural = []
+        for(let i = 0; i < 3; i++)
+        {
+            info.natural.push(await page.evaluate(() => ({ progress: +window.game.dayCycles.progress.toFixed(3), absolute: +window.game.dayCycles.absoluteProgress.toFixed(5), night: window.game.dayCycles.intervalEvents.get('night').inInterval, lightIntensity: +window.game.dayCycles.properties.lightIntensity.value.toFixed(2), wind: +window.game.weather.wind.value.toFixed(3), humidity: +window.game.weather.humidity.value.toFixed(3) })))
+            await sleep(3000)
+        }
+        await page.screenshot({ path: `${OUT}/natural_landing.png` })
+    }
     else if(name === 'flagwind')
     {
         await page.evaluate(() => window.game.player.respawn('controls'))

@@ -21,6 +21,20 @@ export class Lanterns
 
         // Update materials 
         this.game.materials.updateObject(base)
+
+        // Hep gündüz: fener camları gün ışığında parlamaz, sönük amber cam gibi durur
+        if(this.game.dayCycles.alwaysDay)
+        {
+            const glowing = this.game.materials.getFromName('emissiveOrangeRadialGradient')
+            this.game.materials.createEmissiveGradient('emissiveOrangeRadialGradientDay', '#ffb878', '#d5572a', 0.55, true)
+            const dim = this.game.materials.getFromName('emissiveOrangeRadialGradientDay')
+
+            base.traverse((child) =>
+            {
+                if(child.isMesh && child.material === glowing)
+                    child.material = dim
+            })
+        }
         
         // Objects
         this.objects = []

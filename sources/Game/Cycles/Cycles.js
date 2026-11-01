@@ -79,6 +79,12 @@ export class Cycles
         return []
     }
 
+    // Anahtar karelerin (ışık, renk…) okuduğu ilerleme. Varsayılan: gerçek ilerleme
+    resolveProgress(progress)
+    {
+        return progress
+    }
+
     setKeyframes()
     {
         const keyframesDescriptions = this.getKeyframesDescriptions()
@@ -195,7 +201,7 @@ export class Cycles
         })
 
         // Progress
-        this.progress = newProgress % 1
+        this.progress = this.resolveProgress(newProgress % 1)
 
         // Progress override
         if(this.override.strength > 0 && this.override.progress !== null)

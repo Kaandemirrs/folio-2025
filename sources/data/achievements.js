@@ -80,7 +80,7 @@ export default
     [
         'fullDay',
         'Yapacak işin yok mu?',
-        'Tam bir gün döngüsünü kesintisiz burada geçir.',
+        'Tam 4 dakikayı kesintisiz burada geçir.',
         1
     ],
     [

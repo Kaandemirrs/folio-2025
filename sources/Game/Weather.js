@@ -4,6 +4,8 @@ import { lerp, remapClamp } from './utilities/maths.js'
 
 export class Weather
 {
+    static ALWAYS_DAY_VALUES = { temperature: -2.5, electricField: 0.5 }
+
     constructor()
     {
         this.game = Game.getInstance()
@@ -28,7 +30,7 @@ export class Weather
             () =>
             {
                 const yearValue = this.game.yearCycles.properties.temperature.value
-                const dayValue = this.game.dayCycles.properties.temperature.value
+                const dayValue = this.getDayValue('temperature')
 
                 const frequency = 0.4
                 const amplitude = 7.5
@@ -62,7 +64,7 @@ export class Weather
             1,
             () =>
             {
-                const dayValue = this.game.dayCycles.properties.electricField.value
+                const dayValue = this.getDayValue('electricField')
                 
                 const frequency = 0.53
                 const amplitude = 1
@@ -134,6 +136,16 @@ export class Weather
     noise(x)
     {
         return Math.sin(x) * Math.sin(x * 1.678) * Math.sin(x * 2.345)
+    }
+
+    // Gün döngüsünün hava durumuna katkısı. Hep gündüz modunda ışık sabit gündüzde kalır ama kar (soğuk) ve şimşek
+    // (elektrik alanı) ihtimali yalnızca gece/alacakaranlıkta açıldığı için eski döngünün ortalamasına yakın sabit değerler kullanılır.
+    getDayValue(key)
+    {
+        if(this.game.dayCycles.alwaysDay)
+            return Weather.ALWAYS_DAY_VALUES[key]
+
+        return this.game.dayCycles.properties[key].value
     }
 
     addProperty(name, min, max, get)
