@@ -2,11 +2,10 @@ import propsConfig from '../../scripts/props/props.config.json'
 
 // "Müzik" alanı: horon tepen maymunlar (World/Horon.js). Konum, diziliş ve müzik yolu buradan değiştirilir.
 export default {
-    // Horon müziği. Telifli kayıt repoya girmez (.gitignore): geliştirmede vite.config.js bunu
-    // resources/references/examples/ altındaki Zakara Horon Havası dosyasından (ya da HORON_MUSIC_FILE ortam değişkeninden)
-    // '/horon-dev.mp3' adresinde sunar. Production'da 'sounds/horon/horon.mp3' aranır; dosya yoksa maymunlar sessizce dans eder.
-    // Telifsiz kayıt bulunca: dosyayı static/sounds/horon/horon.mp3 olarak koy ya da production yolunu burada değiştir.
-    musicPath: import.meta.env.DEV ? '/horon-dev.mp3' : 'sounds/horon/horon.mp3',
+    // Horon müziği: static/sounds/horon/horon.mp3 (telif kontrolü yapıldı, repoda). Geliştirmede vite.config.js aynı kaydı
+    // resources/references/examples altındaki Zakara dosyası varsa oradan sunar. Başka kayıt için dosyayı değiştirmek ya da yolu burada vermek yeter;
+    // production'da dosya bulunamazsa maymunlar sessizce dans eder.
+    musicPath: 'sounds/horon/horon.mp3',
     musicName: 'Zakara Horon Havası (Karadeniz Horonu)',
     musicVolume: 0.7,
     lapRadius: 28, // "Horona katıl" başarımı: bu yarıçap içinde horon çalarken maymunların etrafında tam tur

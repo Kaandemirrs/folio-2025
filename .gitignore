@@ -9,5 +9,3 @@ scripts/props/.work
 .venv-bpy
 
 scripts/world/.work
-# Telifli müzik: repoya girmez (sources/data/horon.js > musicPath)
-resources/references/examples/*.mp3
