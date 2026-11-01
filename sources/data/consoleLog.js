@@ -1,4 +1,5 @@
 import * as THREE from 'three/webgpu'
+import contact from './contact.js'
 
 const text = `
 ██╗  ██╗ █████╗  █████╗ ███╗   ██╗    ██████╗ ███████╗███╗   ███╗██╗██████╗
@@ -23,6 +24,7 @@ const text = `
 ╔═ Sosyal ══════════════╗
 ║ GitHub   ⇒ https://github.com/Kaandemirrs
 ║ LinkedIn ⇒ https://www.linkedin.com/in/kaandev/
+║ E-posta  ⇒ ${contact.email}
 ╚═══════════════════════╝
 
 ╔═ Three.js ════════════╗
