@@ -222,6 +222,7 @@ export class Reveal
             this.game.overlay.moveOnTop()
 
             this.game.menu.preopen()
+            this.game.hints.start()
 
             this.game.ticker.events.off('tick', this.update)
         }

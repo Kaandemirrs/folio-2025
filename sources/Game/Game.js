@@ -46,6 +46,7 @@ import { Quality } from './Quality.js'
 import { Menu } from './Menu.js'
 import { Title } from './Title.js'
 import { PreRenderer } from './PreRenderer.js'
+import { Hints } from './Hints.js'
 import { Options } from './Options.js'
 import gsap from 'gsap'
 import { Map } from './Map.js'
@@ -225,6 +226,7 @@ export class Game
         this.title = new Title()
         this.world.step(1)
         this.overlay = new Overlay()
+        this.hints = new Hints()
         mark('worldBuilt')
         setLoad(0.95, 'finishing')
         await nextFrame()

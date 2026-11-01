@@ -65,7 +65,10 @@ if(process.env.CLICK && marks.label)
     // Tıkladıktan sonra 5 sn kare süreleri: ≥ 50 ms kareler ve en uzun kare (shader derleme takılmaları)
     await page.evaluate(() => { window.__frames = []; let last = performance.now(); const f = () => { const n = performance.now(); window.__frames.push(n - last); last = n; requestAnimationFrame(f) }; requestAnimationFrame(f) })
     await page.keyboard.press('Enter')
-    await sleep(6000)
+    await sleep(2500)
+    await page.screenshot({ path: `${PREFIX}_after_click_2s.png` })
+    await sleep(5000)
+    await page.screenshot({ path: `${PREFIX}_after_click_7s.png` })
     hitch = await page.evaluate(() => { const f = window.__frames; return { frames: f.length, over50: f.filter(x => x > 50).length, over100: f.filter(x => x > 100).length, max: Math.round(Math.max(...f)) } })
 }
 let loadMarks = null

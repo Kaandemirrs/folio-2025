@@ -10,6 +10,7 @@ export class Options
         this.setSound()
         this.setQuality()
         this.setRespawn()
+        this.setHints()
         this.setReset()
         this.setRenderer()
     }
@@ -46,6 +47,17 @@ export class Options
         {
             this.game.player.respawn()
             this.game.menu.close()
+        })
+    }
+
+    setHints()
+    {
+        const element = this.element.querySelector('.js-hints-replay')
+
+        element.addEventListener('click', () =>
+        {
+            this.game.menu.close()
+            this.game.hints.restart()
         })
     }
 
