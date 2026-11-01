@@ -123,6 +123,7 @@ export class View
         this.focusPoint.position = this.focusPoint.trackedPosition.clone()
         this.focusPoint.smoothedPosition = this.focusPoint.trackedPosition.clone()
         this.focusPoint.isEased = true
+        this.focusPoint.offset = new THREE.Vector3() // Giriş ekranında adayı kadrajda aşağı kaydırmak için (Intro.layout)
         this.focusPoint.easing = 1
         this.focusPoint.magnet = {}
         this.focusPoint.magnet.active = true
@@ -707,7 +708,7 @@ export class View
         this.spherical.offset.setFromSphericalCoords(this.spherical.radius.current, this.spherical.phi, this.spherical.theta)
 
         // Position
-        this.position.copy(this.focusPoint.smoothedPosition).add(this.spherical.offset)
+        this.position.copy(this.focusPoint.smoothedPosition).add(this.focusPoint.offset).add(this.spherical.offset)
 
         // Default camera position
         this.delta = this.position.clone().sub(this.defaultCamera.position)
@@ -715,7 +716,7 @@ export class View
 
         // Default camera look at and roll
         this.defaultCamera.rotation.set(0, 0, 0)
-        this.defaultCamera.lookAt(this.focusPoint.smoothedPosition)
+        this.defaultCamera.lookAt(this.focusPoint.smoothedPosition.clone().add(this.focusPoint.offset))
 
         this.roll.velocity = - this.roll.value * this.roll.pullStrength * this.game.ticker.deltaScaled
         this.roll.speed += this.roll.velocity

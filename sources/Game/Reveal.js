@@ -3,6 +3,7 @@ import * as THREE from 'three/webgpu'
 import { color, uniform, vec2 } from 'three/tsl'
 import { Game } from './Game.js'
 import gsap from 'gsap'
+import { Intro } from './World/Intro.js'
 
 export class Reveal
 {
@@ -77,13 +78,16 @@ export class Reveal
                 gsap.to(
                     this.game.view.zoom,
                     {
-                        baseRatio: 0.3,
+                        baseRatio: Intro.ZOOM_RATIO,
                         // smoothedRatio: 0.4,
                         ease: 'power1.inOut',
                         duration: 1.25 / speedMultiplier,
                         overwrite: true,
                     }
                 )
+
+                // Ada kadrajda aşağı kayar (üstte yazı için yer)
+                this.game.world.intro.shiftFocus(1.25 / speedMultiplier)
 
                 // Intro loader => Show label and sound button
                 this.game.world.intro.setText()
@@ -178,6 +182,7 @@ export class Reveal
             // View
             this.game.view.focusPoint.isTracking = true
             this.game.view.focusPoint.magnet.active = false
+            this.game.world.intro.releaseFocus(1.75 / speedMultiplier)
 
             // View
             gsap.to(

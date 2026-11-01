@@ -229,7 +229,7 @@ export class Jukeboxes
         this.config.placements.forEach((placement, index) =>
         {
             const isVisible = circleIntersectsPolygon({ x: placement.x, y: placement.z }, 3, polygon)
-            this.notes[index].sprite.visible = isVisible
+            this.notes[index].sprite.visible = isVisible && this.game.reveal.step >= 1 // giriş ekranındaki portre/yazılarla çakışmasın
             if(isVisible)
                 visible.push(index)
         })
