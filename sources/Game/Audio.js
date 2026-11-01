@@ -31,6 +31,19 @@ export class Audio
         this.setAmbiants()
         this.setOneOffs()
 
+        // Başlamadan önce kaydedilen efektleri şimdi yükle (ilk yükleme ≈1,2 MB hafifler)
+        this.groups.forEach((group) =>
+        {
+            for(const item of group.items)
+            {
+                if(item.deferredPreload && !item.loaded)
+                {
+                    item.loaded = true
+                    item.howl.load()
+                }
+            }
+        })
+
         // Play all autoplays that didn't start because not initated
         this.groups.forEach((group, name) =>
         {
@@ -78,7 +91,7 @@ export class Audio
             autoplay: (this.initiated && options.autoplay) ?? false,
             loop: options.loop ?? false,
             volume: options.volume ?? 0.5,
-            preload: options.preload ?? true,
+            preload: this.initiated ? (options.preload ?? true) : false, // başlamadan önce kaydedilenler tıklamadan sonra yüklenir (init)
             onloaderror: () =>
             {
                 console.error(`Audio > Load error > ${options.path}`, options)
@@ -98,7 +111,8 @@ export class Audio
         item.lastPlay = -Infinity
         item.onPlaying = options.onPlaying ?? null
         item.onPlay = options.onPlay ?? null
-        item.loaded = options.preload ?? true
+        item.deferredPreload = !this.initiated && (options.preload ?? true) // Audio.init() yükler
+        item.loaded = this.initiated ? (options.preload ?? true) : false
         item.autoplay = options.autoplay ?? false
         item.playing = (this.initiated && options.autoplay) ?? false
         item.id = group.items.length
