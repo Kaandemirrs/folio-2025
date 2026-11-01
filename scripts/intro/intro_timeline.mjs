@@ -19,7 +19,16 @@ page.on('console', m => { if(m.type() === 'error') errors.push(m.text().slice(0,
 await page.setViewport(PROFILES[PROFILE])
 if(PROFILE === 'phone') await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1')
 
+if(process.env.THROTTLE)
+{
+    // Orta seviye bağlantı + zayıf cihaz: 10 Mbit/s, 40 ms gecikme, CPU 4x yavaş
+    const client = await page.createCDPSession()
+    await client.send('Network.enable')
+    await client.send('Network.emulateNetworkConditions', { offline: false, latency: 40, downloadThroughput: 10 * 1024 * 1024 / 8, uploadThroughput: 5 * 1024 * 1024 / 8 })
+    await client.send('Emulation.setCPUThrottlingRate', { rate: 4 })
+}
 const t0 = Date.now()
+
 await page.goto(URL_, { waitUntil: 'domcontentloaded' })
 const marks = {}
 let shot = 0
@@ -46,10 +55,11 @@ for(let i = 0; i < 1200; i++)
     if(s.progress >= 1 && marks.progress100 === undefined) marks.progress100 = t
     if(s.smoothed >= 0.99 && marks.ring100 === undefined) marks.ring100 = t
     if(s.step === 0 && marks.step0 === undefined) marks.step0 = t
-    if(s.clickable && marks.clickable === undefined) marks.clickable = t
     if(s.label && marks.label === undefined) { marks.label = t; await sleep(3800); await page.screenshot({ path: `${PREFIX}_ready.png` }); break }
     if(s.intro && s.progress > 0.3 && shot === 0) { shot = 1; await page.screenshot({ path: `${PREFIX}_loading.png` }) }
     await sleep(50)
 }
-console.log(JSON.stringify({ profile: PROFILE, marks, errors: [...new Set(errors)].slice(0, 5) }))
+let loadMarks = null
+try { loadMarks = await page.evaluate(() => window.game.loadMarks) } catch(e) {}
+console.log(JSON.stringify({ profile: PROFILE, throttle: !!process.env.THROTTLE, marks, loadMarks, errors: [...new Set(errors)].slice(0, 5) }))
 await browser.close()

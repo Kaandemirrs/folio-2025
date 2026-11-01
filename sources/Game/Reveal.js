@@ -108,6 +108,8 @@ export class Reveal
                 }
                 else
                 {
+                    this.game.loadMarks.clickable = Math.round(performance.now())
+
                     // Next function
                     const next = () =>
                     {

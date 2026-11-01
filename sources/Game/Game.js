@@ -70,6 +70,11 @@ export class Game
 
     async init()
     {
+        // Yükleme zaman çizelgesi (ms, sayfa başlangıcından): scripts/intro/intro_timeline.mjs okur
+        this.loadMarks = {}
+        const mark = (name) => { this.loadMarks[name] = Math.round(performance.now()) }
+        mark('init')
+
         // Setup
         this.domElement = document.querySelector('.game')
         this.canvasElement = this.domElement.querySelector('.js-canvas')
@@ -93,6 +98,7 @@ export class Game
         this.menu = new Menu()
         this.rendering = new Rendering()
         await this.rendering.setRenderer()
+        mark('renderer')
 
         const compressed = !!import.meta.env.VITE_COMPRESSED
         const compressedModelSuffix = compressed ? '-compressed' : ''
@@ -108,6 +114,7 @@ export class Game
             [ 'paletteTexture',             `palette.${compressedTextureExtension}${cb}`,                   compressedTextureFormat, (resource) => { resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; resource.colorSpace = THREE.SRGBColorSpace; } ],
 
         ])
+        mark('firstBatch')
         this.options = new Options()
         this.respawns = new Respawns(import.meta.env.VITE_PLAYER_SPAWN || 'landing')
         this.view = new View()
@@ -125,6 +132,8 @@ export class Game
         this.objects = new Objects()
         this.explosions = new Explosions()
         this.world = new World()
+
+        mark('worldCreated')
 
         // Load and init RAPIER
         const rapierPromise = import('@dimforge/rapier3d')
@@ -176,6 +185,7 @@ export class Game
 
         const [ newResources, RAPIER ] = await Promise.all([ resourcesPromise, rapierPromise ])
         this.RAPIER = RAPIER
+        mark('resourcesAndRapier')
         this.resources = { ...newResources, ...this.resources }
 
         this.terrain = new Terrain()
@@ -194,13 +204,16 @@ export class Game
         this.title = new Title()
         this.world.step(1)
         this.overlay = new Overlay()
+        mark('worldBuilt')
 
         // Pre-render if quality high
         if(this.quality.level === 0 && this.rendering.renderer.backend.isWebGPUBackend)
             PreRenderer.render()
+        mark('preRendered')
 
         this.ticker.wait(3, () =>
         {
+            mark('reveal0')
             this.reveal.updateStep(0)
         })
     }
