@@ -1,5 +1,5 @@
 {
-  "name": "bruno-simon-folio-2025",
+  "name": "kaan-demir-portfolio",
   "version": "0.0.0",
   "main": "index.js",
   "type": "module",
@@ -11,7 +11,7 @@
   },
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Kaan Demir'in arabayla gezilebilen interaktif 3D portfolyosu",
   "dependencies": {
     "@dimforge/rapier3d": "^0.17.3",
     "@gltf-transform/cli": "^4.1.0",
