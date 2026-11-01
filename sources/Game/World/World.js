@@ -10,7 +10,6 @@ import { WindLines } from './WindLines.js'
 import { Leaves } from './Leaves.js'
 import { Lightnings } from './Lightnings.js'
 import { Snow } from './Snow.js'
-import { Whispers } from './Whispers.js'
 import { VisualVehicle } from './VisualVehicle.js'
 import { VisualTornado } from './VisualTornado.js'
 import { Flowers } from './Flowers.js'
@@ -78,10 +77,6 @@ export class World
             this.lanterns = new Lanterns()
             this.scenery = new Scenery()
             this.areas = new Areas()
-        }
-        else if(step === 2)
-        {
-            this.whispers = new Whispers()
         }
     }
 

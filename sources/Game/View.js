@@ -145,8 +145,7 @@ export class View
             'suspensionsFrontRight',
             'suspensionsBackRight',
             'suspensionsBackLeft',
-            'interact',
-            'whisper'
+            'interact'
         ]
         this.game.inputs.events.on('actionStart', (action) =>
         {

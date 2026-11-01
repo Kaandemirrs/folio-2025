@@ -12,7 +12,6 @@ export class Options
         this.setRespawn()
         this.setReset()
         this.setRenderer()
-        this.setServer()
     }
 
     setSound()
@@ -75,44 +74,5 @@ export class Options
             const tooltip = element.querySelector('.js-tooltip')
             tooltip.innerHTML = /* html */`Your browser is <strong>not compatible</strong> with WebGPU resulting in performance loss`
         }
-    }
-
-    setServer()
-    {
-        const element = this.element.querySelector('.js-server')
-        const text = element.querySelector('span')
-        const tooltip = element.querySelector('.js-tooltip')
-        
-        const update = (connected) =>
-        {
-            if(connected)
-            {
-                element.classList.add('is-success')
-                element.classList.remove('is-danger')
-                
-                text.textContent = 'Online'
-
-                tooltip.innerHTML = /* html */`Enjoy the <strong>multiplayer</strong> features`
-            }
-            else
-            {
-                element.classList.remove('is-success')
-                element.classList.add('is-danger')
-                text.textContent = 'Offline'
-
-                tooltip.innerHTML = /* html */`Should be back soon`
-            }
-        }
-
-        update(this.game.server.connected)
-
-        this.game.server.events.on('connected', () =>
-        {
-            update(true)
-        })
-        this.game.server.events.on('disconnected', () =>
-        {
-            update(false)
-        })
     }
 }

@@ -603,9 +603,6 @@ export class Achievements
             debugAchievement.setProgress(1)
         }
 
-        if(this.game.tornado)
-            this.game.tornado.achievementAchieved = false
-
         if(this.game.world.rainLines)
             this.game.world.rainLines.achievementAchieved = false
 

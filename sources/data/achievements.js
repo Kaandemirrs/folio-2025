@@ -1,4 +1,3 @@
-import labData from './lab.js'
 import projectsData from './projects.js'
 
 export default
@@ -13,7 +12,7 @@ export default
         'areas',
         'Traveler',
         'Vist every area.',
-        13,
+        6,
         true // Unique
     ],
     [
@@ -22,43 +21,6 @@ export default
         'Check every project in the <strong>projects</strong> area.',
         projectsData.length,
         true // Unique
-    ],
-    [
-        'lab',
-        'I\'m a bit of a scientist myself',
-        'Check every project in the <strong>lab</strong> area.',
-        labData.length,
-        true // Unique
-    ],
-    [
-        'cookie',
-        'Wake & bake',
-        'Accept <strong>1</strong> cookies.',
-        1
-    ],
-    [
-        'cookie',
-        'Making some dough',
-        'Accept <strong>10</strong> cookies.',
-        10
-    ],
-    [
-        'cookie',
-        'So baked right now',
-        'Accept <strong>100</strong> cookies.',
-        100
-    ],
-    [
-        'cookie',
-        'Cookie Clicker',
-        'Accept <strong>1000</strong> cookies.',
-        1000
-    ],
-    [
-        'whisper',
-        'It\'s About Sending A Message',
-        'Post a whisper.',
-        1
     ],
     [
         'sea',
@@ -116,30 +78,6 @@ export default
         1
     ],
     [
-        'toiletDown',
-        'Do not disturb',
-        'Knock down the latrine.',
-        1
-    ],
-    [
-        'circuitFinish',
-        'Participation medal',
-        'Finish a race.',
-        1
-    ],
-    [
-        'circuitFinishFast',
-        'KA-CHOW!',
-        'Finish a race in less than <strong>30s</strong>.',
-        1
-    ],
-    [
-        'circuitLeaderboard',
-        'Early Bird gets the Worm',
-        'Make it to the leaderboard.',
-        1
-    ],
-    [
         'fullDay',
         'Don’t you have work to do?',
         'Spend a full day cycle here in one go.',
@@ -162,18 +100,6 @@ export default
         'Honey, I’m home!',
         'Drive 100km.',
         100
-    ],
-    [
-        'sacrifice',
-        'One for the god of Chaos',
-        'Sacrifice yourself into the altar.',
-        1
-    ],
-    [
-        'cataclysm',
-        'Witness me!',
-        'Witness a cataclysm',
-        1
     ],
     [
         'weatherSnow',

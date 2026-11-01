@@ -15,7 +15,6 @@ export class Tornado
         this.strength = 0
         this.resolution = 100
         this.position = new THREE.Vector3()
-        this.achievementAchieved = this.game.achievements.groups.get('cataclysm')?.items[0].achieved
 
         // Debug
         if(this.game.debug.active)
@@ -28,7 +27,6 @@ export class Tornado
 
         this.setPath()
         // this.setPreviews()
-        this.setData()
 
         // Update
         this.game.ticker.events.on('tick', () =>
@@ -111,33 +109,6 @@ export class Tornado
         this.previews.line.scale.set( 1, 1, 1 );
         this.previews.line.position.y += 0.5
         this.game.scene.add(this.previews.line)
-    }
-
-    setData()
-    {
-        this.data = {}
-        
-        // Server message event
-        this.game.server.events.on('message', (data) =>
-        {
-            // Init and insert
-            if(data.type === 'init' || data.type === 'cataclysmUpdate')
-            {
-                if(data.cataclysmRunning)
-                    this.start()
-                else
-                    this.stop()
-            }
-        })
-
-        // Init message already received
-        if(this.game.server.initData)
-        {
-            if(this.game.server.initData.cataclysmRunning)
-                this.start()
-            else
-                this.stop()
-        }
     }
 
     start()
@@ -235,12 +206,6 @@ export class Tornado
         const distance = toTornado.length()
         
         const strength = remapClamp(distance, 20, 2, 0, 1)
-        if(!this.achievementAchieved && strength > 0.5)
-        {
-            this.achievementAchieved = true
-            this.game.achievements.setProgress('cataclysm', 1)
-        }
-
         const force = toTornado.clone().normalize()
 
         const sideAngleStrength = remapClamp(distance, 8, 2, 0, Math.PI * 0.25)

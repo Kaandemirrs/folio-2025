@@ -466,11 +466,9 @@ export class Audio
             }
         })
 
-        // Oven fire (Project Area + Cookie Area)
+        // Oven fire (Project Area)
         {
             const positions = []
-            if(this.game.world.areas?.cookie)
-                positions.push(this.game.world.areas.cookie.references.items.get('spawner')[0].position)
             if(this.game.world.areas?.projects)
                 positions.push(this.game.world.areas.projects.references.items.get('oven')[0].position)
 
@@ -482,26 +480,6 @@ export class Audio
                     autoplay: true,
                     loop: true,
                     volume: 0.8,
-                    positions: positions,
-                    distanceFade: 13,
-                })
-            }
-        }
-
-        // Campfire (Lab Area + Bonfire Area)
-        {
-            const positions = []
-            if(this.game.world.areas?.lab)
-                positions.push(this.game.world.areas.lab.references.items.get('fire')[0].position)
-
-            if(positions.length)
-            {
-                this.game.audio.register({
-                    group: 'campfire',
-                    path: 'sounds/fire/Fire Burning.mp3',
-                    autoplay: true,
-                    loop: true,
-                    volume: 1,
                     positions: positions,
                     distanceFade: 13,
                 })

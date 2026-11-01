@@ -2,7 +2,6 @@ import { Events } from './Events.js'
 import { Game } from './Game.js'
 import { Inputs } from './Inputs/Inputs.js'
 import { Tabs } from './Tabs.js'
-import { CircuitArea } from './World/Areas/CircuitArea.js'
 
 export class Menu
 {
@@ -58,10 +57,7 @@ export class Menu
         {
             event.preventDefault()
 
-            if(this.game.world.areas?.circuit?.state === CircuitArea.STATE_RUNNING || this.game.world.areas?.circuit?.state === CircuitArea.STATE_STARTING)
-                this.open('circuit')
-            else
-                this.open()
+            this.open()
         })
         element.addEventListener('keydown', (event) =>
         {

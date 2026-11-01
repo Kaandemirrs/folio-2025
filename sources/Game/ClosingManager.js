@@ -2,8 +2,6 @@ import { Game } from './Game.js'
 import { Inputs } from './Inputs/Inputs.js'
 import { Menu } from './Menu.js'
 import { Modals } from './Modals.js'
-import { CircuitArea } from './World/Areas/CircuitArea.js'
-import { LabArea } from './World/Areas/LabArea.js'
 import { ProjectsArea } from './World/Areas/ProjectsArea.js'
 
 export class ClosingManager
@@ -22,33 +20,17 @@ export class ClosingManager
         {
             if(action.active)
             {
-                // Whispers flag select => Close
-                if(this.game.world.whispers?.menu.inputFlag.isOpen)
-                    this.game.world.whispers.menu.inputFlag.close()
-
-                // Circuit flag select => Close
-                else if(this.game.world.areas?.circuit?.menu.inputFlag.isOpen)
-                    this.game.world.areas.circuit.menu.inputFlag.close()
-                
                 // Modal open => Close
-                else if(this.game.modals.state === Modals.OPEN)
+                if(this.game.modals.state === Modals.OPEN)
                     this.game.modals.close()
                 
                 // Menu open => Close
                 else if(this.game.menu.state === Menu.OPEN || (this.game.inputs.mode !== Inputs.MODE_GAMEPAD && this.game.menu.state === Menu.OPENING))
                     this.game.menu.close()
 
-                // Circuit running
-                else if(this.game.world.areas?.circuit?.state === CircuitArea.STATE_RUNNING || this.game.world.areas?.circuit?.state === CircuitArea.STATE_STARTING)
-                    this.game.menu.open('circuit')
-
                 // Projects => Close
                 else if(this.game.world.areas?.projects && (this.game.world.areas?.projects.state === ProjectsArea.STATE_OPEN || this.game.world.areas?.projects.state === ProjectsArea.STATE_OPENING))
                     this.game.world.areas.projects.close()
-
-                // Lab => Close
-                else if(this.game.world.areas?.lab && (this.game.world.areas?.lab.state === LabArea.STATE_OPEN || this.game.world.areas?.lab.state === LabArea.STATE_OPENING))
-                    this.game.world.areas.lab.close()
 
                 // Nothing opened and used the keyboard Escape key => Open default modal
                 else if(action.activeKeys.has('Keyboard.Escape'))
@@ -86,23 +68,12 @@ export class ClosingManager
                 this.game.modals.close()
         })
 
-        // On modal close => Go to wandering or racing
+        // On modal close => Go to wandering
         const modalMenuCloseCallback = () =>
         {
             this.game.inputs.filters.clear()
 
-            if(
-                this.game.world.areas?.circuit?.state === CircuitArea.STATE_RUNNING ||
-                this.game.world.areas?.circuit?.state === CircuitArea.STATE_STARTING ||
-                this.game.world.areas?.circuit?.state === CircuitArea.STATE_ENDING
-            )
-            {
-                this.game.inputs.filters.add('racing')
-            }
-            else
-            {
-                this.game.inputs.filters.add('wandering')
-            }
+            this.game.inputs.filters.add('wandering')
         }
         this.game.modals.events.on('close', modalMenuCloseCallback)
         this.game.menu.events.on('close', modalMenuCloseCallback)
