@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { atan, float, Fn, PI, PI2, positionGeometry, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
+import { atan, float, Fn, PI, PI2, positionGeometry, smoothstep, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 import gsap from 'gsap'
 import { Inputs } from '../Inputs/Inputs.js'
 import { lerp } from '../utilities/maths.js'
@@ -16,6 +16,7 @@ export class Intro
         const respawn = this.game.respawns.getDefault()
         this.center = respawn.position.clone()
 
+        this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
         this.setCircle()
         this.setLabel()
         this.setExtras()
@@ -308,6 +309,9 @@ export class Intro
     setText()
     {
         this.text = {}
+        this.text.nudge = uniform(0)
+        // Ok etiket dokusunun sol kısmındadır (x < ≈0.37); yalnızca orayı örnekleme kaydırmasıyla ileri-geri dürter
+        const labelUv = () => vec2(uv().x.add(this.text.nudge.mul(smoothstep(0.4, 0.33, uv().x))), uv().y.oneMinus())
 
         // Geometry
         const scale = 1.3
@@ -352,7 +356,7 @@ export class Intro
                         // Update material and mesh
                         material.outputNode = Fn(() =>
                         {
-                            texture(loadedTexture, vec2(uv().x, uv().y.oneMinus())).r.lessThan(0.5).discard()
+                            texture(loadedTexture, labelUv()).r.lessThan(0.5).discard()
                             return vec4(1)
                         })()
                         material.needsUpdate = true
@@ -365,7 +369,7 @@ export class Intro
                 // Update material and mesh
                 material.outputNode = Fn(() =>
                 {
-                    texture(cachedTexture, vec2(uv().x, uv().y.oneMinus())).r.lessThan(0.5).discard()
+                    texture(cachedTexture, labelUv()).r.lessThan(0.5).discard()
                     return vec4(1)
                 })()
                 material.needsUpdate = true
@@ -515,8 +519,27 @@ export class Intro
         this.circle.progress = progress
     }
 
+    // "Nefes alma": etiket %5 büyüyüp küçülür (≈1.8 sn), ok sola-sağa dürter. Hareket azaltma tercihinde kapalı
+    updateBreathing()
+    {
+        if(!this.text || !this.text.mesh || this.reducedMotion.matches || this.label.userData.appear < 0.99)
+        {
+            if(this.text && this.text.mesh)
+            {
+                this.text.mesh.scale.setScalar(1)
+                this.text.nudge.value = 0
+            }
+            return
+        }
+
+        const t = this.game.ticker.elapsedScaled
+        this.text.mesh.scale.setScalar(1 + 0.05 * (0.5 - 0.5 * Math.cos(t * Math.PI * 2 / 1.8)))
+        this.text.nudge.value = 0.018 * Math.pow(0.5 - 0.5 * Math.cos(t * Math.PI * 2 / 1.1), 2)
+    }
+
     update()
     {
+        this.updateBreathing()
         this.circle.smoothedProgress.value += (this.circle.progress - this.circle.smoothedProgress.value) * this.game.ticker.delta * 10
     }
 
