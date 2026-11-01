@@ -1,5 +1,6 @@
 import { clamp } from 'three/src/math/MathUtils.js'
 import { Game } from './Game.js'
+import propsConfig from '../../scripts/props/props.config.json'
 
 export class Map
 {
@@ -48,6 +49,12 @@ export class Map
             { name: 'Projeler', respawnName: 'projects', offset: { x: 0, y: -0.02 } },
             { name: 'Sosyal', respawnName: 'social', offset: { x: -0.01, y: -0.04 } },
         ]
+
+        for(const prop of propsConfig.props)
+        {
+            if(prop.map)
+                this.locations.items.push({ name: prop.map.label, respawnName: prop.name, offset: prop.map.offset })
+        }
 
         for(const item of this.locations.items)
         {

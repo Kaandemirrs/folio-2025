@@ -1,5 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
+import propsConfig from '../../scripts/props/props.config.json'
 
 export class Respawns
 {
@@ -45,6 +46,25 @@ export class Respawns
             }
 
             this.items.set(name, item)
+        }
+
+        // Prop'ların önünde doğma noktası (cephe yönü: dünya xz'de +X'ten +Z'ye açı)
+        for(const prop of propsConfig.props)
+        {
+            if(!prop.respawn)
+                continue
+
+            const theta = (prop.world.facingDeg ?? 0) * Math.PI / 180
+            const distance = prop.respawn.distance
+            this.items.set(prop.name, {
+                name: prop.name,
+                position: new THREE.Vector3(
+                    prop.world.x + Math.cos(theta) * distance,
+                    4,
+                    prop.world.z + Math.sin(theta) * distance
+                ),
+                rotation: Math.PI - theta
+            })
         }
     }
 

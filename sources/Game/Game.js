@@ -1,6 +1,7 @@
 import * as THREE from 'three/webgpu'
 
 import { Debug } from './Debug.js'
+import propsConfig from '../../scripts/props/props.config.json'
 import { Inputs } from './Inputs/Inputs.js'
 import { Physics } from './Physics/Physics.js'
 import { Rendering } from './Rendering.js'
@@ -147,6 +148,7 @@ export class Game
                 [ 'cherryTreesVisualModel',                `cherryTrees/cherryTreesVisual${compressedModelSuffix}.glb${cb}`,                     'gltf' ],
                 [ 'cherryTreesReferencesModel',            `cherryTrees/cherryTreesReferences${compressedModelSuffix}.glb${cb}`,                 'gltf' ],
                 [ 'sceneryModel',                          `scenery/scenery${compressedModelSuffix}.glb${cb}`,                                   'gltf' ],
+                ...propsConfig.props.map(prop => [ `prop_${prop.name}`, `props/${prop.name}${compressedModelSuffix}.glb${cb}`, 'gltf' ]),
                 [ 'areasModel',                            `areas/areas${compressedModelSuffix}.glb${cb}`,                                       'gltf' ],
                 [ 'poleLightsModel',                       `poleLights/poleLights${compressedModelSuffix}.glb${cb}`,                             'gltf' ],
                 [ 'tornadoPathReferencesModel',            `tornado/tornadoPathReferences${compressedModelSuffix}.glb${cb}`,                     'gltf' ],
