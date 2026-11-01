@@ -7,6 +7,8 @@ import { Events } from './Events.js'
 
 export class Audio
 {
+    static PLAYLIST_VOLUME = 0.2
+
     constructor()
     {
         this.game = Game.getInstance()
@@ -208,6 +210,9 @@ export class Audio
 
             this.playlist.switching = true
 
+            // Horon gibi playlist'i duraklatan çalıcılar jukebox'a basılınca kendini kapatır
+            this.events.trigger('playlistNext')
+
             // Disc change sound
             this.game.audio.groups.get('discChange').play()
 
@@ -215,6 +220,7 @@ export class Audio
             if(this.playlist.current)
             {
                 this.playlist.current.sound.stop()
+                this.playlist.current.sound.volume(Audio.PLAYLIST_VOLUME) // duraklatma sırasında kısılmış olabilir
             }
             
             gsap.delayedCall(3, () =>
@@ -230,6 +236,13 @@ export class Audio
                 if(!this.playlist.current.loaded)
                 {
                     this.playlist.current.sound.load()
+                }
+
+                // Playlist duraklatılmışsa (horon çalıyor) şarkı seçilir ama çalmaz; resume() çalar
+                if(this.playlist.suspended)
+                {
+                    this.playlist.switching = false
+                    return
                 }
 
                 this.playlist.current.sound.play()
@@ -252,6 +265,46 @@ export class Audio
                 
                 this.playlist.switching = false
             })
+        }
+
+        // Duraklat/devam: ~1 sn'de kısılıp durur; devam edince kaldığı yerden geri gelir
+        this.playlist.suspended = false
+        this.playlist.suspend = () =>
+        {
+            if(this.playlist.suspended)
+                return
+
+            this.playlist.suspended = true
+
+            const sound = this.playlist.current?.sound
+            if(!sound)
+                return
+
+            const state = { volume: Audio.PLAYLIST_VOLUME }
+            gsap.to(state, { volume: 0, duration: 1, ease: 'power1.in', onUpdate: () => { sound.volume(state.volume) }, onComplete: () =>
+            {
+                if(this.playlist.suspended)
+                    sound.pause()
+            } })
+        }
+        this.playlist.resume = () =>
+        {
+            if(!this.playlist.suspended)
+                return
+
+            this.playlist.suspended = false
+
+            const song = this.playlist.current
+            if(!song)
+                return
+
+            const sound = song.sound
+            const state = { volume: 0 }
+            sound.volume(0)
+            if(!song.loaded && !sound.playing())
+                sound.load()
+            sound.play()
+            gsap.to(state, { volume: Audio.PLAYLIST_VOLUME, duration: 1.5, ease: 'power1.out', onUpdate: () => { sound.volume(state.volume) } })
         }
 
         this.playlist.play = () =>
@@ -699,7 +752,7 @@ export class Audio
             {
                 Howler.mute(false)
 
-                if(this.playlist?.current)
+                if(this.playlist?.current && !this.playlist.suspended)
                     this.playlist.current.sound.play()
             }
         })

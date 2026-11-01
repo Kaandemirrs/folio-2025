@@ -109,6 +109,41 @@ for(const name of SCENARIOS)
         await page.screenshot({ path: `${OUT}/horon_dance2.png` })
         info.horonStats = await page.evaluate(() => { const r = window.game.rendering.renderer; r.info.reset?.(); return null })
     }
+    else if(name === 'horonmusic')
+    {
+        await page.evaluate(() =>
+        {
+            const base = window.game.respawns.getByName('landing')
+            const position = base.position.clone()
+            position.set(-59.5, 4, -43.4)
+            window.game.respawns.items.set('tmp', { name: 'tmp', position, rotation: Math.PI })
+            window.game.player.respawn('tmp')
+        })
+        await sleep(9000)
+        const state = () => page.evaluate(() =>
+        {
+            const h = window.game.world.horon, a = window.game.audio
+            return { playing: h.music.playing, avail: h.music.available, howl: h.music.item ? h.music.item.howl.playing() : null, vol: h.music.item ? +h.music.item.volume.toFixed(2) : null, suspended: a.playlist.suspended, playlistPlaying: a.playlist.current ? a.playlist.current.sound.playing() : null, plVol: a.playlist.current ? +a.playlist.current.sound.volume().toFixed(2) : null, dancing: h.dancing, muted: a.mute.active }
+        })
+        info.m0 = await state()
+        await page.evaluate(() => window.game.world.horon.start())
+        await sleep(3000)
+        info.m1_started = await state()
+        await page.screenshot({ path: `${OUT}/horon_music_notification.png` })
+        await page.evaluate(() => window.game.world.horon.stop())
+        await sleep(3000)
+        info.m2_stopped = await state()
+        await page.evaluate(() => window.game.world.horon.start())
+        await sleep(2500)
+        await page.evaluate(() => window.game.audio.playlist.next())
+        await sleep(1500)
+        info.m3_jukebox = await state()
+        await page.evaluate(() => window.game.world.horon.start())
+        await sleep(2000)
+        await page.evaluate(() => window.game.physicalVehicle.moveTo({ x: -10, y: 4, z: -46 }, 0))
+        await sleep(3500)
+        info.m4_far = await state()
+    }
     else if(name === 'projects')
     {
         await page.evaluate(() => window.game.player.respawn('projects'))

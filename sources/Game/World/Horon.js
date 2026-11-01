@@ -4,6 +4,8 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import gsap from 'gsap'
 import { Game } from '../Game.js'
 import { Props } from './Props.js'
+import { InteractivePoints } from '../InteractivePoints.js'
+import { Audio } from '../Audio.js'
 import { circleIntersectsPolygon } from '../utilities/maths.js'
 import propsConfig from '../../../scripts/props/props.config.json'
 import horonConfig from '../../data/horon.js'
@@ -28,6 +30,8 @@ export class Horon
 
         this.setPlacements()
         this.setPhysics()
+        this.setInteractivePoints()
+        this.setMusic()
 
         this.game.ticker.events.on('tick', () => { this.update() }, 14)
     }
@@ -84,6 +88,139 @@ export class Horon
                     },
                 }
             )
+        }
+    }
+
+    // Etkileşim: "Horonu başlat" / "Horonu durdur" (iki nokta aynı yerde, biri gizli)
+    setInteractivePoints()
+    {
+        const position = new THREE.Vector3(this.config.world.x, 1, this.config.world.z)
+        const direction = new THREE.Vector2(Math.cos(THREE.MathUtils.degToRad(this.config.world.facingDeg)), Math.sin(THREE.MathUtils.degToRad(this.config.world.facingDeg)))
+        position.x += direction.x * 3.2
+        position.z += direction.y * 3.2
+
+        const create = (label, onInteract) => this.game.interactivePoints.create(
+            position,
+            label,
+            InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
+            onInteract,
+            () => { this.game.inputs.interactiveButtons.addItems([ 'interact' ]) },
+            () => { this.game.inputs.interactiveButtons.removeItems([ 'interact' ]) },
+            () => { this.game.inputs.interactiveButtons.removeItems([ 'interact' ]) }
+        )
+
+        this.startPoint = create('Horonu başlat', () => { this.start() })
+        this.stopPoint = create('Horonu durdur', () => { this.stop() })
+        this.stopPoint.hide()
+    }
+
+    // Müzik: dosya varsa konuma bağlı (alandan uzaklaştıkça kısılır) ve döngüde; yoksa maymunlar sessizce dans eder
+    setMusic()
+    {
+        this.music = { item: null, available: null, checking: null, playing: false }
+
+        // Jukebox'a basılırsa horon durur, playlist sıradaki şarkıya geçer
+        this.game.audio.events.on('playlistNext', () =>
+        {
+            if(this.music.playing)
+                this.stop(false)
+        })
+    }
+
+    // Müzik dosyası gerçekten var mı (production'da dosya olmayabilir; SPA yedeği HTML döndürebilir)
+    checkMusic()
+    {
+        if(this.music.checking)
+            return this.music.checking
+
+        this.music.checking = fetch(this.config.musicPath, { method: 'HEAD' })
+            .then((response) => response.ok && (response.headers.get('content-type') ?? '').startsWith('audio'))
+            .catch(() => false)
+            .then((available) => { this.music.available = available; return available })
+
+        return this.music.checking
+    }
+
+    async start()
+    {
+        if(this.music.playing)
+            return
+
+        this.music.playing = true
+        this.startPoint.hide()
+        this.stopPoint.show()
+        this.setDancing(true)
+
+        const available = await this.checkMusic()
+
+        // Beklerken durdurulduysa çalma
+        if(!this.music.playing || !available)
+            return
+
+        const audio = this.game.audio
+
+        // Playlist ~1 sn'de kısılıp durur
+        audio.playlist.suspend()
+
+        if(!this.music.item)
+        {
+            this.music.item = audio.register({
+                path: this.config.musicPath,
+                group: 'horon',
+                loop: true,
+                volume: this.config.musicVolume,
+                positions: [ new THREE.Vector3(this.config.world.x, 1, this.config.world.z) ],
+                distanceFade: this.config.listenDistance,
+                autoplay: false,
+                preload: false,
+                antiSpam: 0,
+            })
+        }
+
+        const item = this.music.item
+        item.volume = 0
+        item.play()
+        gsap.to(item, { volume: this.config.musicVolume, duration: 1, ease: 'power1.out', overwrite: true })
+
+        // Şarkı bildirimi (playlist ile aynı biçim)
+        this.game.notifications.show(/* html */`
+            <div class="top">
+                <div class="title">Şimdi çalıyor<br /><span class="song-name">${this.config.musicName}</span></div>
+                <div class="music-note-icon"></div>
+            </div>
+        `, 'song', 5)
+    }
+
+    // resumePlaylist: false ise (jukebox'a basıldı) playlist kendi sıradaki şarkısına geçer
+    stop(resumePlaylist = true)
+    {
+        if(!this.music.playing)
+            return
+
+        this.music.playing = false
+        this.stopPoint.hide()
+        this.startPoint.show()
+        this.setDancing(false)
+
+        const item = this.music.item
+        if(item && item.howl.playing())
+        {
+            gsap.to(item, { volume: 0, duration: 0.6, ease: 'power1.in', overwrite: true, onComplete: () =>
+            {
+                if(!this.music.playing)
+                    item.howl.stop()
+                item.playing = false
+            } })
+        }
+
+        const playlist = this.game.audio.playlist
+        if(playlist.suspended)
+        {
+            if(resumePlaylist)
+                playlist.resume()
+            else
+                playlist.suspended = false
         }
     }
 
@@ -215,6 +352,10 @@ export class Horon
     {
         const player = this.game.physicalVehicle.position
         const distance = Math.hypot(player.x - this.center.x, player.z - this.center.z)
+
+        // Çok uzaklaşınca horon durur, playlist kaldığı yerden döner
+        if(this.music.playing && distance > this.config.listenDistance)
+            this.stop()
 
         // Yaklaşınca yükle
         if(!this.loaded)
