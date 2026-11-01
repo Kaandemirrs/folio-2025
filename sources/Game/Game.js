@@ -12,7 +12,6 @@ import { View } from './View.js'
 import { Viewport } from './Viewport.js'
 import { World } from './World/World.js'
 import { Tracks } from './Tracks.js'
-// import { Monitoring } from './Monitoring.js'
 import { Lighting } from './Ligthing.js'
 import { Materials } from './Materials.js'
 import { Objects } from './Objects.js'
@@ -134,8 +133,6 @@ export class Game
                 [ 'foliageTexture',                        `foliage/foliageSDF.${compressedTextureExtension}${cb}`,                              compressedTextureFormat, (resource) => { resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; } ],
                 [ 'bushesReferences',                      `bushes/bushesReferences${compressedModelSuffix}.glb${cb}`,                           'gltf' ],
                 [ 'vehicle',                               `vehicle/default${compressedModelSuffix}.glb${cb}`,                                   'gltf' ],
-                [ 'playgroundVisual',                      `playground/playgroundVisual${compressedModelSuffix}.glb${cb}`,                       'gltf' ],
-                [ 'playgroundPhysical',                    `playground/playgroundPhysical${compressedModelSuffix}.glb${cb}`,                     'gltf' ],
                 [ 'flowersReferencesModel',                `flowers/flowersReferences${compressedModelSuffix}.glb${cb}`,                         'gltf' ],
                 [ 'bricksModel',                           `bricks/bricks${compressedModelSuffix}.glb${cb}`,                                     'gltf' ],
                 [ 'fencesModel',                           `fences/fences${compressedModelSuffix}.glb${cb}`,                                     'gltf' ],
@@ -195,7 +192,6 @@ export class Game
         this.tornado = new Tornado()
         this.map = new Map()
         this.title = new Title()
-        // this.monitoring = new Monitoring()
         this.world.step(1)
         this.overlay = new Overlay()
 

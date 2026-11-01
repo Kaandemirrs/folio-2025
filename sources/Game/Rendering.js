@@ -175,11 +175,5 @@ export class Rendering
 
         if(this.stats)
             this.stats.update()
-
-        if(this.game.monitoring?.stats)
-        {
-            this.game.rendering.renderer.resolveTimestampsAsync(THREE.TimestampQuery.RENDER)
-            this.game.monitoring.stats.update()
-        }
     }
 }
