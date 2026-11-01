@@ -149,16 +149,8 @@ export class Audio
         this.playlist = {}
         this.playlist.songs = [
             {
-                path: 'sounds/musics/Sudo.mp3',
-                name: 'Sudo.mp3'
-            },
-            {
-                path: 'sounds/musics/Boy.mp3',
-                name: 'Boy.mp3'
-            },
-            {
-                path: 'sounds/musics/Baguira.mp3',
-                name: 'Baguira.mp3'
+                path: 'sounds/musics/Kullenen-Ask-1986.mp3',
+                name: 'Cengiz Kurtoğlu - Küllenen Aşk (1986)'
             },
         ]
         this.playlist.index = (Math.floor(Date.now() / 1000 / 60 / 3) % this.playlist.songs.length) // Different music every X minutes
