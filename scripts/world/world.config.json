@@ -1,0 +1,75 @@
+{
+    "letters": {
+        "text": "KAAN DEMİR",
+        "height": 1.45,
+        "depth": 0.46,
+        "colliderDepth": 0.442,
+        "mass": 0.2,
+        "triangles": 240,
+        "gap": 0.2,
+        "wordGap": 0.55,
+        "center": {
+            "x": -5.2,
+            "z": 3.09
+        },
+        "angleDeg": 25,
+        "uv": [
+            0.7356,
+            0.5
+        ],
+        "sources": {
+            "K": {
+                "procedural": "K"
+            },
+            "A": {
+                "procedural": "A"
+            },
+            "N": {
+                "procedural": "N"
+            },
+            "D": {
+                "file": "d_letter.glb",
+                "rotate": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "E": {
+                "file": "e_letter.glb",
+                "rotate": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "M": {
+                "file": "m_letter.glb",
+                "rotate": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "R": {
+                "file": "r_letter.glb",
+                "rotate": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "İ": {
+                "file": "i_letter.glb",
+                "rotate": [
+                    0,
+                    0,
+                    0
+                ],
+                "dotted": true
+            }
+        },
+        "stroke": 0.37,
+        "bevel": 0.035
+    }
+}

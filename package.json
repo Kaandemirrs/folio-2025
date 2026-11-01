@@ -10,6 +10,7 @@
     "compress": "node scripts/compress.js static/",
     "prop": "node scripts/props/build.mjs",
     "vehicle": "node scripts/vehicle/build.mjs",
+    "world": "node scripts/world/build.mjs",
     "postbuild": "node scripts/prune-dist.mjs"
   },
   "author": "",
