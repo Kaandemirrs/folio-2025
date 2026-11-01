@@ -74,8 +74,11 @@ export class Jukeboxes
             this.references.push(reference)
         }
 
-        // Sabit: tek seferde yerleştirilir (autoUpdate kapalı)
+        // Sabit: matrisler görüş alanına göre update()'te yazılır (autoUpdate kapalı); görünmeyenler çizilmez
         this.instancedGroup = new InstancedGroup(this.references, base, false)
+        this.visibleKey = null
+        for(const mesh of this.instancedGroup.meshes)
+            mesh.instance.frustumCulled = false
     }
 
     setPhysics()
@@ -216,13 +219,37 @@ export class Jukeboxes
         }
     }
 
-    // Notalar yalnızca görüş alanındayken çizilir
+    // Yalnızca görüş alanındaki müzik kutuları çizilir (instance sayısı değişir) ve nota çıkarır
     update()
     {
         const quad = this.game.view.optimalArea.quad2
         const polygon = [ quad[0].offseted, quad[1].offseted, quad[2].offseted, quad[3].offseted ]
 
-        for(const { sprite, placement } of this.notes)
-            sprite.visible = circleIntersectsPolygon({ x: placement.x, y: placement.z }, 4, polygon)
+        const visible = []
+        this.config.placements.forEach((placement, index) =>
+        {
+            const isVisible = circleIntersectsPolygon({ x: placement.x, y: placement.z }, 3, polygon)
+            this.notes[index].sprite.visible = isVisible
+            if(isVisible)
+                visible.push(index)
+        })
+
+        const key = visible.join(',')
+        if(key === this.visibleKey)
+            return
+
+        this.visibleKey = key
+        for(const mesh of this.instancedGroup.meshes)
+        {
+            visible.forEach((index, i) =>
+            {
+                const reference = this.references[index]
+                reference.updateMatrixWorld()
+                mesh.instance.setMatrixAt(i, mesh.localMatrix.clone().premultiply(reference.matrixWorld))
+            })
+            mesh.instance.count = visible.length
+            mesh.instance.visible = visible.length > 0
+            mesh.instance.instanceMatrix.needsUpdate = true
+        }
     }
 }

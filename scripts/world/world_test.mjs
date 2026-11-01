@@ -33,7 +33,7 @@ for(const name of SCENARIOS)
 {
     if(name === 'landing')
     {
-        await weather(0.4, 0.3)
+        await weather(0.4, 0.07)
         await page.evaluate(() => window.game.player.respawn('landing'))
         await sleep(5000)
         await page.screenshot({ path: `${OUT}/landing_spawn.png` })

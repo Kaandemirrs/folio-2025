@@ -94,3 +94,19 @@ Hiçbiri 192 kbps'in üstünde değil, bu yüzden dönüştürme zorunlu değil;
 2. **Yaprak kartlarının gölgesi:** Low'da ağaç yapraklarının gölge atmasını kapatmak ≈88 bin üçgeni (gölge geçişinde) kaldırır ama ağaç gölgeleri sadeleşir. Görsel kalite kararı, uygulanmadı.
 3. **İlk müzik indirmesi:** Tıklamadan sonra 6,8 MB'lık ilk parça iniyor. İlk parçayı 3–5 sn geciktirmek veya düşük bitrate kullanmak mobil veride fark eder.
 4. **Kare süresi:** Gerçek telefonda FPS ölçülmedi; low değerleri (çim 160², piksel 1,5) cihaz denemesine göre ayarlanabilir.
+
+## Dünya kişiselleştirmesi (dal `dunya`)
+
+Ölçüm: `scripts/perf/measure.mjs`, landing spawn, 1280×720 ve telefon profili, değişiklik öncesi (`25b13aa`) ve sonrası.
+
+| | önce | sonra |
+|---|---|---|
+| İlk yükleme (başlamadan önce) | 7.988 KB | 7.969 KB |
+| Masaüstü high: draw call / üçgen | 215 / 439.755 | 220 / 452.080 |
+| Masaüstü low: draw call / üçgen | 214 / 380.834 | 219 / 393.111 |
+| Telefon high: draw call / üçgen | 153 / 409.430 | 154 / 415.427 |
+| Telefon low: draw call / üçgen | 154 / 350.605 | 154 / 356.542 |
+
+- `areas-compressed.glb` 639 KB → 587 KB (Bruno figürleri/heykeli çıktı, harfler ve jukebox çıktı); `bayrak` 11 KB, `jukebox` 8 KB (Draco).
+- Jukebox tek GLB + tek `InstancedGroup`; yalnızca görüş alanındaki yerleşimler çizilir (`instance.count`). Tüm instance'ları çizmek +21 bin üçgendi.
+- `areas` yamasında silinen mesh'lerin yetim accessor'ları da silinmelidir; aksi halde Draco dışında dosyaya yazılıp boyutu 1,0 MB'a çıkarıyordu.
