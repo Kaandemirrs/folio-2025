@@ -173,6 +173,17 @@ for(const name of SCENARIOS)
         await sleep(3000)
         info.p3_stopped = await st()
     }
+    else if(name === 'horondebug')
+    {
+        await page.evaluate(() => window.game.player.respawn('monkey'))
+        await sleep(9000)
+        await page.evaluate(() => window.game.world.horon.setDancing(true))
+        for(let i = 0; i < 4; i++)
+        {
+            await sleep(1200)
+            info['d' + i] = await page.evaluate(() => { const h = window.game.world.horon, m = h.monkeys[0]; return { time: +m.dance.time.toFixed(2), wd: +m.dance.getEffectiveWeight().toFixed(2), wi: +m.idle.getEffectiveWeight().toFixed(2), en: m.dance.enabled, paused: m.dance.paused, dancing: h.dancing, settled: h.settled, vis: h.group.visible, delta: window.game.ticker.deltaScaled, bone: h.skeleton.bones[5].quaternion.toArray().map(v => +v.toFixed(2)) } })
+        }
+    }
     else if(name === 'horonlap')
     {
         await page.evaluate(() => window.game.player.respawn('monkey'))

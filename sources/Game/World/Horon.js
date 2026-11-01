@@ -325,8 +325,9 @@ export class Horon
             const dance = mixer.clipAction(this.clip)
             dance.setLoop(THREE.LoopRepeat)
             dance.time = placement.timeOffset
+            dance.weight = 1 // asıl ağırlık 1; görünürlük crossFade ile gelir (setEffectiveWeight(0) dansı sonsuza dek 0 bırakıyordu)
             dance.play()
-            dance.setEffectiveWeight(0)
+            dance.enabled = false
 
             const idle = mixer.clipAction(this.idleClip)
             idle.setLoop(THREE.LoopRepeat)
