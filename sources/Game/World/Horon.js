@@ -342,6 +342,7 @@ export class Horon
         this.mesh.name = 'horonMonkeys'
         this.mesh.frustumCulled = false // görünürlük update()'te
         this.mesh.castShadow = this.game.quality.pick(true, false)
+        this.game.quality.events.on('change', () => { this.mesh.castShadow = this.game.quality.pick(true, false) })
         this.mesh.receiveShadow = true
         this.group.add(this.mesh)
         this.mesh.bind(this.skeleton, new THREE.Matrix4())
@@ -403,9 +404,9 @@ export class Horon
         const quad = this.game.view.optimalArea.quad2
         const polygon = [ quad[0].offseted, quad[1].offseted, quad[2].offseted, quad[3].offseted ]
         const visible = circleIntersectsPolygon({ x: this.center.x, y: this.center.z }, this.config.visibleRadius, polygon)
-        this.group.visible = visible
+        this.group.visible = visible && !this.forceHidden // forceHidden: ölçüm/hata ayıklama
 
-        if(!visible)
+        if(!this.group.visible)
             return
 
         // Güncelleme gerekli mi: dans sürerken ya da geçiş/ilk poz uygulanırken
