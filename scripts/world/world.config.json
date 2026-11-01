@@ -91,5 +91,89 @@
             "x": 51.75,
             "z": 38.05
         }
+    },
+    "social": {
+        "_note": "Konumlar refCenter'a göre yerel (areas.glb social). Halka yarım çember: açı = π·(slot+0.5)/bağlantı sayısı (sources/data/social.js). Dekor: ikon/heykel kalkınca boşalan merkez ve halka için çalı ve çiçek kümeleri.",
+        "radius": 7.85,
+        "nodes": {
+            "GitHub": "gitHubPhysicalDynamic",
+            "LinkedIn": "linkedInPhysicalDynamic",
+            "X": "xPhysicalDynamic"
+        },
+        "remove": [
+            "baguiraPhysicalDynamic",
+            "boyPhysicalDynamic",
+            "sudoPhysicalDynamic",
+            "refStatuePhysicalDynamic",
+            "blueskyPhysicalDynamic.001",
+            "discordPhysicalDynamic",
+            "mailPhysicalDynamic",
+            "twitchPhysicalDynamic",
+            "youtubePhysicalDynamic",
+            "onlyfansPhysicalDynamic",
+            "refFan",
+            "refOnlyFans"
+        ],
+        "decor": {
+            "bushes": [
+                {
+                    "x": 8.9,
+                    "z": -0.0,
+                    "y": 0.85,
+                    "scale": 1.15
+                },
+                {
+                    "x": -8.9,
+                    "z": -0.0,
+                    "y": 0.85,
+                    "scale": 1.15
+                },
+                {
+                    "x": 9.01,
+                    "z": -5.2,
+                    "y": 0.85,
+                    "scale": 1.15
+                },
+                {
+                    "x": 0.0,
+                    "z": -10.4,
+                    "y": 0.85,
+                    "scale": 1.15
+                },
+                {
+                    "x": -9.01,
+                    "z": -5.2,
+                    "y": 0.85,
+                    "scale": 1.15
+                }
+            ],
+            "flowers": [
+                {
+                    "x": 0,
+                    "z": 0,
+                    "y": 0.384
+                },
+                {
+                    "x": -1.4,
+                    "z": 1.0,
+                    "y": 0.384
+                },
+                {
+                    "x": 1.4,
+                    "z": -0.9,
+                    "y": 0.384
+                },
+                {
+                    "x": 3.93,
+                    "z": -6.8,
+                    "y": 0.384
+                },
+                {
+                    "x": -3.92,
+                    "z": -6.8,
+                    "y": 0.384
+                }
+            ]
+        }
     }
 }

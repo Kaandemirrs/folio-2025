@@ -138,12 +138,6 @@ export default
         1
     ],
     [
-        'statueDown',
-        'Devrim!',
-        'Şu heykeli yık.',
-        1
-    ],
-    [
         'konami',
         'Yukarı yukarı aşağı aşağı…',
         'Gerisini biliyorsun.',

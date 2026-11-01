@@ -16,13 +16,14 @@ sc.render.engine='BLENDER_WORKBENCH'
 sc.render.resolution_x,sc.render.resolution_y=1600,900
 w=bpy.data.worlds.new('w');w.color=(0.62,0.7,0.62);sc.world=w
 sh=sc.display.shading;sh.light='STUDIO';sh.color_type='TEXTURE';sh.show_object_outline=False
-# hide everything outside landing area box
+# merkez çevresindeki kutunun dışını gizle (kutu: ortho ölçeğinin yarısı + pay)
+CX,CZ=float(argv[2]),float(argv[4]);HX=HZ=float(argv[5])*0.9
 keep=[]
 for ob in bpy.data.objects:
     if ob.type=='MESH':
         wp=ob.matrix_world.translation
         # glTF (49,3,38) -> blender (49,-38,3)
-        if abs(wp.x-40)<28 and abs(wp.y+38.5)<22: pass
+        if abs(wp.x-CX)<HX and abs(wp.y+CZ)<HZ: pass
         else: ob.hide_render=True
 ctr=Vector((float(argv[2]),-float(argv[4]),float(argv[3])))
 cd=bpy.data.cameras.new('c');cam=bpy.data.objects.new('c',cd);sc.collection.objects.link(cam);sc.camera=cam

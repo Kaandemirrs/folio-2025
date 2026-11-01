@@ -1,6 +1,7 @@
 /**
  * areas.glb yaması: temiz kaynaktan (resources/original/) okur, adım adım düğüm siler/ekler,
  * static/areas/areas.glb (ham) ve areas-compressed.glb (Draco + KTX2) olarak yeniden yazar.
+ * Aynı yama düzeni küçük referans GLB'leri (çalı, çiçek) için de geçerli: hedef başına bir adım listesi.
  *
  *   npm run world                # bpy ile harfleri üretir + yamayı uygular
  *   node scripts/world/patch_areas.mjs   # yalnızca yama (letters.glb hazırsa)
@@ -9,6 +10,7 @@
  * oysa buradaki yama diğer her düğümü bayt düzeyinde olduğu gibi bırakmalı.
  */
 import { readFileSync, existsSync } from 'node:fs'
+import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { NodeIO, PropertyType } from '@gltf-transform/core'
@@ -125,21 +127,244 @@ const stepLetters = async (doc, report) =>
     report.push(`landing: ${items.length} harf eklendi (${triangles} üçgen, toplam uzunluk ${total.toFixed(2)})`)
 }
 
-const STEPS = [
-    stepLetters,
+
+/**
+ * Adım: Sosyal alan. Bruno'ya ait figürleri/heykeli ve kullanılmayan ikonları siler, kalan ikonları (sources/data/social.js)
+ * yarım çemberde dengeli yeniden yerleştirir. Kaide (Cube.133) tek mesh: bağlı parçalara ayrılır, gerekmeyenler silinir,
+ * kalanlar yeni açıya döndürülür; kaide çarpıştırıcıları (physicalFixed.002) aynı şekilde güncellenir.
+ */
+const quat = (yaw) => [ 0, Math.sin(yaw / 2), 0, Math.cos(yaw / 2) ]
+
+// Üçgenleri konum eşleşmesiyle bağlı parçalara ayırır → { islands: [{ tris: [..], min, max }], of: Int32Array(üçgen → parça) }
+const splitIslands = (prim) =>
+{
+    const pos = prim.getAttribute('POSITION')
+    const idx = prim.getIndices().getArray()
+    const key = (i) => pos.getElement(i, []).map(x => Math.round(x * 1000)).join(',')
+    const parent = new Map()
+    const find = (k) => { while(parent.get(k) !== k) { parent.set(k, parent.get(parent.get(k))); k = parent.get(k) } return k }
+    for(let i = 0; i < pos.getCount(); i++)
+    {
+        const k = key(i)
+        if(!parent.has(k)) parent.set(k, k)
+    }
+    for(let t = 0; t < idx.length; t += 3)
+    {
+        const a = find(key(idx[t]))
+        for(const o of [ 1, 2 ])
+        {
+            const b = find(key(idx[t + o]))
+            if(a !== b) parent.set(b, a)
+        }
+    }
+    const roots = new Map()
+    const islands = []
+    const of = new Int32Array(idx.length / 3)
+    for(let t = 0; t < idx.length; t += 3)
+    {
+        const r = find(key(idx[t]))
+        if(!roots.has(r))
+        {
+            roots.set(r, islands.length)
+            islands.push({ tris: [], min: [ Infinity, Infinity, Infinity ], max: [ -Infinity, -Infinity, -Infinity ] })
+        }
+        const isl = islands[roots.get(r)]
+        of[t / 3] = roots.get(r)
+        isl.tris.push(t / 3)
+        for(let o = 0; o < 3; o++)
+        {
+            const p = pos.getElement(idx[t + o], [])
+            for(let k = 0; k < 3; k++)
+            {
+                isl.min[k] = Math.min(isl.min[k], p[k])
+                isl.max[k] = Math.max(isl.max[k], p[k])
+            }
+        }
+    }
+    return { islands, of }
+}
+
+// Seçilen üçgenlerden yeni (sıkıştırılmış) bir primitive içeriği üretir; transform(üçgenIslandNo, [x,y,z]) → [x,y,z], normal için rotasyon (yaw)
+const rebuildPrimitive = (doc, prim, split, keep) =>
+{
+    const idx = prim.getIndices().getArray()
+    const attrs = prim.listSemantics().map(sem => ({ sem, acc: prim.getAttribute(sem), arr: [] }))
+    const map = new Map()
+    const out = []
+    const posAttr = prim.getAttribute('POSITION')
+    const normalAttr = prim.getAttribute('NORMAL')
+
+    for(const [ islandNo, yaw, dx, dz, cx, cz ] of keep)
+    {
+        const cos = Math.cos(yaw), sin = Math.sin(yaw)
+        for(const t of split.islands[islandNo].tris)
+        {
+            for(let o = 0; o < 3; o++)
+            {
+                const old = idx[t * 3 + o]
+                const mk = `${islandNo}:${old}`
+                if(!map.has(mk))
+                {
+                    map.set(mk, map.size)
+                    for(const a of attrs)
+                    {
+                        const e = a.acc.getElement(old, [])
+                        if(a.sem === 'POSITION')
+                        {
+                            const x = e[0] - cx, z = e[2] - cz
+                            e[0] = cx + x * cos + z * sin + dx
+                            e[2] = cz - x * sin + z * cos + dz
+                        }
+                        else if(a.sem === 'NORMAL')
+                        {
+                            const nx = e[0], nz = e[2]
+                            e[0] = nx * cos + nz * sin
+                            e[2] = - nx * sin + nz * cos
+                        }
+                        a.arr.push(...e)
+                    }
+                }
+                out.push(map.get(mk))
+            }
+        }
+    }
+    for(const a of attrs)
+    {
+        const acc = prim.getAttribute(a.sem)
+        acc.setArray(new Float32Array(a.arr))
+    }
+    prim.getIndices().setArray(new Uint32Array(out))
+}
+
+const stepSocial = async (doc, report) =>
+{
+    const cfg = config.social
+    const social = (await import(pathToFileURL(path.join(root, 'sources/data/social.js')).href)).default
+    const slots = social.length
+    const slotAngle = (slot) => Math.PI * (slot + 0.5) / slots
+
+    // 1) Silinecek düğümler
+    let removed = 0
+    for(const name of cfg.remove)
+    {
+        const node = find(doc, name)
+        if(!node)
+            throw new Error(`social: ${name} bulunamadı`)
+        removeNode(node)
+        removed++
+    }
+    report.push(`social: ${removed} düğüm silindi (${cfg.remove.join(', ')})`)
+
+    // 2) Kaide mesh'i: orijinal slot → kalacak olan
+    const center = find(doc, 'refCenter').getTranslation()
+    const oldSlotOf = (x, z) => Math.round(Math.atan2(-z, x) / (Math.PI / 7))
+    const platform = find(doc, 'Cube.133')
+    const prim = platform.getMesh().listPrimitives()[0]
+    const split = splitIslands(prim)
+
+    const keep = []
+    const colliders = find(doc, 'physicalFixed.002')
+    const used = []
+
+    for(const link of social)
+    {
+        const iconNode = find(doc, cfg.nodes[link.name])
+        const iconPos = iconNode.getTranslation()
+        const oldSlot = oldSlotOf(iconPos[0] - center[0], iconPos[2] - center[2])
+        const oldAngle = oldSlot * Math.PI / 7
+        const newAngle = slotAngle(link.slot)
+        const delta = newAngle - oldAngle   // yaw farkı (+Y etrafında)
+
+        // Eski kaide parçası: merkezi eski halka konumunda olan
+        const oldX = Math.cos(oldAngle) * cfg.radius, oldZ = - Math.sin(oldAngle) * cfg.radius
+        const islandNo = split.islands.findIndex(isl =>
+        {
+            const cx = (isl.min[0] + isl.max[0]) / 2, cz = (isl.min[2] + isl.max[2]) / 2
+            return Math.hypot(cx - oldX, cz - oldZ) < 0.2
+        })
+        if(islandNo < 0)
+            throw new Error(`social: ${link.name} kaidesi bulunamadı (slot ${oldSlot})`)
+
+        const isl = split.islands[islandNo]
+        const newX = Math.cos(newAngle) * cfg.radius, newZ = - Math.sin(newAngle) * cfg.radius
+        keep.push([ islandNo, delta, newX - oldX, newZ - oldZ, oldX, oldZ ])
+
+        // İkon: yeni halka konumu (yükseklik ve duruş aynı)
+        iconNode.setTranslation([ center[0] + newX, iconPos[1], center[2] + newZ ])
+
+        // Kaide çarpıştırıcısı
+        const collider = colliders.listChildren().find(c => /^cuboid/.test(c.getName()) && Math.hypot(c.getTranslation()[0] - oldX, c.getTranslation()[2] - oldZ) < 0.2)
+        if(!collider)
+            throw new Error(`social: ${link.name} kaide çarpıştırıcısı bulunamadı`)
+        const t = collider.getTranslation()
+        collider.setTranslation([ newX, t[1], newZ ])
+        collider.setRotation(quat(newAngle))
+        used.push(collider)
+    }
+
+    rebuildPrimitive(doc, prim, split, keep)
+
+    // Kullanılmayan kaide çarpıştırıcıları ve merkez kaide gövdesi (hull)
+    for(const child of colliders.listChildren())
+    {
+        if(!used.includes(child))
+            removeNode(child)
+    }
+
+    report.push(`social: ${slots} ikon yarım çemberde yeniden yerleştirildi (açılar ${social.map(l => (slotAngle(l.slot) * 180 / Math.PI).toFixed(0) + '°').join(', ')}); kaide mesh'i ${split.islands.length} parçadan ${keep.length}'e indirildi`)
+}
+
+/**
+ * Referans GLB'lerine (çalı, çiçek) dekor ekleme. Referans düğümleri çalı için Icosphere.N (ölçek = boyut),
+ * çiçek için flowers.N (küme merkezi) biçiminde; yeni düğümler listenin sonuna eklenir (eski rastgele dizi bozulmasın).
+ */
+const stepSocialDecor = (kind) => async (doc, report) =>
+{
+    const cfg = config.social
+    const items = cfg.decor[kind === 'bushes' ? 'bushes' : 'flowers']
+    if(!items.length)
+        return
+
+    const areas = await io.read(path.join(root, 'resources/original/areas.glb'))
+    const socialNode = find(areas, 'social')
+    const socialPos = socialNode.getTranslation()
+    const center = find(areas, 'refCenter').getTranslation()
+    const sceneNodes = doc.getRoot().listScenes()[0].listChildren()
+    const template = sceneNodes[0]
+
+    items.forEach((item, i) =>
+    {
+        const name = kind === 'bushes' ? `Icosphere.${900 + i}` : `flowers.${900 + i}`
+        const node = doc.createNode(name)
+            .setMesh(template.getMesh())
+            .setTranslation([ socialPos[0] + center[0] + item.x, item.y ?? template.getTranslation()[1], socialPos[2] + center[2] + item.z ])
+            .setScale([ item.scale ?? template.getScale()[0], item.scale ?? template.getScale()[1], item.scale ?? template.getScale()[2] ])
+        doc.getRoot().listScenes()[0].addChild(node)
+    })
+    report.push(`social dekor: ${items.length} ${kind === 'bushes' ? 'çalı' : 'çiçek kümesi'} eklendi`)
+}
+
+// Hedef başına adımlar. Her hedefin kaynağı resources/original/<ad>.glb ve <ad>-compressed.glb
+const TARGETS = [
+    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial ] },
+    { original: 'bushesReferences', out: 'static/bushes/bushesReferences', steps: [ stepSocialDecor('bushes') ] },
+    { original: 'flowersReferences', out: 'static/flowers/flowersReferences', steps: [ stepSocialDecor('flowers') ] },
 ]
 
 /**
  * Çalıştır
  */
-const run = async (input, output, compressed) =>
+const run = async (input, output, compressed, steps) =>
 {
     const doc = await io.read(input)
     const report = []
-    for(const step of (process.env.WORLD_STEPS === 'none' ? [] : STEPS))
+    for(const step of (process.env.WORLD_STEPS === 'none' ? [] : steps))
         await step(doc, report)
 
     // Yetim mesh/accessor temizliği. Malzeme ve dokulara dokunulmaz (kod bunları ada göre arıyor).
+    if(report.length === 0)
+        return report // bu hedefte değişiklik yok: dosyaya dokunma
+
     await doc.transform(prune({ propertyTypes: [ PropertyType.MESH, PropertyType.ACCESSOR ], keepLeaves: true, keepAttributes: true, keepIndices: true }))
 
     if(compressed)
@@ -158,11 +383,15 @@ const run = async (input, output, compressed) =>
     return report
 }
 
-for(const [ input, output, compressed ] of [
-    [ 'resources/original/areas.glb', process.env.WORLD_OUT_DIR ? `${process.env.WORLD_OUT_DIR}/areas.glb` : 'static/areas/areas.glb', false ],
-    [ 'resources/original/areas-compressed.glb', process.env.WORLD_OUT_DIR ? `${process.env.WORLD_OUT_DIR}/areas-compressed.glb` : 'static/areas/areas-compressed.glb', true ],
-])
+const outDir = process.env.WORLD_OUT_DIR
+for(const target of TARGETS)
 {
-    const report = await run(path.join(root, input), path.resolve(root, output), compressed)
-    console.log(`${output}\n  ${report.join('\n  ')}`)
+    for(const compressed of [ false, true ])
+    {
+        const suffix = compressed ? '-compressed.glb' : '.glb'
+        const input = path.join(root, `resources/original/${target.original}${suffix}`)
+        const output = outDir ? path.join(outDir, path.basename(target.out) + suffix) : path.resolve(root, target.out + suffix)
+        const report = await run(input, output, compressed, target.steps)
+        console.log(`${path.relative(root, output)}\n  ${report.join('\n  ')}`)
+    }
 }

@@ -224,12 +224,6 @@ export class Game
             if(this.world.areas.bowling)
                 this.world.areas.bowling.restart()
 
-            // Social
-            if(this.world.areas.social)
-            {
-                this.world.areas.social.statue.down = false
-            }
-            
             // Benches
             if(this.world.benches)
                 this.world.benches.instancedGroup.needsUpdate = true

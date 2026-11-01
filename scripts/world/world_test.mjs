@@ -69,6 +69,16 @@ for(const name of SCENARIOS)
         }
         await page.screenshot({ path: `${OUT}/natural_landing.png` })
     }
+    else if(name === 'social')
+    {
+        await weather(0.2, 0.07)
+        await page.evaluate(() => window.game.player.respawn('social'))
+        await sleep(6000)
+        await page.screenshot({ path: `${OUT}/social_ingame.png` })
+        info.social = await page.evaluate(() => window.game.interactivePoints.items.filter(i => ['X', 'GitHub', 'LinkedIn'].includes(i.name)).map(i => ({ name: i.name, x: +i.position.x.toFixed(1), z: +i.position.z.toFixed(1) })))
+        // Çalı/çiçekler uzaktan yüklenir, bir de ikon halkasının merkezine yakın dur
+        await page.evaluate(() => { window.game.physicalVehicle.position && 0 })
+    }
     else if(name === 'flagwind')
     {
         await page.evaluate(() => window.game.player.respawn('controls'))
