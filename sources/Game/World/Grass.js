@@ -9,7 +9,8 @@ export class Grass
     {
         this.game = Game.getInstance()
 
-        this.subdivisions = 280
+        this.subdivisions = this.game.quality.pick(280, 160) // high: 78.400 bıçak, low: 25.600
+        this.qualityScale = this.bladeScaleFor(this.subdivisions)
         const halfExtent = this.game.view.optimalArea.radius
         this.size = halfExtent * 2
         this.count = this.subdivisions * this.subdivisions
@@ -28,6 +29,11 @@ export class Grass
             this.update()
         }, 10)
 
+        this.game.quality.events.on('change', () =>
+        {
+            this.applyQuality()
+        })
+
         // Resize
         this.game.viewport.events.on('throttleChange', () =>
         {
@@ -37,13 +43,35 @@ export class Grass
             this.surfaceOverflow = Math.max(0, this.surface - this.surfaceIdeal) / this.surfaceIdeal
             
             this.sizeUniform.value = this.size
-            this.bladeWidth.value = 0.1 * (1 + this.surfaceOverflow * 0.4)
-            this.bladeHeight.value = 0.6 * (1 + this.surfaceOverflow * 0.4)
+            this.bladeWidth.value = 0.1 * (1 + this.surfaceOverflow * 0.4) * this.qualityScale.width
+            this.bladeHeight.value = 0.6 * (1 + this.surfaceOverflow * 0.4) * this.qualityScale.height
 
             this.geometry.dispose()
             this.setGeometry()
             this.mesh.geometry = this.geometry
         }, 2)
+    }
+
+    // Bıçak sayısı azaldığında seyrek görünmesin diye bıçaklar kalınlaşır ve biraz uzar
+    bladeScaleFor(subdivisions)
+    {
+        const ratio = 280 / subdivisions
+        return { width: ratio, height: Math.sqrt(ratio) }
+    }
+
+    // Kalite değişince (Ayarlar'dan): geometri yeniden kurulur, sayfa yenilemesi gerekmez
+    applyQuality()
+    {
+        this.subdivisions = this.game.quality.pick(280, 160)
+        this.count = this.subdivisions * this.subdivisions
+        this.fragmentSize = this.size / this.subdivisions
+        this.qualityScale = this.bladeScaleFor(this.subdivisions)
+        this.bladeWidth.value = 0.1 * (1 + this.surfaceOverflow * 0.4) * this.qualityScale.width
+        this.bladeHeight.value = 0.6 * (1 + this.surfaceOverflow * 0.4) * this.qualityScale.height
+
+        this.geometry.dispose()
+        this.setGeometry()
+        this.mesh.geometry = this.geometry
     }
 
     setGeometry()
@@ -99,8 +127,8 @@ export class Grass
         const wind = varying(vec2())
         const bladePosition = varying(vec2())
 
-        this.bladeWidth = uniform(0.1 * (1 + this.surfaceOverflow * 0.5))
-        this.bladeHeight = uniform(0.6 * (1 + this.surfaceOverflow * 0.5))
+        this.bladeWidth = uniform(0.1 * (1 + this.surfaceOverflow * 0.5) * this.qualityScale.width)
+        this.bladeHeight = uniform(0.6 * (1 + this.surfaceOverflow * 0.5) * this.qualityScale.height)
         this.bladeHeightRandomness = uniform(0.6)
         this.sizeUniform = uniform(this.size)
 

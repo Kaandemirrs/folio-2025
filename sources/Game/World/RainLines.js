@@ -220,6 +220,15 @@ export class RainLines
         this.mesh.frustumCulled = false
         this.mesh.renderOrder = 1
         this.game.scene.add(this.mesh)
+
+        // Çizgi sayısı: high 2048, low 1024 (drawRange; kalite değişince anında uygulanır)
+        const applyQuality = () =>
+        {
+            const lines = this.game.quality.pick(this.count, this.count / 2)
+            this.geometry.setDrawRange(0, lines * 6)
+        }
+        applyQuality()
+        this.game.quality.events.on('change', applyQuality)
     }
 
     update()

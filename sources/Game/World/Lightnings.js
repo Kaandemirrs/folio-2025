@@ -135,7 +135,7 @@ export class Lightnings
     setAnticipationParticles()
     {
         this.anticipationParticles = {}
-        this.anticipationParticles.count = 32
+        this.anticipationParticles.count = this.game.quality.pick(32, 16) // sayfa yenilemesi gerekir
         this.anticipationParticles.duration = 5
 
         // Uniforms
@@ -320,7 +320,7 @@ export class Lightnings
     setExplosionParticles()
     {
         this.explosionParticles = {}
-        this.explosionParticles.count = 128
+        this.explosionParticles.count = this.game.quality.pick(128, 64) // sayfa yenilemesi gerekir
         this.explosionParticles.duration = 4
         this.explosionParticles.fallAmplitude = 1
         

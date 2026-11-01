@@ -277,6 +277,14 @@ export class Leaves
     {
         this.mesh = new THREE.Mesh(this.geometry, this.material)
         this.mesh.count = this.count
+
+        // Görünen yaprak sayısı: low'da yarısı (kalite değişince anında uygulanır)
+        const applyQuality = () =>
+        {
+            this.mesh.count = this.game.quality.pick(this.count, Math.ceil(this.count / 2))
+        }
+        applyQuality()
+        this.game.quality.events.on('change', applyQuality)
         this.mesh.frustumCulled = false
         this.mesh.castShadow = true
         this.mesh.receiveShadow = true

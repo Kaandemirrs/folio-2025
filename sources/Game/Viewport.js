@@ -1,15 +1,24 @@
 import { Events } from './Events.js'
+import { Game } from './Game.js'
 
 export class Viewport
 {
     constructor(domElement)
     {
+        this.game = Game.getInstance()
         this.domElement = domElement
 
         this.events = new Events()
         
         this.measure()
         this.setResize()
+
+        // Kalite değişince piksel oranı sınırı da değişir
+        this.game.quality.events.on('change', () =>
+        {
+            this.measure()
+            this.events.trigger('change')
+        })
     }
 
     measure()
@@ -21,7 +30,7 @@ export class Viewport
         this.ratio = this.width / this.height
 
         this.pixelRatioPure = window.devicePixelRatio
-        this.pixelRatioMax = 2
+        this.pixelRatioMax = this.game.quality.pick(2, 1.5) // high: 2, low: 1.5
         this.pixelRatio = Math.min(this.pixelRatioPure, this.pixelRatioMax)
     }
 

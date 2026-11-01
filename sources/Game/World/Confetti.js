@@ -21,7 +21,7 @@ export class Confetti
 
         this.pool = []
         this.poolSize = 4
-        this.count = 500
+        this.count = this.game.quality.pick(500, 250) // sayfa yenilemesi gerekir
         this.geometry = new THREE.PlaneGeometry(0.1, 0.2)
 
         this.colorsUniform = uniformArray([
