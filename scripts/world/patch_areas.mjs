@@ -40,7 +40,27 @@ const removeNode = (node) =>
 {
     for(const child of node.listChildren())
         removeNode(child)
+
+    const mesh = node.getMesh()
     node.dispose()
+
+    // Başka düğümün kullanmadığı mesh'i ve accessor'larını da sil (yetim accessor dosyaya yazılır, Draco dışında kalır)
+    const orphaned = (property) => property.listParents().every(parent => parent.propertyType === 'Root')
+    if(mesh && orphaned(mesh))
+    {
+        const accessors = []
+        for(const primitive of mesh.listPrimitives())
+        {
+            accessors.push(...primitive.listAttributes(), primitive.getIndices())
+            primitive.dispose()
+        }
+        mesh.dispose()
+        for(const accessor of accessors)
+        {
+            if(accessor && orphaned(accessor))
+                accessor.dispose()
+        }
+    }
 }
 
 const copyMesh = (doc, sourceMesh, material) =>
@@ -373,14 +393,16 @@ const run = async (input, output, compressed, steps) =>
 {
     const doc = await io.read(input)
     const report = []
-    for(const step of (process.env.WORLD_STEPS === 'none' ? [] : steps))
+    for(const step of (process.env.WORLD_STEPS === 'none' ? [] : steps.filter(step => !process.env.WORLD_ONLY || process.env.WORLD_ONLY.split(',').includes(step.name))))
         await step(doc, report)
 
     // Yetim mesh/accessor temizliği. Malzeme ve dokulara dokunulmaz (kod bunları ada göre arıyor).
     if(report.length === 0)
         return report // bu hedefte değişiklik yok: dosyaya dokunma
 
-    await doc.transform(prune({ propertyTypes: [ PropertyType.MESH, PropertyType.ACCESSOR ], keepLeaves: true, keepAttributes: true, keepIndices: true }))
+    // İki geçiş: önce yetim mesh'ler, sonra onların artık yetim kalan accessor'ları
+    for(let pass = 0; pass < 2; pass++)
+        await doc.transform(prune({ propertyTypes: [ PropertyType.MESH, PropertyType.ACCESSOR ], keepLeaves: true, keepAttributes: true, keepIndices: true }))
 
     if(compressed)
     {
