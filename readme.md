@@ -22,6 +22,14 @@ npm run build
 
 `.env` içinde en azından `VITE_COMPRESSED=1` ve `VITE_MUSIC=1` olmalı. Bir değişkeni kapatmak için `0` yazma, boş bırak.
 
+## Yayın ve SEO
+
+- Domain: https://kaandemirdev.com (Cloudflare Workers statik varlıklar, `wrangler.jsonc`; `static/_headers` önbellek ve güvenlik başlıkları).
+- Metin sürümü `/hakkimda/` **üretilir**: veriyi (`sources/data/projects.js`, `contact.js`, `social.js`) okuyup `sources/hakkimda/index.html`, `static/sitemap.xml`, `static/robots.txt` ve web görsellerini yazar: `node scripts/seo/build_about.mjs`. Proje verisi değişince çalıştır.
+- Paylaşım görseli: `node scripts/seo/make_share_image.mjs` (dev sunucusu açıkken), favicon seti: `node scripts/seo/make_favicons.mjs`.
+- Harita görseli dünyadan üretilir: `node scripts/map/render_map.mjs <çıktı.png>` (dev sunucusu açıkken).
+- Varsayılan grafik kalitesi her cihazda **düşük**; Ayarlar'dan yükseğe geçilirse tercih `localStorage`'da saklanır.
+
 ## Hata ayıklama
 
 Geliştirme sunucusunda (`npm run dev`) adresin sonuna `#debug` ekleyip sayfayı yenile; `#stats`, `#inspector` ve `#skip` da kullanılabilir. Bu araçlar production build'de kapalıdır; açmak için build sırasında `VITE_DEBUG=1` tanımla.
