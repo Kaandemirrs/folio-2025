@@ -11,7 +11,8 @@ export class ExplosiveCrates
 
         // Base and references
         const [ base, references ] = InstancedGroup.getBaseAndReferencesFromInstances(this.game.resources.explosiveCratesModel.scene.children)
-        this.references = references
+        // Başlangıç ekranındaki 3 bomba kutusu (46-48 / 38.5, "Projeler / Bakkal" tabelasının yanı) kaldırıldı
+        this.references = references.filter(reference => Math.hypot(reference.position.x - 47.2, reference.position.z - 38.5) > 3)
         
         // Setup base
         base.castShadow = true
