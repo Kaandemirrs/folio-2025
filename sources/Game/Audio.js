@@ -723,6 +723,9 @@ export class Audio
         if(soundToggleLocal !== null && soundToggleLocal === '1')
             this.mute.activate()
 
+        // Ekrandaki ses düğmesi (harita düğmesinin altı)
+        this.game.domElement.querySelector('.js-sound-trigger')?.addEventListener('click', () => { this.mute.toggle() })
+
         // Inputs keyboard
         this.game.inputs.addActions([
             { name: 'mute', categories: [ 'intro', 'modal', 'menu', 'racing', 'cinematic', 'wandering' ], keys: [ 'Keyboard.l' ] },

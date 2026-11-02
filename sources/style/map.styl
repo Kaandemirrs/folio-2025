@@ -328,3 +328,18 @@
                     
                     @media only screen and (max-width 520px)
                         display initial
+
+
+// Ses düğmesi: harita düğmesinin (top 70px) altında
+.sound-trigger
+    top 120px
+
+    .sound-off
+        display none
+
+    html.is-audio-muted &
+        .sound-on
+            display none
+
+        .sound-off
+            display block
