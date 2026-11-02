@@ -485,9 +485,27 @@ const stepDistinctions = async (doc, report) =>
     report.push('projects: Bruno ödül objeleri silindi (awwwards, cssda, fwa)')
 }
 
+/**
+ * Adım: Kariyer alanındaki Bruno'nun zaman çizelgesi kalkar: renkli zemin çizgileri (Plane.018/022/035/048/049), taş levhalı çizgiler
+ * (refLine ×6: IRL TEACHER, UZIK, FREELANCER, HETIC… etiketleri careerText düğümlerinde) ve yıl göstergesi (refYear).
+ * Alan bölgesi (refZoneBounding.001 / refZoneFrustum.001) yerinde kalır; pano World/CareerBoard.js ile kodda kurulur.
+ */
+const stepCareer = async (doc, report) =>
+{
+    const career = find(doc, 'career')
+    const targets = career.listChildren().filter(child => /^(Plane\.(018|022|035|048|049)|refLine(\.\d+)?|refYear)$/.test(child.getName()))
+    if(targets.length !== 12)
+        throw new Error(`career: 12 düğüm bekleniyordu, ${targets.length} bulundu`)
+
+    for(const node of targets)
+        removeNode(node)
+
+    report.push(`career: zaman çizelgesi silindi (${targets.map(node => node.getName()).join(', ')})`)
+}
+
 // Hedef başına adımlar. Her hedefin kaynağı resources/original/<ad>.glb ve <ad>-compressed.glb
 const TARGETS = [
-    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls, stepLabels, stepDistinctions ] },
+    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls, stepLabels, stepDistinctions, stepCareer ] },
     { original: 'bushesReferences', out: 'static/bushes/bushesReferences', steps: [ stepSocialDecor('bushes') ] },
     { original: 'flowersReferences', out: 'static/flowers/flowersReferences', steps: [ stepSocialDecor('flowers') ] },
 ]

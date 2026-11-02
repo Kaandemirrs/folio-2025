@@ -37,6 +37,13 @@ export class ClosingManager
                 else if(this.game.world.projectBoard?.viewer?.isActive)
                     this.game.world.projectBoard.viewer.close()
 
+                // Kariyer panosu (kamera ya da tam ekran modal) => Kapat; kapanırken Esc yutulur
+                else if(this.game.world.areas?.career?.board?.isActive)
+                    this.game.world.areas.career.board.close()
+                else if(this.game.world.areas?.career?.board?.isTransitioning)
+                {
+                }
+
                 // Garaj geçişte (araç yükleniyor / yeniden doğuyor / kapanıyor) => Esc yutulur: menü açılmasın, durum makinesi bozulmasın
                 else if(this.game.world.garage?.isTransitioning)
                 {
