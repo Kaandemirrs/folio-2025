@@ -98,7 +98,8 @@
         "nodes": {
             "GitHub": "gitHubPhysicalDynamic",
             "LinkedIn": "linkedInPhysicalDynamic",
-            "X": "xPhysicalDynamic"
+            "X": "xPhysicalDynamic",
+            "E-posta gönder": "mailPhysicalDynamic"
         },
         "remove": [
             "baguiraPhysicalDynamic",
@@ -107,7 +108,6 @@
             "refStatuePhysicalDynamic",
             "blueskyPhysicalDynamic.001",
             "discordPhysicalDynamic",
-            "mailPhysicalDynamic",
             "twitchPhysicalDynamic",
             "youtubePhysicalDynamic",
             "onlyfansPhysicalDynamic",

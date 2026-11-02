@@ -2,6 +2,7 @@ import { Game } from '../../Game.js'
 import { InteractivePoints } from '../../InteractivePoints.js'
 import socialData from '../../../data/social.js'
 import { Area } from './Area.js'
+import { Envelopes } from '../Envelopes.js'
 
 export class SocialArea extends Area
 {
@@ -37,6 +38,15 @@ export class SocialArea extends Area
             position.y = 1
             position.z -= Math.sin(angle) * radius
 
+            // Zarf ikonunun üstüne "Bana ulaşın" levhası (ikon halkası yarıçapı 7.85, scripts/world/world.config.json > social.radius)
+            if(link.action === 'contact')
+            {
+                const label = Envelopes.createLabel()
+                label.position.set(this.center.x + Math.cos(angle) * 7.85, 2.9, this.center.z - Math.sin(angle) * 7.85)
+                label.rotation.y = Math.PI / 4 // kameraya (+X+Z) bakar
+                this.game.scene.add(label)
+            }
+
             this.interactivePoint = this.game.interactivePoints.create(
                 position,
                 link.name,
@@ -44,7 +54,10 @@ export class SocialArea extends Area
                 InteractivePoints.STATE_CONCEALED,
                 () =>
                 {
-                    window.open(link.url, '_blank')
+                    if(link.action === 'contact')
+                        Envelopes.contact()
+                    else
+                        window.open(link.url, '_blank')
                 },
                 () =>
                 {

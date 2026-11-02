@@ -48,6 +48,7 @@ export class Map
             { name: 'Başlangıç', respawnName: 'landing', offset: { x: 0.02, y: 0 } },
             { name: 'Projeler', respawnName: 'projects', offset: { x: 0, y: -0.02 } },
             { name: 'Sosyal', respawnName: 'social', offset: { x: -0.01, y: -0.04 } },
+            { name: 'İletişim', respawnName: 'contact', offset: { x: 0, y: 0.03 } },
         ]
 
         for(const prop of propsConfig.props)

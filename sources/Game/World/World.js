@@ -34,6 +34,7 @@ import { Jukeboxes } from './Jukeboxes.js'
 import { Signs } from './Signs.js'
 import { ProjectBoard } from './ProjectBoard.js'
 import { Horon } from './Horon.js'
+import { Envelopes } from './Envelopes.js'
 
 export class World
 {
@@ -91,6 +92,7 @@ export class World
             this.signs = new Signs()
             this.projectBoard = new ProjectBoard()
             this.horon = new Horon()
+            this.envelopes = new Envelopes()
         }
     }
 

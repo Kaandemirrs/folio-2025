@@ -25,6 +25,7 @@ import { NodeIO, PropertyType } from '@gltf-transform/core'
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
 import { draco, prune } from '@gltf-transform/functions'
 import draco3d from 'draco3dgltf'
+import { buildEnvelope, COLORS, ENVELOPE } from '../envelope/envelope_geometry.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const config = JSON.parse(readFileSync(path.join(root, 'scripts/world/world.config.json'), 'utf8'))
@@ -264,6 +265,45 @@ const rebuildPrimitive = (doc, prim, split, keep) =>
     prim.getIndices().setArray(new Uint32Array(out))
 }
 
+// Posta ikonunun (Bruno'nun modeli) mesh'ini kendi zarf modelimizle değiştirir; palet malzemesi korunur, çarpıştırıcılar zarfa göre küçülür.
+// Zarf X ikonu gibi ön yüzü +Z, y konumu X ikonuyla aynı (kaideye oturur).
+const replaceMailWithEnvelope = (doc, node, referenceIcon, report) =>
+{
+    const buffer = doc.getRoot().listBuffers()[0]
+    const mesh = node.getMesh()
+    const material = mesh.listPrimitives()[0].getMaterial()
+    for(const primitive of mesh.listPrimitives())
+        primitive.dispose()
+
+    const positions = [], normals = [], uvs = [], indices = []
+    for(const [ name, part ] of Object.entries(buildEnvelope()))
+    {
+        const base = positions.length / 3
+        positions.push(...part.positions)
+        normals.push(...part.normals)
+        const u = (COLORS[name].cell * 4 + 2) / 128
+        for(let i = 0; i < part.positions.length / 3; i++)
+            uvs.push(u, 0.5)
+        for(const index of part.indices)
+            indices.push(base + index)
+    }
+    mesh.addPrimitive(doc.createPrimitive()
+        .setMaterial(material)
+        .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(new Float32Array(positions)).setBuffer(buffer))
+        .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(new Float32Array(normals)).setBuffer(buffer))
+        .setAttribute('TEXCOORD_0', doc.createAccessor().setType('VEC2').setArray(new Float32Array(uvs)).setBuffer(buffer))
+        .setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint16Array(indices)).setBuffer(buffer)))
+
+    // Çarpıştırıcılar: ikisinden biri kalır, zarf boyutunda düz kutu (X ikonunun çarpıştırıcı/mesh oranlarıyla)
+    const cuboids = node.listChildren().filter(child => /^cuboid/.test(child.getName()))
+    cuboids.slice(1).forEach(removeNode)
+    cuboids[0].setTranslation([ 0, 0, 0 ]).setRotation([ 0, 0, 0, 1 ]).setScale([ ENVELOPE.width * 0.8, ENVELOPE.height, ENVELOPE.depth * 1.4 ])
+
+    const t = node.getTranslation()
+    node.setTranslation([ t[0], referenceIcon.getTranslation()[1], t[2] ])
+    report.push(`social: posta ikonu kendi zarf modelimizle değiştirildi (${indices.length / 3} üçgen)`)
+}
+
 const stepSocial = async (doc, report) =>
 {
     const cfg = config.social
@@ -297,6 +337,8 @@ const stepSocial = async (doc, report) =>
     for(const link of social)
     {
         const iconNode = find(doc, cfg.nodes[link.name])
+        if(link.action === 'contact')
+            replaceMailWithEnvelope(doc, iconNode, find(doc, cfg.nodes.X), report)
         const iconPos = iconNode.getTranslation()
         const oldSlot = oldSlotOf(iconPos[0] - center[0], iconPos[2] - center[2])
         const oldAngle = oldSlot * Math.PI / 7

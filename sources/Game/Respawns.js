@@ -2,6 +2,7 @@ import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
 import propsConfig from '../../scripts/props/props.config.json'
 import { Props } from './World/Props.js'
+import contact from '../data/contact.js'
 
 export class Respawns
 {
@@ -48,6 +49,13 @@ export class Respawns
 
             this.items.set(name, item)
         }
+
+        // İletişim: sosyal alandaki zarfın önü (haritadaki "İletişim" pini)
+        this.items.set('contact', {
+            name: 'contact',
+            position: new THREE.Vector3(contact.respawn.x, 4, contact.respawn.z),
+            rotation: contact.respawn.rotation,
+        })
 
         // Prop'ların önünde doğma noktası (cephe yönü: dünya xz'de +X'ten +Z'ye açı)
         for(const prop of propsConfig.props)
