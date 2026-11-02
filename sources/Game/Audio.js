@@ -169,10 +169,6 @@ export class Audio
                 name: 'Cengiz Kurtoğlu - Küllenen Aşk (1986)'
             },
             {
-                path: 'sounds/musics/Sevda-Yuklu-Kervanlar.mp3',
-                name: 'Timuçin Esen - Sevda Yüklü Kervanlar'
-            },
-            {
                 path: 'sounds/musics/NazlicanIM.mp3',
                 name: 'NazlıcanıM'
             },
