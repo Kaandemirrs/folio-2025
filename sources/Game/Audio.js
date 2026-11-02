@@ -194,9 +194,24 @@ export class Audio
                 volume: 0.2,
                 onend: () =>
                 {
+                    song.soundId = undefined
                     this.playlist.next()
                 }
             })
+        }
+
+        // Howler: kimliksiz play() duraklatılmış sesi devam ettirmez, YENİ bir örnek başlatır (üst üste iki kez çalma).
+        // Bu yüzden her şarkının çalan örnek kimliği saklanır; zaten çalıyorsa dokunulmaz, duraklatılmışsa kimlikle devam edilir.
+        this.playlist.startSong = (song) =>
+        {
+            const sound = song.sound
+            if(sound.playing())
+                return
+
+            if(song.soundId !== undefined)
+                sound.play(song.soundId)
+            else
+                song.soundId = sound.play()
         }
 
         this.playlist.next = () =>
@@ -215,7 +230,8 @@ export class Audio
             // Old one
             if(this.playlist.current)
             {
-                this.playlist.current.sound.stop()
+                this.playlist.current.sound.stop() // tüm örnekleri durdurur
+                this.playlist.current.soundId = undefined
                 this.playlist.current.sound.volume(Audio.PLAYLIST_VOLUME) // duraklatma sırasında kısılmış olabilir
             }
             
@@ -241,7 +257,7 @@ export class Audio
                     return
                 }
 
-                this.playlist.current.sound.play()
+                this.playlist.startSong(this.playlist.current)
 
                 // Notification
                 const html = /* html */`
@@ -299,7 +315,7 @@ export class Audio
             sound.volume(0)
             if(!song.loaded && !sound.playing())
                 sound.load()
-            sound.play()
+            this.playlist.startSong(song)
             gsap.to(state, { volume: Audio.PLAYLIST_VOLUME, duration: 1.5, ease: 'power1.out', onUpdate: () => { sound.volume(state.volume) } })
         }
 
@@ -312,7 +328,7 @@ export class Audio
                 this.playlist.current.sound.load()
             }
 
-            this.playlist.current.sound.play()
+            this.playlist.startSong(this.playlist.current)
         }
 
         if(import.meta.env.VITE_MUSIC)
@@ -752,7 +768,7 @@ export class Audio
                 Howler.mute(false)
 
                 if(this.playlist?.current && !this.playlist.suspended)
-                    this.playlist.current.sound.play()
+                    this.playlist.startSong(this.playlist.current)
             }
         })
 
