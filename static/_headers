@@ -1,0 +1,33 @@
+# Cloudflare Workers statik varlıklar: https://developers.cloudflare.com/workers/static-assets/headers/
+# Hash'li derleme çıktıları (içerik değişince adı değişir): bir yıl, immutable
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Hash'siz statik dosyalar (modeller, dokular, sesler; güncellemede ?cb= ile geçersiz kılınır): 1 gün, sonra yeniden doğrula
+/*.glb
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/*.ktx
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+/*.mp3
+  Cache-Control: public, max-age=604800
+/*.webp
+  Cache-Control: public, max-age=604800
+/*.png
+  Cache-Control: public, max-age=604800
+/*.svg
+  Cache-Control: public, max-age=604800
+/*.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=604800
+
+# HTML: her zaman yeniden doğrula
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/hakkimda/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Güvenlik
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()

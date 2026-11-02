@@ -1,0 +1,45 @@
+// Ekran okuyucu / bot içeriği (görsel olarak gizli) ve JS'siz not
+.sr-only
+    position absolute
+    width 1px
+    height 1px
+    padding 0
+    margin -1px
+    overflow hidden
+    clip rect(0, 0, 0, 0)
+    white-space nowrap
+    border 0
+
+.noscript-note
+    position relative
+    z-index 100
+    padding 24px
+    color #fff
+    background #1d1721
+    font-family "Nunito", sans-serif
+
+    a
+        color #ff9a4d
+
+// Giriş ekranı köşesindeki "Metin sürümü / CV" bağlantısı: yalnızca oyun başlamadan önce
+.cv-link
+    position absolute
+    left 14px
+    bottom calc(12px + env(safe-area-inset-bottom, 0px))
+    z-index 5
+    padding 8px 12px
+    font-family "Nunito", sans-serif
+    font-weight 700
+    font-size 14px
+    color rgba(255, 255, 255, 0.85)
+    background rgba(24, 18, 30, 0.45)
+    border-radius 10px
+    text-decoration none
+
+    html.is-started &
+        display none
+
+    &:hover
+    &:focus-visible
+        color #fff
+        background rgba(24, 18, 30, 0.75)
