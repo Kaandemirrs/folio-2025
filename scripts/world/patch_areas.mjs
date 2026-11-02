@@ -13,6 +13,14 @@ import { readFileSync, existsSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import zlib from 'node:zlib'
+import sharp from 'sharp'
+import {
+    createDefaultContainer, write as writeKtx2,
+    KHR_DF_CHANNEL_RGBSDA_ALPHA, KHR_DF_CHANNEL_RGBSDA_BLUE, KHR_DF_CHANNEL_RGBSDA_GREEN, KHR_DF_CHANNEL_RGBSDA_RED,
+    KHR_DF_FLAG_ALPHA_STRAIGHT, KHR_DF_MODEL_RGBSDA, KHR_DF_PRIMARIES_BT709, KHR_DF_SAMPLE_DATATYPE_LINEAR,
+    KHR_DF_TRANSFER_SRGB, KHR_SUPERCOMPRESSION_ZSTD, VK_FORMAT_R8G8B8A8_SRGB,
+} from 'ktx-parse'
 import { NodeIO, PropertyType } from '@gltf-transform/core'
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
 import { draco, prune } from '@gltf-transform/functions'
@@ -397,9 +405,72 @@ const stepControls = async (doc, report) =>
     report.push(`landing: Kontroller zemin sanatı silindi (${names.join(', ')})`)
 }
 
+/**
+ * Adım: areas.glb'ye gömülü İngilizce etiket dokuları (projectsLabels, blackboardLabels) Türkçe olur.
+ * Yeni görseller scripts/world/make_area_labels.mjs ile üretilir (resources/references/world/labels/*.png). Dokunun adı ve UV'leri aynı kalır,
+ * yalnızca görüntü baytları değişir; -compressed.glb'de KTX2 (ham RGBA8 sRGB + Zstd, mip zinciriyle), ham glb'de PNG yazılır.
+ */
+const toKtx2 = async (png) =>
+{
+    const { data, info } = await sharp(png).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    const levels = []
+    let width = info.width
+    let height = info.height
+    let level = data
+    for(;;)
+    {
+        const compressed = zlib.zstdCompressSync(level, { params: { [zlib.constants.ZSTD_c_compressionLevel]: 19 } })
+        levels.push({ levelData: new Uint8Array(compressed), uncompressedByteLength: level.length })
+        if(width === 1 && height === 1)
+            break
+        const nextWidth = Math.max(1, width >> 1)
+        const nextHeight = Math.max(1, height >> 1)
+        level = await sharp(level, { raw: { width, height, channels: 4 } }).resize(nextWidth, nextHeight, { kernel: 'lanczos3' }).raw().toBuffer()
+        width = nextWidth
+        height = nextHeight
+    }
+
+    const container = createDefaultContainer()
+    container.vkFormat = VK_FORMAT_R8G8B8A8_SRGB
+    container.typeSize = 1
+    container.pixelWidth = info.width
+    container.pixelHeight = info.height
+    container.pixelDepth = 0
+    container.supercompressionScheme = KHR_SUPERCOMPRESSION_ZSTD
+    const dfd = container.dataFormatDescriptor[0]
+    dfd.colorModel = KHR_DF_MODEL_RGBSDA
+    dfd.colorPrimaries = KHR_DF_PRIMARIES_BT709
+    dfd.transferFunction = KHR_DF_TRANSFER_SRGB
+    dfd.flags = KHR_DF_FLAG_ALPHA_STRAIGHT
+    dfd.texelBlockDimension = [ 0, 0, 0, 0 ]
+    dfd.bytesPlane = [ 4, 0, 0, 0, 0, 0, 0, 0 ]
+    dfd.samples = [ KHR_DF_CHANNEL_RGBSDA_RED, KHR_DF_CHANNEL_RGBSDA_GREEN, KHR_DF_CHANNEL_RGBSDA_BLUE, KHR_DF_CHANNEL_RGBSDA_ALPHA | KHR_DF_SAMPLE_DATATYPE_LINEAR ]
+        .map((channelType, i) => ({ bitOffset: i * 8, bitLength: 7, channelType, samplePosition: [ 0, 0, 0, 0 ], sampleLower: 0, sampleUpper: 255 }))
+    container.levelCount = levels.length
+    container.levels = levels
+    return writeKtx2(container)
+}
+
+const stepLabels = async (doc, report) =>
+{
+    for(const name of [ 'projectsLabels', 'blackboardLabels' ])
+    {
+        const texture = doc.getRoot().listTextures().find(item => item.getName() === name)
+        if(!texture)
+            throw new Error(`labels: ${name} dokusu bulunamadı`)
+
+        const png = readFileSync(path.join(root, `resources/references/world/labels/${name}.png`))
+        if(texture.getMimeType() === 'image/ktx2')
+            texture.setImage(await toKtx2(png))
+        else
+            texture.setImage(new Uint8Array(png)).setMimeType('image/png')
+        report.push(`${name}: Türkçe etiket dokusu (${texture.getMimeType()})`)
+    }
+}
+
 // Hedef başına adımlar. Her hedefin kaynağı resources/original/<ad>.glb ve <ad>-compressed.glb
 const TARGETS = [
-    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls ] },
+    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls, stepLabels ] },
     { original: 'bushesReferences', out: 'static/bushes/bushesReferences', steps: [ stepSocialDecor('bushes') ] },
     { original: 'flowersReferences', out: 'static/flowers/flowersReferences', steps: [ stepSocialDecor('flowers') ] },
 ]
