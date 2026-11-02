@@ -26,6 +26,24 @@ export class Quality
         return false
     }
 
+    static STORAGE_KEY = 'quality'
+
+    // Kayıtlı tercih: 'high' → 0, 'low' → 1; yoksa/okunamıyorsa null
+    static getSavedLevel()
+    {
+        try
+        {
+            const value = localStorage.getItem(Quality.STORAGE_KEY)
+            if(value === 'high')
+                return 0
+            if(value === 'low')
+                return 1
+        }
+        catch(error) {}
+
+        return null
+    }
+
     // Kaliteye göre değer seç: pick(yüksek, düşük)
     pick(high, low)
     {
@@ -39,7 +57,9 @@ export class Quality
         this.events = new Events()
 
         this.isMobile = Quality.detectMobile()
-        this.level = this.isMobile ? 1 : 0 // 0 = highest quality, 1 = low (mobil)
+        // 0 = yüksek, 1 = düşük. Varsayılan HER cihazda düşük; kullanıcı Ayarlar'dan yükseğe geçerse tercih hatırlanır.
+        // Mobil tespiti (isMobile) artık kaliteyi belirlemez; yalnızca başka yerlerde bilgi olarak kullanılır.
+        this.level = Quality.getSavedLevel() ?? 1
 
         // Debug
         if(this.game.debug.active)
@@ -73,6 +93,9 @@ export class Quality
             return
             
         this.level = level
+
+        try { localStorage.setItem(Quality.STORAGE_KEY, level === 0 ? 'high' : 'low') } catch(error) {}
+
         this.events.trigger('change', [ this.level ])
     }
 }
