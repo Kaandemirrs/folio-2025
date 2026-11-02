@@ -71,6 +71,12 @@ export class Tracks
     remove(track)
     {
         this.tracks = this.tracks.filter(_track => _track !== track)
+
+        // Sızıntı düzeltmesi: araç değiştirilince eski izler çizim sahnesinde ve GPU'da kalıyordu (her araç: +5 geometri, +5 texture)
+        track.trail.mesh.removeFromParent()
+        track.trail.geometry.dispose()
+        track.trail.material.dispose()
+        track.dataTexture.dispose()
     }
 
     update()

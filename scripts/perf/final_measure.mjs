@@ -16,7 +16,7 @@ const PROFILES = {
     masaüstü: { viewport: { width: 1920, height: 1080, deviceScaleFactor: 1 }, ua: null },
     telefon: { viewport: { width: 390, height: 844, deviceScaleFactor: 3, isMobile: true, hasTouch: true }, ua: IPHONE_UA },
 }
-const AREAS = [ [ 'landing', 'landing' ], [ 'projeler', 'projects' ], [ 'bakkal', 'bakkal' ], [ 'horon', 'horon' ] ]
+const AREAS = [ [ 'landing', 'landing' ], [ 'projeler', 'projects' ], [ 'bakkal', 'bakkal' ], [ 'horon', 'monkey' ] ]
 
 async function open(backend, profile, quality)
 {
@@ -34,7 +34,7 @@ async function open(backend, profile, quality)
     const net = { requests: 0, bytes: 0 }
     client.on('Network.requestWillBeSent', () => { net.requests++ })
     client.on('Network.loadingFinished', e => { net.bytes += e.encodedDataLength })
-    await page.goto(`http://127.0.0.1:${PORT}/`, { waitUntil: 'load' })
+    await page.goto(`http://127.0.0.1:${PORT}/${backend === 'webgl' ? '#webgl' : ''}`, { waitUntil: 'load' })
     await page.waitForFunction(() => window.game && window.game.reveal && window.game.reveal.step === 0, { timeout: 240000 })
     const clickableMs = await page.evaluate(() => Math.round(performance.now()))
     const initial = { requests: net.requests, KB: Math.round(net.bytes / 1024) }
@@ -112,7 +112,7 @@ if(!LEAK_ONLY)
             await page.evaluate(() => window.game.quality.changeLevel(0)); await sleep(2500)
             await page.evaluate(() => window.game.quality.changeLevel(1)); await sleep(2500)
         }
-        for(const area of [ 'landing', 'projects', 'career', 'social', 'horon', 'bakkal' ])
+        for(const area of [ 'landing', 'projects', 'career', 'social', 'monkey', 'bakkal' ])
         {
             await page.evaluate((a) => window.game.player.respawn(a), area); await sleep(5000)
         }

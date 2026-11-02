@@ -482,6 +482,10 @@ export class Player
             // Find respawn
             let respawn = respawnName ? this.game.respawns.getByName(respawnName) : this.game.respawns.getClosest(this.position)
 
+            // Bilinmeyen ad (kaldırılan alan vb.): ışınlama çökmesin, en yakın noktaya dön
+            if(!respawn)
+                respawn = this.game.respawns.getClosest(this.position)
+
             // Update physical vehicle
             this.game.physicalVehicle.moveTo(
                 respawn.position,

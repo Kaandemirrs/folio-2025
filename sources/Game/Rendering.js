@@ -41,7 +41,7 @@ export class Rendering
         this.renderer = new THREE.WebGPURenderer({
             canvas: this.game.canvasElement,
             powerPreference: 'high-performance',
-            forceWebGL: false,
+            forceWebGL: /#webgl/i.test(location.hash), // adres sonuna #webgl: WebGL2 geri dönüşünü zorlar (test ve WebGPU sorunu olan cihazlar için)
             antialias: this.game.quality.level === 0 && this.game.viewport.pixelRatio < 2 // low'da kapalı (sayfa yenilemesi gerekir)
         })
         this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)

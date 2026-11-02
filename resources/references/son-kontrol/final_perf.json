@@ -1,0 +1,415 @@
+{
+  "measured": "2026-11-02T10:25:50.160Z",
+  "runs": [
+    {
+      "backend": "webgpu",
+      "profile": "masaüstü",
+      "quality": "low",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1553,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 145,
+          "triangles": 348370,
+          "frameMs": 16.67,
+          "geometries": 91,
+          "textures": 39
+        },
+        "projeler": {
+          "drawCalls": 191,
+          "triangles": 348423,
+          "frameMs": 16.66,
+          "geometries": 139,
+          "textures": 54
+        },
+        "bakkal": {
+          "drawCalls": 131,
+          "triangles": 354865,
+          "frameMs": 16.66,
+          "geometries": 143,
+          "textures": 55
+        },
+        "horon": {
+          "drawCalls": 131,
+          "triangles": 354807,
+          "frameMs": 16.67,
+          "geometries": 143,
+          "textures": 55
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    },
+    {
+      "backend": "webgpu",
+      "profile": "masaüstü",
+      "quality": "high",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1729,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 242,
+          "triangles": 447976,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 95
+        },
+        "projeler": {
+          "drawCalls": 237,
+          "triangles": 416245,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 98
+        },
+        "bakkal": {
+          "drawCalls": 179,
+          "triangles": 440448,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 98
+        },
+        "horon": {
+          "drawCalls": 180,
+          "triangles": 440450,
+          "frameMs": 16.67,
+          "geometries": 238,
+          "textures": 98
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    },
+    {
+      "backend": "webgpu",
+      "profile": "telefon",
+      "quality": "low",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1181,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 160,
+          "triangles": 352421,
+          "frameMs": 16.67,
+          "geometries": 98,
+          "textures": 40
+        },
+        "projeler": {
+          "drawCalls": 179,
+          "triangles": 347968,
+          "frameMs": 16.68,
+          "geometries": 137,
+          "textures": 51
+        },
+        "bakkal": {
+          "drawCalls": 123,
+          "triangles": 354184,
+          "frameMs": 16.67,
+          "geometries": 143,
+          "textures": 52
+        },
+        "horon": {
+          "drawCalls": 125,
+          "triangles": 354246,
+          "frameMs": 16.67,
+          "geometries": 143,
+          "textures": 52
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    },
+    {
+      "backend": "webgpu",
+      "profile": "telefon",
+      "quality": "high",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1871,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 213,
+          "triangles": 425794,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 95
+        },
+        "projeler": {
+          "drawCalls": 237,
+          "triangles": 417473,
+          "frameMs": 16.68,
+          "geometries": 238,
+          "textures": 99
+        },
+        "bakkal": {
+          "drawCalls": 179,
+          "triangles": 441245,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 99
+        },
+        "horon": {
+          "drawCalls": 180,
+          "triangles": 441247,
+          "frameMs": 16.67,
+          "geometries": 238,
+          "textures": 99
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    },
+    {
+      "backend": "webgl",
+      "profile": "masaüstü",
+      "quality": "low",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1446,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 145,
+          "triangles": 348370,
+          "frameMs": 16.67,
+          "geometries": 91,
+          "textures": 39
+        },
+        "projeler": {
+          "drawCalls": 191,
+          "triangles": 348423,
+          "frameMs": 16.66,
+          "geometries": 139,
+          "textures": 54
+        },
+        "bakkal": {
+          "drawCalls": 131,
+          "triangles": 354865,
+          "frameMs": 16.65,
+          "geometries": 143,
+          "textures": 55
+        },
+        "horon": {
+          "drawCalls": 132,
+          "triangles": 354867,
+          "frameMs": 16.66,
+          "geometries": 143,
+          "textures": 55
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    },
+    {
+      "backend": "webgl",
+      "profile": "masaüstü",
+      "quality": "high",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1902,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 241,
+          "triangles": 447916,
+          "frameMs": 16.68,
+          "geometries": 238,
+          "textures": 95
+        },
+        "projeler": {
+          "drawCalls": 237,
+          "triangles": 416245,
+          "frameMs": 16.67,
+          "geometries": 238,
+          "textures": 98
+        },
+        "bakkal": {
+          "drawCalls": 178,
+          "triangles": 440388,
+          "frameMs": 16.67,
+          "geometries": 238,
+          "textures": 98
+        },
+        "horon": {
+          "drawCalls": 179,
+          "triangles": 440390,
+          "frameMs": 16.68,
+          "geometries": 238,
+          "textures": 98
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    },
+    {
+      "backend": "webgl",
+      "profile": "telefon",
+      "quality": "low",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1442,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 162,
+          "triangles": 352541,
+          "frameMs": 16.65,
+          "geometries": 99,
+          "textures": 41
+        },
+        "projeler": {
+          "drawCalls": 179,
+          "triangles": 347968,
+          "frameMs": 16.69,
+          "geometries": 138,
+          "textures": 52
+        },
+        "bakkal": {
+          "drawCalls": 123,
+          "triangles": 354184,
+          "frameMs": 16.65,
+          "geometries": 144,
+          "textures": 53
+        },
+        "horon": {
+          "drawCalls": 124,
+          "triangles": 354186,
+          "frameMs": 16.67,
+          "geometries": 144,
+          "textures": 53
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    },
+    {
+      "backend": "webgl",
+      "profile": "telefon",
+      "quality": "high",
+      "backendActual": "webgpu",
+      "initialLoad": {
+        "requests": 111,
+        "KB": 5495
+      },
+      "clickableMs": 1804,
+      "totalAfterStart": {
+        "requests": 174,
+        "KB": 14684
+      },
+      "areas": {
+        "landing": {
+          "drawCalls": 213,
+          "triangles": 425794,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 95
+        },
+        "projeler": {
+          "drawCalls": 238,
+          "triangles": 417533,
+          "frameMs": 16.68,
+          "geometries": 238,
+          "textures": 99
+        },
+        "bakkal": {
+          "drawCalls": 179,
+          "triangles": 441245,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 99
+        },
+        "horon": {
+          "drawCalls": 180,
+          "triangles": 441247,
+          "frameMs": 16.66,
+          "geometries": 238,
+          "textures": 99
+        }
+      },
+      "errors": [
+        "pageerror: Cannot read properties of undefined (reading 'position')"
+      ]
+    }
+  ],
+  "leak": {
+    "baseline": {
+      "geometries": 105,
+      "textures": 41
+    },
+    "rounds": [
+      {
+        "round": 1,
+        "geometries": 188,
+        "textures": 77
+      },
+      {
+        "round": 2,
+        "geometries": 203,
+        "textures": 92
+      },
+      {
+        "round": 3,
+        "geometries": 218,
+        "textures": 107
+      }
+    ],
+    "errors": [
+      "pageerror: Cannot read properties of undefined (reading 'position')"
+    ]
+  }
+}
