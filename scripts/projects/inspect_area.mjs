@@ -21,7 +21,8 @@ await sleep(2000)
 for(let i = 0; i < 90; i++) { const s = await page.evaluate(() => window.game.reveal.step); if(s === 2) break; if(s === 0) await page.keyboard.press('Enter'); await sleep(1000) }
 await sleep(3000)
 await page.evaluate(() => { window.game.weather.override.start({ humidity: 0, electricField: 0, clouds: 0, wind: 0.2 }, 0); window.game.dayCycles.override.start({ progress: 0.07 }, 0) })
-await page.evaluate(() => window.game.player.respawn('projects'))
+const board = MODE.startsWith('board')
+await page.evaluate((board) => window.game.player.respawn(board ? 'landing' : 'projects'), board)
 await sleep(6000)
 
 if(MODE === 'info')
@@ -45,6 +46,19 @@ if(MODE === 'info')
         return out
     })
     console.log(JSON.stringify(info, null, 1))
+}
+else if(board)
+{
+    // board[:indeks]: landing panosunu açar, ilgili projeyi gösterir
+    const index = +(MODE.split(':')[1] || 0)
+    await page.evaluate(() => window.game.physicalVehicle.moveTo({ x: 55, y: 4, z: 33 }, 0))
+    await sleep(4000)
+    await page.evaluate(() => window.game.world.projectBoard.viewer.open())
+    await sleep(4500)
+    await page.evaluate((index) => window.game.world.projectBoard.viewer.changeProject(index, 2, true), index)
+    await sleep(4500)
+    await page.screenshot({ path: `${OUT}/board_open_${phone ? 'phone_' : ''}${index}.png` })
+    console.log(JSON.stringify(await page.evaluate(() => ({ openLabelVisible: window.game.world.projectBoard.buttons.open.label.mesh.visible, openActive: window.game.world.projectBoard.buttons.open.intersect.active, caption: document.querySelector('.js-project-caption').className }))))
 }
 else
 {

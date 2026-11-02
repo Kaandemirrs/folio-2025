@@ -334,10 +334,11 @@ export class ProjectBoard
 
     setViewer()
     {
-        // Sinematik: panonun önünden, hafif yukarıdan
+        // Sinematik: panonun önünden, hafif yukarıdan. Hedef biraz aşağıda tutulur: pano ekranın üstüne yaslanır,
+        // alttaki açıklama paneli (DOM, ProjectViewer) proje adı levhasını kapatmaz. Sağdaki ağaçtan uzak durmak için kamera hafif solda.
         this.cinematic = {}
-        this.cinematic.target = this.localToWorld(0, ProjectBoard.CENTER_Y + 0.15, 0)
-        this.cinematic.position = this.localToWorld(0, 7.6, 13.5)
+        this.cinematic.target = this.localToWorld(0, ProjectBoard.CENTER_Y - 0.55, 0)
+        this.cinematic.position = this.localToWorld(-4.6, 9.4, 15.5)
 
         this.viewer = new ProjectViewer({
             projects: this.projects,
