@@ -49,7 +49,7 @@ export class ProjectsArea extends Area
         this.setAdjacents()
         this.setTitle()
         this.setUrl()
-        this.setDistinctions()
+        this.setHighlights()
         this.setBlackBoard()
         this.setOven()
         this.setGrinder()
@@ -125,7 +125,7 @@ export class ProjectsArea extends Area
                     this.adjacents.update()
                     this.title.update(direction)
                     this.url.update(direction)
-                    this.distinctions.update()
+                    this.highlights.update()
                 },
                 onImageChange: (direction) =>
                 {
@@ -672,7 +672,8 @@ export class ProjectsArea extends Area
                 0.45,
                 this.texts.density,
                 'center',
-                0.2
+                0.2,
+                true
             )
 
             this.texts.createMaterialOnMesh(textMesh, item.textCanvas.texture)
@@ -745,7 +746,8 @@ export class ProjectsArea extends Area
             0.75,
             this.texts.density,
             'center',
-            0.3
+            0.3,
+            true
         )
         this.texts.createMaterialOnMesh(this.adjacents.previous.textMesh, this.adjacents.previous.textCanvas.texture)
 
@@ -792,7 +794,8 @@ export class ProjectsArea extends Area
             0.75,
             this.texts.density,
             'center',
-            0.3
+            0.3,
+            true
         )
         this.texts.createMaterialOnMesh(this.adjacents.next.textMesh, this.adjacents.next.textCanvas.texture)
 
@@ -863,7 +866,9 @@ export class ProjectsArea extends Area
             4,
             0.6,
             this.texts.density,
-            'center'
+            'center',
+            1,
+            true
         )
         this.texts.createMaterialOnMesh(this.title.textMesh, this.title.textCanvas.texture)
 
@@ -978,12 +983,26 @@ export class ProjectsArea extends Area
 
                 gsap.to(this.url.inner.rotation, { x: Math.PI * 2 * rotationDirection, duration: 1, delay: 0, ease: 'back.out(2)', overwrite: true })
 
-                this.url.textCanvas.updateText(this.navigation.current.url.replace(/https?:\/\//, ''))
+                // Bağlantısı olmayan projede (url: null) adres etiketi ve "Aç" gizlenir
+                this.url.refresh()
+
+            } })
+        }
+
+        // Adres etiketini ve tıklanabilir alanı güncel projeye göre ayarlar
+        this.url.refresh = () =>
+        {
+            const url = this.navigation.current.url
+            this.url.inner.visible = !!url
+            this.url.intersect.active = !!url && !this.viewer.isClosed
+
+            if(url)
+            {
+                this.url.textCanvas.updateText(url.replace(/https?:\/\//, ''))
 
                 const ratio = this.url.textCanvas.getMeasure().width / this.texts.density
                 this.url.panel.scale.x = ratio + 0.2
-
-            } })
+            }
         }
 
         // Open
@@ -993,67 +1012,102 @@ export class ProjectsArea extends Area
         }
     }
 
-    setDistinctions()
+    // Öne çıkanlar masası: Bruno'nun ödül objeleri (awwwards/fwa/cssda) yerine, projenin "highlights" listesini
+    // gösteren (en çok 2) küçük ahşap levha; yazı diğer etiketlerle aynı yöntemle (Amatic SC, TextCanvas) çizilir.
+    setHighlights()
     {
-        this.distinctions = {}
-        this.distinctions.status = 'hidden'
-        this.distinctions.group = this.references.items.get('distinctions')[0]
-        this.distinctions.names = ['awwwards', 'cssda', 'fwa']
-        this.distinctions.items = {}
-        this.distinctions.items.awwwards = this.distinctions.group.children.find(_child => _child.name.startsWith('awwwards'))
-        this.distinctions.items.fwa = this.distinctions.group.children.find(_child => _child.name.startsWith('fwa'))
-        this.distinctions.items.cssda = this.distinctions.group.children.find(_child => _child.name.startsWith('cssda'))
+        this.highlights = {}
+        this.highlights.status = 'hidden'
+        this.highlights.group = this.references.items.get('distinctions')[0]
+        this.highlights.width = 1
+        this.highlights.height = 0.5
+        this.highlights.items = []
 
-        this.distinctions.positions = [
-            [
-                [0, 0],
-            ],
-            [
-                [-0.4582188129425049, -0.2090435028076172],
-                [0.4859628677368164, 0.47049903869628906],
-            ],
-            [
-                [-0.7032163143157959, -0.2090439796447754],
-                [0.8216180801391602, -0.16075992584228516],
-                [0.1332714557647705, 0.47049903869628906],
-            ],
-        ]
+        // [kaç öğe][öğe] → yerel x (levhalar masada yan yana)
+        this.highlights.positions = [ [ 0 ], [ - 0.56, 0.56 ] ]
 
-        this.distinctions.update = () =>
+        const woodMaterial = new MeshDefaultMaterial({ colorNode: color('#a9733f'), hasWater: false })
+        const geometry = new THREE.BoxGeometry(this.highlights.width, this.highlights.height, 0.07)
+
+        for(let i = 0; i < 2; i++)
         {
-            if(this.distinctions.status === 'hiding')
+            const item = {}
+            item.visible = false
+
+            // Masada hafif geriye yaslı duran levha
+            item.group = new THREE.Group()
+            item.group.visible = false
+            item.group.rotation.x = - 0.3
+            this.highlights.group.add(item.group)
+
+            item.board = new THREE.Mesh(geometry, woodMaterial)
+            item.board.position.y = this.highlights.height / 2
+            item.board.castShadow = true
+            item.board.receiveShadow = true
+            item.group.add(item.board)
+
+            // Yazı: tahtanın ön yüzünde (tuval V'si ters olduğundan düzlemin V'si çevrilir)
+            item.textCanvas = new TextCanvas(
+                this.texts.fontFamily,
+                this.texts.fontWeight,
+                this.texts.fontSizeMultiplier * 0.34,
+                this.highlights.width - 0.08,
+                this.highlights.height - 0.06,
+                this.texts.density,
+                'center',
+                0.34,
+                true
+            )
+            const planeGeometry = new THREE.PlaneGeometry(this.highlights.width - 0.08, this.highlights.height - 0.06)
+            const uv = planeGeometry.attributes.uv
+            for(let j = 0; j < uv.count; j++)
+                uv.setY(j, 1 - uv.getY(j))
+
+            item.text = new THREE.Mesh(planeGeometry)
+            item.text.position.set(0, this.highlights.height / 2, 0.037)
+            this.texts.createMaterialOnMesh(item.text, item.textCanvas.texture)
+            item.group.add(item.text)
+
+            this.highlights.items.push(item)
+        }
+
+        this.highlights.update = () =>
+        {
+            if(this.highlights.status === 'hiding')
                 return
 
-            this.distinctions.status = 'hiding'
-            let i = 0
-            for(const name of this.distinctions.names)
-            {
-                const item = this.distinctions.items[name]
+            this.highlights.status = 'hiding'
 
-                gsap.to(item.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.5, delay: 0.1 * i, ease: 'power2.in', overwrite: true })
+            let i = 0
+            for(const item of this.highlights.items)
+            {
+                gsap.to(item.group.scale, { x: 0.01, y: 0.01, z: 0.01, duration: 0.5, delay: 0.1 * i, ease: 'power2.in', overwrite: true })
                 i++
             }
 
             gsap.delayedCall(1, () =>
             {
-                this.distinctions.status = 'visible'
+                this.highlights.status = 'visible'
 
-                let i = 0
-                const positions = this.distinctions.positions[this.navigation.current.distinctions.length - 1]
-                for(const name of this.navigation.current.distinctions)
+                const list = this.navigation.current.highlights ?? []
+                const positions = this.highlights.positions[Math.min(list.length, 2) - 1] ?? []
+
+                i = 0
+                for(const item of this.highlights.items)
                 {
-                    const item = this.distinctions.items[name]
+                    const text = list[i]
+                    item.group.visible = !!text && i < positions.length
 
-                    item.visible = true
-                    gsap.to(item.scale, { x: 1, y: 1, z: 1, duration: 1, delay: 0.2 * i, ease: 'back.out(2)', overwrite: true })
-
-                    item.position.x = positions[i][0]
-                    item.position.z = positions[i][1]
-
+                    if(item.group.visible)
+                    {
+                        item.textCanvas.updateText(text)
+                        item.group.position.x = positions[i]
+                        gsap.to(item.group.scale, { x: 1, y: 1, z: 1, duration: 1, delay: 0.2 * i, ease: 'back.out(2)', overwrite: true })
+                    }
                     i++
                 }
             })
-        } 
+        }
     }
 
     setPendulum()
@@ -1280,7 +1334,7 @@ export class ProjectsArea extends Area
         this.adjacents.previous.intersect.active = true
         this.pagination.previousIntersect.active = true
         this.pagination.nextIntersect.active = true
-        this.url.intersect.active = true
+        this.url.intersect.active = this.viewer.hasUrl
     }
 
     onClose()

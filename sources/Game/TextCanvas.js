@@ -11,10 +11,13 @@ export class TextCanvas
         height = null,
         density = 1,
         horizontalAlign = 'center',
-        lineHeight = 1
+        lineHeight = 1,
+        fit = false
     )
     {
         this.lines = []
+        this.fit = fit // true: en uzun satır tuvale sığmıyorsa yazı tipi küçültülür (uzun Türkçe başlıklar için)
+        this.fontParts = { fontFamily, fontWeight, size: fontSize * density }
         this.font = `${fontWeight} ${fontSize * density}px "${fontFamily}"`
         this.width = Math.ceil(width * density)
         this.height = Math.ceil(height * density)
@@ -79,8 +82,26 @@ export class TextCanvas
         return output
     }
 
+    // Yazı tipini temel boyuta getirir; fit açıksa en uzun satır tuvalin %94'üne sığana kadar küçültür
+    applyFit()
+    {
+        const { fontFamily, fontWeight, size } = this.fontParts
+        this.context.font = `${fontWeight} ${size}px "${fontFamily}"`
+
+        if(!this.fit)
+            return
+
+        const width = this.getMeasure().width
+        const maxWidth = this.width * 0.94
+        if(width > maxWidth)
+            this.context.font = `${fontWeight} ${size * maxWidth / width}px "${fontFamily}"`
+    }
+
     draw()
     {
+        if(this.fit)
+            this.applyFit()
+
         // Clear
         this.context.fillStyle = '#000000'
         this.context.fillRect(0, 0, this.width, this.height)

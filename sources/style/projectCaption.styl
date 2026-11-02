@@ -1,0 +1,50 @@
+// Proje açıklaması: proje görüntüleyici açıkken ekranın altında, 2-4 satırlık okunaklı Nunito paragrafı.
+// Uzun metin ProjectViewer.js içinde yazı boyutu küçültülerek sığdırılır; yine sığmazsa kaydırılabilir.
+.project-caption
+    position absolute
+    left 0
+    right 0
+    padding 0 16px
+    bottom calc(24px + env(safe-area-inset-bottom, 0px))
+    display flex
+    justify-content center
+    pointer-events none
+    z-index 4
+    opacity 0
+    transform translateY(12px)
+    transition opacity 0.5s ease, transform 0.5s ease
+
+    // Dokunmatikte alt düğmelerin (önceki/sonraki/aç/kapat) üstünde
+    html.is-mode-touch &
+        bottom calc(124px + env(safe-area-inset-bottom, 0px))
+
+    &.is-visible
+        opacity 1
+        transform translateY(0)
+
+    .project-caption-text
+        width fit-content
+        max-width 720px
+        max-height unquote('min(9.6em, 34vh)')
+        overflow-y auto
+        padding 12px 20px
+        font-family "Nunito", sans-serif
+        font-weight 700
+        font-size 17px
+        line-height 1.45
+        text-align center
+        color #fff
+        background rgba(24, 18, 30, 0.72)
+        border-radius 16px
+        text-shadow 0 1px 3px rgba(0, 0, 0, 0.5)
+        pointer-events auto
+        -webkit-backdrop-filter blur(6px)
+        backdrop-filter blur(6px)
+
+    @media only screen and (max-width 520px)
+        .project-caption-text
+            padding 10px 14px
+            font-size 15px
+
+    @media (prefers-reduced-motion: reduce)
+        transition none

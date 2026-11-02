@@ -30,6 +30,49 @@ export class ProjectViewer
         this.imageIndex = 0
 
         this.setInputs()
+        this.setCaption()
+    }
+
+    // Açıklama paneli (DOM, ortak): yalnızca açık olan görüntüleyici yazar
+    setCaption()
+    {
+        this.caption = {}
+        this.caption.element = this.game.domElement.querySelector('.js-project-caption')
+        this.caption.textElement = this.game.domElement.querySelector('.js-project-caption-text')
+        this.caption.maxFontSize = 17
+
+        // Metin sığana kadar yazı boyutunu küçültür (en az 12 px; sonrasında panel kaydırılabilir)
+        this.caption.fit = () =>
+        {
+            const element = this.caption.textElement
+            const phone = window.matchMedia('(max-width: 520px)').matches
+            let size = phone ? 15 : this.caption.maxFontSize
+            element.style.fontSize = `${size}px`
+            while(element.scrollHeight > element.clientHeight + 1 && size > 12)
+            {
+                size -= 0.5
+                element.style.fontSize = `${size}px`
+            }
+        }
+
+        this.caption.update = () =>
+        {
+            const description = this.navigation.current?.description
+            if(!this.caption.element)
+                return
+
+            this.caption.textElement.textContent = description ?? ''
+            this.caption.textElement.scrollTop = 0
+            this.caption.element.classList.toggle('is-visible', !!description && this.isActive)
+            if(description)
+                this.caption.fit()
+        }
+    }
+
+    // "Aç" yalnızca bağlantısı olan projede anlamlıdır
+    get hasUrl()
+    {
+        return !!this.navigation.current?.url
     }
 
     get isActive()
@@ -104,7 +147,7 @@ export class ProjectViewer
 
     openUrl()
     {
-        if(this.navigation.current?.url)
+        if(this.hasUrl)
             window.open(this.navigation.current.url, '_blank')
     }
 
@@ -144,7 +187,10 @@ export class ProjectViewer
 
         // Buttons
         this.game.inputs.interactiveButtons.clearItems()
-        this.game.inputs.interactiveButtons.addItems(['previous', 'next', 'open', 'close'])
+        this.game.inputs.interactiveButtons.addItems(this.hasUrl ? ['previous', 'next', 'open', 'close'] : ['previous', 'next', 'close'])
+
+        // Description
+        this.caption.update()
 
         // Sound
         const sound = this.game.audio.groups.get('click')
@@ -193,6 +239,9 @@ export class ProjectViewer
 
         // Buttons
         this.game.inputs.interactiveButtons.clearItems([])
+
+        // Description
+        this.caption.element?.classList.remove('is-visible')
 
         // Sound
         const sound = this.game.audio.groups.get('click')
@@ -278,6 +327,17 @@ export class ProjectViewer
 
         // Update components
         this.hooks.onProjectChange?.(direction, silent)
+
+        // Description + "Aç" düğmesi (açıkken)
+        if(this.isActive)
+        {
+            this.caption.update()
+            const buttons = this.game.inputs.interactiveButtons
+            if(this.hasUrl)
+                buttons.addItems(['open'])
+            else
+                buttons.removeItems(['open'])
+        }
 
         // Change image
         let imageIndex = null

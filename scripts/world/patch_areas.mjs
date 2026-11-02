@@ -468,9 +468,26 @@ const stepLabels = async (doc, report) =>
     }
 }
 
+/**
+ * Adım: Projeler alanındaki "öne çıkanlar" masasından Bruno'nun ödül objeleri (awwwards, cssda, fwa) kalkar.
+ * refDistinctions düğümü yerinde kalır; ProjectsArea.js her projenin highlights listesi için ahşap levhaları burada kurar.
+ */
+const stepDistinctions = async (doc, report) =>
+{
+    const group = find(doc, 'refDistinctions')
+    for(const name of [ 'awwwards', 'cssda', 'fwa' ])
+    {
+        const node = group.listChildren().find(child => child.getName() === name)
+        if(!node)
+            throw new Error(`distinctions: ${name} bulunamadı`)
+        removeNode(node)
+    }
+    report.push('projects: Bruno ödül objeleri silindi (awwwards, cssda, fwa)')
+}
+
 // Hedef başına adımlar. Her hedefin kaynağı resources/original/<ad>.glb ve <ad>-compressed.glb
 const TARGETS = [
-    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls, stepLabels ] },
+    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls, stepLabels, stepDistinctions ] },
     { original: 'bushesReferences', out: 'static/bushes/bushesReferences', steps: [ stepSocialDecor('bushes') ] },
     { original: 'flowersReferences', out: 'static/flowers/flowersReferences', steps: [ stepSocialDecor('flowers') ] },
 ]

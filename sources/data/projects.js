@@ -1,162 +1,87 @@
+// url: null olan projede "AÇ" düğmesi ve adres etiketi gizlenir (TODO: gerçek bağlantılar eklenecek)
 export default [
     {
-        title: 'Three.js Journey',
-        titleSmall: [ 'Three.js', 'Journey' ],
-        url: 'https://threejs-journey.com',
+        title: 'Beykent Üniversitesi',
+        titleSmall: [ 'Beykent', 'Web & Mobil' ],
+        url: null, // TODO
         attributes:
         {
-            role: [ 'developer', 'formater' ],
-            with: [ 'Hervé Studio', 'Bonhomme Paris' ]
+            role: 'Web & Mobil Geliştirici',
+            at: 'Beykent Üniversitesi',
+            with: 'Ekip çalışması'
         },
-        distinctions: [ 'fwa' ], // 'awwwards', 'fwa', 'cssda'
-        images:
-        [
-            'threejs-journey-1.ktx',
-            'threejs-journey-2.ktx',
-            'threejs-journey-3.ktx',
-            'threejs-journey-4.ktx',
-            'threejs-journey-5.ktx',
-        ]
-    },
-    // {
-    //     title: 'Chartogne Taillet',
-    //     titleSmall: [ 'Chartogne', 'Taillet' ],
-    //     url: 'https://chartogne-taillet.com',
-    //     attributes:
-    //     {
-    //         at: 'Immersive Garden',
-    //         role: 'WebGL developer',
-    //         with: 'Rémi Tran'
-    //     },
-    //     distinctions: [ 'awwwards', 'cssda', 'fwa' ], // 'awwwards', 'fwa', 'cssda'
-    //     images:
-    //     [
-    //         'chartogne-taillet-1.ktx',
-    //         'chartogne-taillet-2.ktx',
-    //         'chartogne-taillet-3.ktx',
-    //     ]
-    // },
-    {
-        title: 'Bonhomme | 10 ans',
-        titleSmall: [ 'Bonhomme', '10 ans' ],
-        url: 'https://anniversary.bonhommeparis.com',
-        attributes:
-        {
-            role: 'WebGL developer',
-            with: 'Bonhomme Paris'
-        },
-        distinctions: [ 'awwwards', 'fwa' ],
-        images:
-        [
-            'bonhomme-10-ans-1.ktx',
-            'bonhomme-10-ans-2.ktx',
-            'bonhomme-10-ans-3.ktx',
-        ]
+        description: 'Beykent Üniversitesi\'nin resmi web sitesi ve mobil uygulamasını ekiple birlikte geliştirdik. Üniversitenin dijital hizmetlerini modern ve kullanıcı dostu bir platformda birleştirdik.',
+        highlights: [ 'Web + Mobil' ],
+        images: [ 'beykent-1.ktx' ]
     },
     {
-        title: 'Madbox',
-        titleSmall: [ 'Madbox' ],
-        url: 'https://madbox.io',
+        title: 'Loyalty SaaS',
+        titleSmall: [ 'Loyalty', 'Texas, ABD' ],
+        url: null, // TODO
         attributes:
         {
-            role: 'WebGL developer',
-            at: 'Hervé Studio',
-            with: 'Lei Xing'
+            role: 'Full Stack Geliştirici',
+            at: 'Upwork',
+            with: 'Texas, ABD'
         },
-        distinctions: [ 'awwwards' ],
-        images:
-        [
-            'madbox-1.ktx',
-            'madbox-2.ktx',
-            'madbox-3.ktx',
-        ]
+        description: 'ABD merkezli bir işletme için çok şubeli müşteri sadakat ve ödül yönetim sistemi geliştirdim. Platform 300\'den fazla kullanıcıya hizmet veriyor.',
+        highlights: [ '300+ kullanıcı', 'Çok şubeli' ],
+        images: [ 'loyalty-1.ktx' ]
     },
     {
-        title: 'Luni',
-        titleSmall: [ 'Luni' ],
-        url: 'https://www.luni.app',
+        title: 'Mobil Uygulamalar',
+        titleSmall: [ 'Mobil', 'Flutter & Supabase' ],
+        url: null, // TODO
         attributes:
         {
-            role: 'WebGL developer',
-            at: 'Hervé Studio',
-            with: 'Loïc Belaidremesal'
+            role: 'Mobil Geliştirici',
+            at: 'Kendi projelerim',
+            with: 'Flutter, Supabase'
         },
-        distinctions: [ 'awwwards', 'fwa' ],
-        images:
-        [
-            'luni-1.ktx',
-            'luni-2.ktx',
-            'luni-3.ktx',
-            'luni-4.ktx',
-        ]
+        description: 'Flutter ve Supabase teknolojileriyle farklı alanlarda 5\'ten fazla mobil uygulama geliştirdim ve yayınladım. Uygulamalarım toplamda 10.000\'den fazla kullanıcıya ulaştı.',
+        highlights: [ '5+ uygulama', '10.000+ kullanıcı' ],
+        images: [ 'mobil-1.ktx' ]
     },
     {
-        title: 'Scout',
-        titleSmall: [ 'Scout' ],
-        url: 'https://scout-omega.vercel.app',
+        title: 'Yinego',
+        titleSmall: [ 'Yinego', 'Full Stack SaaS' ],
+        url: null, // TODO
         attributes:
         {
-            role: 'WebGL developer',
-            at: 'Hervé Studio'
+            role: 'Full Stack Geliştirici',
+            at: 'Freelance',
+            with: 'React, Flutter, Supabase, AWS'
         },
-        distinctions: [  ],
-        images:
-        [
-            'scout-1.ktx',
-            'scout-2.ktx',
-            'scout-3.ktx',
-        ]
+        description: 'Freelance proje olarak admin, işletme, kasiyer ve dijital cüzdan sistemlerinden oluşan dört platformlu bir sadakat SaaS çözümünü tek başıma geliştirdim. React, Flutter, Supabase ve AWS teknolojilerini kullandım.',
+        highlights: [ '4 platform', 'Tek başıma' ],
+        images: [ 'yinego-1.ktx' ]
     },
     {
-        title: 'Prior Holdings',
-        titleSmall: [ 'Prio', 'Holdings' ],
-        url: 'https://prior.co.jp/discover/en',
+        title: 'getcvportfolio',
+        titleSmall: [ 'getcv', 'AI Startup' ],
+        url: null, // TODO
         attributes:
         {
-            role: [ 'Front developer', 'WebGL developer' ],
-            at: 'Immersive Garden'
+            role: 'Kurucu',
+            at: 'Kendi girişimim',
+            with: 'Yapay zekâ'
         },
-        distinctions: [ 'awwwards', 'cssda', 'fwa' ],
-        images:
-        [
-            'prior-1.ktx',
-            'prior-2.ktx',
-            'prior-3.ktx',
-        ]
+        description: 'Kendi girişimim olan getcvportfolio, kullanıcıların CV\'lerini yapay zekâ ile analiz ederek dakikalar içinde kişisel portfolyo web siteleri oluşturup yayınlamalarını sağlayan bir platformdur.',
+        highlights: [ 'AI', 'Girişim' ],
+        images: [ 'getcvportfolio-1.ktx' ]
     },
     {
-        title: 'Orano',
-        titleSmall:  'Orano',
-        url: 'https://www.orano.group/experience/innovation/en',
+        title: 'EvimAI',
+        titleSmall: [ 'EvimAI', 'Ürün Tasarımı' ],
+        url: null, // TODO
         attributes:
         {
-            role: [ 'Front developer', 'WebGL developer' ],
-            at: 'Immersive Garden'
+            role: 'Ürün Tasarımcısı & İş Analisti',
+            at: 'Harvard Innovation Labs',
+            with: 'SaaS girişimi'
         },
-        distinctions: [ 'awwwards', 'cssda', 'fwa' ],
-        images:
-        [
-            'orano-1.ktx',
-            'orano-2.ktx',
-            'orano-3.ktx',
-        ]
+        description: 'Harvard Innovation Labs çıkışlı EvimAI SaaS girişiminin uçtan uca ürün tasarımını, iş analizini ve tüm iş akışlarını üstlendim. Kullanıcı deneyiminden yönetim panellerine kadar 200\'den fazla ekranın UI/UX tasarımını, sistem mimarisine uygun kullanıcı akışlarını ve kapsamlı tasarım sistemini oluşturdum.',
+        highlights: [ '200+ ekran', 'Harvard i-lab' ],
+        images: [ 'evimai-1.ktx' ]
     },
-    {
-        title: 'Citrix / Redbull',
-        titleSmall: ['Citrix', 'Redbull'],
-        url: 'https://thenewmobileworkforce.imm-g-prod.com',
-        attributes:
-        {
-            role: [ 'WebGL developer' ],
-            at: 'Immersive Garden',
-            with: [ 'Damien Doussaud', 'Quentin Leclercq' ]
-        },
-        distinctions: [ 'awwwards', 'cssda', 'fwa' ],
-        images:
-        [
-            'citrix-redbull-1.ktx',
-            'citrix-redbull-2.ktx',
-            'citrix-redbull-3.ktx',
-        ]
-    }
 ]

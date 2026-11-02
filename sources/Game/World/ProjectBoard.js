@@ -240,7 +240,7 @@ export class ProjectBoard
             return
 
         const attributes = []
-        const names = { role: 'Rol', with: 'Birlikte', at: 'Kurum' }
+        const names = { role: 'Rol', at: 'Kurum', with: 'Nerede' } // Projeler alanındaki etiketlerle aynı
         for(const [ key, value ] of Object.entries(project.attributes ?? {}))
             attributes.push(`${names[key] ?? key}: ${[].concat(value).join(', ')}`)
 
@@ -347,6 +347,8 @@ export class ProjectBoard
                 {
                     for(const button of Object.values(this.buttons))
                         button.intersect.active = true
+
+                    this.updateOpenButton()
                 },
                 onClose: () =>
                 {
@@ -356,6 +358,7 @@ export class ProjectBoard
                 onProjectChange: () =>
                 {
                     this.drawInfo()
+                    this.updateOpenButton()
                 },
                 onImageChange: () =>
                 {
@@ -373,6 +376,18 @@ export class ProjectBoard
                 },
             }
         })
+    }
+
+    // Bağlantısı olmayan projede (url: null) "AÇ" düğmesi gizlenir ve tıklanmaz
+    updateOpenButton()
+    {
+        const button = this.buttons?.open
+        if(!button || !this.viewer)
+            return
+
+        const hasUrl = this.viewer.hasUrl
+        button.label.mesh.visible = hasUrl
+        button.intersect.active = hasUrl && this.viewer.isActive
     }
 
     setInteractivePoint()
