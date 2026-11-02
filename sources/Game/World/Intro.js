@@ -7,6 +7,9 @@ import { lerp } from '../utilities/maths.js'
 
 export class Intro
 {
+    static HIT = { width: 3.4, height: 1.7, centerY: 0.15 } // etiket yerel birimi
+    static MIN_TOUCH_PX = 48
+
     static ZOOM_RATIO = 0.05 // Reveal'in adım 0'daki son zoom oranı (0 = oyun başlangıç zoom'u)
 
     constructor()
@@ -25,6 +28,7 @@ export class Intro
         this.updateLoading(this.game.loadProgress ?? 0, this.game.loadStage ?? 'assets')
 
         this.game.viewport.events.on('change', this.onViewportChange = () => { this.layout() })
+        this.game.inputs.events.on('modeChange', this.onModeChange = () => { this.layout() })
 
         this.update = this.update.bind(this)
         this.game.ticker.events.on('tick', this.update, 8)
@@ -142,6 +146,7 @@ export class Intro
         const items = this.extras.items
         const BLOCK = { width: 5.9, height: 3.0 }
         const wide = aspect >= 1.15
+        const touch = this.game.inputs.mode === Inputs.MODE_TOUCH
 
         let blockScale = Math.min((2 * halfWidth * 0.94) / BLOCK.width, 1.15)
         let shift
@@ -196,22 +201,47 @@ export class Intro
         place(items.portrait.group, portraitCenter[0], portraitCenter[1])
         face(items.portrait, tilt)
 
-        // "bu benim": portrenin sağ altı, ok portreyi gösterir
+        // "bu benim": portrenin sağ altı, ok portreyi gösterir. Dokunmatikte kalkar (yeri başlama etiketine kalır)
         const noteScale = Math.min(1.0, portraitSize / 4.2)
-        items.note.layoutScale = noteScale
+        items.note.layoutScale = touch ? 0 : noteScale
         place(items.note.group,
             portraitCenter[0] + ((portraitSize * 0.62) / halfWidth),
             portraitCenter[1] - ((portraitSize * 0.5 + 0.55 * noteScale) / halfHeight))
         face(items.note, tilt)
 
-        // "TIKLA VE BAŞLA" etiketi: geniş ekranda adanın sağ üstü, dar/dikeyde adanın sağ altı
-        const labelScale = Math.min(1, (wide ? (1 - islandX - gap) : 0.9) * halfWidth / 2.9)
+        // "TIKLA VE BAŞLA" etiketi: geniş ekranda adanın sağ üstü, dar/dikeyde adanın sağ altı;
+        // dokunmatik dikeyde adanın üstünde (alt başlık ile ağaç tepesi arasındaki boşlukta, ortada)
+        let labelScale = Math.min(1, (wide ? (1 - islandX - gap) : 0.9) * halfWidth / 2.9)
         this.label.userData.layoutScale = labelScale
         if(wide)
+        {
             place(this.label, islandX + gap + (0.97 - islandX - gap) / 2, islandCenterY + 0.30)
+        }
+        else if(touch)
+        {
+            const bandTop = blockCenterY - (BLOCK.height * blockScale / 2) / halfHeight
+            const bandBottom = islandCenterY + crown
+            const bandWorld = (bandTop - bandBottom) * halfHeight
+            // Etiket + ses düğmesi ≈ 2.4 birim yüksek (ölçek 1'de); boşluk dar kalırsa ağaç tepesine taşar (etiket üstte çizilir)
+            const maxScale = Math.min(1.1, 0.9 * halfWidth / 2.9)
+            labelScale = THREE.MathUtils.clamp(bandWorld / 2.4, Math.min(1, maxScale), maxScale) // okunur boyuttan küçülmez
+            this.label.userData.layoutScale = labelScale
+            place(this.label, 0, bandTop - (0.85 * labelScale) / halfHeight) // üst kenar alt başlığın altında; taşma ağaç tepesine olur
+        }
         else
+        {
             place(this.label, 0.46, portraitCenter[1])
+        }
         this.label.quaternion.copy(quaternion)
+
+        // Başlatma alanı: dokunmatikte en az 48×48 px (dünya birimi/px = 2 * halfHeight / yükseklik)
+        if(this.startHit)
+        {
+            const worldPerPixel = 2 * halfHeight / this.game.viewport.height
+            const minLocal = (touch ? Intro.MIN_TOUCH_PX : 0) * worldPerPixel / labelScale
+            this.startHit.scale.set(Math.max(1, minLocal / Intro.HIT.width), Math.max(1, minLocal / Intro.HIT.height), 1)
+            this.startHit.position.y = Intro.HIT.centerY + (this.startHit.scale.y - 1) * Intro.HIT.height / 2 // alt kenar sabit (ses düğmesine inmesin): yalnızca yukarı büyür
+        }
 
         // Ses düğmesi çarpışma alanı etiketle birlikte taşınır
         if(this.soundButton && this.soundButton.intersect)
@@ -399,6 +429,14 @@ export class Intro
         this.label.add(mesh)
 
         this.text.mesh = mesh
+
+        // Başlatma dokunma/tıklama alanı: etiketin (ok + yazı) çevresinde cömert, görünmez bir düzlem. Ses düğmesinin üstüne taşmaz
+        // (yerel y -0.7 … 1.0). layout() dokunmatikte en az 48×48 px'e büyütür. Reveal.js bunu rayCursor'a ekler.
+        this.startHit = new THREE.Mesh(new THREE.PlaneGeometry(Intro.HIT.width, Intro.HIT.height), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }))
+        this.startHit.position.y = Intro.HIT.centerY
+        this.startHit.visible = false
+        this.label.add(this.startHit)
+        this.layout()
     }
 
     setSoundButton()
@@ -689,6 +727,7 @@ export class Intro
         this.loading.group.traverse((child) => { if(child.isMesh) { child.geometry.dispose(); child.material.dispose() } })
         this.loading.textures?.forEach(t => t.dispose())
         this.game.viewport.events.off('change', this.onViewportChange)
+        this.game.inputs.events.off('modeChange', this.onModeChange)
 
         for(const item of Object.values(this.extras.items))
         {
@@ -702,6 +741,8 @@ export class Intro
         this.circle.mesh.geometry.dispose()
         this.soundButton.mesh.geometry.dispose()
         this.text.mesh.geometry.dispose()
+        this.startHit?.geometry.dispose()
+        this.startHit?.material.dispose()
 
         // Materials
         this.circle.mesh.material.dispose()

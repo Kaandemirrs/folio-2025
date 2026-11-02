@@ -114,6 +114,8 @@ export class Reveal
                     this.updateStep(1)
                     this.game.inputs.events.off('introStart', inputCallback)
                     this.game.rayCursor.removeIntersect(intersect)
+                    if(labelIntersect)
+                        this.game.rayCursor.removeIntersect(labelIntersect)
                 }
 
                 // Input callback
@@ -139,6 +141,17 @@ export class Reveal
                         gsap.to(this, { intensityMultiplier: 1, duration: 0.2, overwrite: true })
                     }
                 })
+
+                // Başlama etiketi (TIKLA/DOKUN VE BAŞLA): etiketin kendisine tıklamak/dokunmak da başlatır (tüm platformlar)
+                const labelIntersect = this.game.world.intro.startHit
+                    ? this.game.rayCursor.addIntersect({
+                        active: true,
+                        shape: this.game.world.intro.startHit,
+                        onClick: next,
+                        onEnter: () => { gsap.to(this, { intensityMultiplier: 1.22, duration: 0.2, overwrite: true }) },
+                        onLeave: () => { gsap.to(this, { intensityMultiplier: 1, duration: 0.2, overwrite: true }) }
+                    })
+                    : null
 
                 // Inputs (for gamepad and keyboard)
                 this.game.inputs.addActions([
