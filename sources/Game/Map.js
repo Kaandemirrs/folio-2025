@@ -110,7 +110,7 @@ export class Map
         
         this.texture.update = () =>
         {
-            const url = this.game.dayCycles.intervalEvents.get('night').inInterval ? 'ui/map/map-night.webp' : 'ui/map/map-day.webp'
+            const url = 'ui/map/map-day.webp' // oyun hep gündüz; gece haritası kaldırıldı
 
             if(url !== this.texture.previousUrl)
             {
