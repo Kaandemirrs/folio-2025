@@ -545,9 +545,41 @@ const stepCareer = async (doc, report) =>
     report.push(`career: zaman çizelgesi silindi (${targets.map(node => node.getName()).join(', ')})`)
 }
 
+/**
+ * Adım: Kaldırılan alanların (lab, cookie, altar, toilet, circuit, behindTheScene, timeMachine) kök düğümleri areas.glb'den silinir.
+ * Areas.js bunları zaten kurmuyordu (liste: achievements, bowling, career, landing, projects, social) ama dosyada duruyor,
+ * indiriliyor ve ayrıştırılıyordu (≈38 bin üçgen, labCarpet/cookieBanner/circuit* dokuları).
+ */
+const stepRemovedAreas = async (doc, report) =>
+{
+    const names = [ 'lab', 'cookie', 'altar', 'toilet', 'circuit', 'behindTheScene', 'timeMachine' ]
+    const scene = doc.getRoot().listScenes()[0]
+    for(const name of names)
+    {
+        const node = scene.listChildren().find(child => child.getName() === name)
+        if(!node)
+            throw new Error(`removedAreas: ${name} bulunamadı`)
+        removeNode(node)
+    }
+
+    // Artık hiçbir malzemenin kullanmadığı dokular
+    for(const texture of doc.getRoot().listTextures())
+    {
+        if(/^(labCarpet|cookieBanner|circuit)/.test(texture.getName()))
+        {
+            for(const material of doc.getRoot().listMaterials())
+            {
+                if(material.getBaseColorTexture() === texture)
+                    material.setBaseColorTexture(null)
+            }
+        }
+    }
+    report.push(`areas: kaldırılan alan düğümleri silindi (${names.join(', ')})`)
+}
+
 // Hedef başına adımlar. Her hedefin kaynağı resources/original/<ad>.glb ve <ad>-compressed.glb
 const TARGETS = [
-    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls, stepLabels, stepDistinctions, stepCareer ] },
+    { original: 'areas', out: 'static/areas/areas', steps: [ stepLetters, stepSocial, stepJukebox, stepControls, stepLabels, stepDistinctions, stepCareer, stepRemovedAreas ] },
     { original: 'bushesReferences', out: 'static/bushes/bushesReferences', steps: [ stepSocialDecor('bushes') ] },
     { original: 'flowersReferences', out: 'static/flowers/flowersReferences', steps: [ stepSocialDecor('flowers') ] },
 ]
@@ -565,6 +597,9 @@ const run = async (input, output, compressed, steps) =>
     // Yetim mesh/accessor temizliği. Malzeme ve dokulara dokunulmaz (kod bunları ada göre arıyor).
     if(report.length === 0)
         return report // bu hedefte değişiklik yok: dosyaya dokunma
+
+    // Yetim malzeme ve dokular (kaldırılan alanlardan kalanlar)
+    await doc.transform(prune({ propertyTypes: [ PropertyType.MATERIAL, PropertyType.TEXTURE ], keepLeaves: false }))
 
     // İki geçiş: önce yetim mesh'ler, sonra onların artık yetim kalan accessor'ları
     for(let pass = 0; pass < 2; pass++)
