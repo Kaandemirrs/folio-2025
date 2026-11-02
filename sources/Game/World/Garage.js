@@ -16,6 +16,7 @@ export class Garage
     static STATE_OPENING = 2
     static STATE_OPEN = 3
     static STATE_CLOSING = 4
+    static STATE_SWITCHING = 5 // "Sür" basıldı: araç yükleniyor / perde iniyor. Girdiler kilitli, Esc yutulur
 
     constructor()
     {
@@ -35,6 +36,18 @@ export class Garage
 
         this.game.vehicles.events.on('change', () => { this.updateParking() })
         this.game.ticker.events.on('tick', () => { this.update() }, 14)
+    }
+
+    // Açık (OPENING/OPEN/SWITCHING): dışarıdan araç değişimi yapılmaz
+    get isBusy()
+    {
+        return this.state !== Garage.STATE_CLOSED
+    }
+
+    // Esc'nin işlem yapmaması gereken geçiş durumları
+    get isTransitioning()
+    {
+        return this.state === Garage.STATE_CLOSING || this.state === Garage.STATE_SWITCHING
     }
 
     toWorld(local, y = 0)
@@ -77,21 +90,45 @@ export class Garage
     {
         const vehicle = this.getParkedVehicle()
 
-        if(this.parking.vehicleId === vehicle.id || this.parking.loading)
+        if(this.parking.vehicleId === vehicle.id)
             return
+
+        // Yükleme sürerken gelen değişiklik kaybolmasın: bitince yeniden bakılır
+        if(this.parking.loading)
+        {
+            this.parking.pending = true
+            return
+        }
 
         // Uzakta ve henüz hiç kurulmadıysa yükleme yaklaşınca yapılır
         if(this.parking.object === null && this.parking.far)
             return
 
         await this.createParked(vehicle)
+
+        if(this.parking.pending)
+        {
+            this.parking.pending = false
+            await this.updateParking()
+        }
     }
 
     async createParked(vehicle)
     {
         this.parking.loading = true
 
-        const model = await this.game.vehicles.createModel(vehicle.id)
+        let model
+        try
+        {
+            model = await this.game.vehicles.createModel(vehicle.id)
+        }
+        catch(error)
+        {
+            // Yükleme başarısız: bayrak takılı kalmasın, sonraki araç değişiminde/yaklaşmada yeniden denenir
+            console.warn('Garage > park yeri aracı yüklenemedi:', vehicle.id, error)
+            this.parking.loading = false
+            return
+        }
 
         // Önceki park eden aracı kaldır
         if(this.parking.object)
@@ -209,7 +246,20 @@ export class Garage
 
         this.updateUi(vehicle, direction)
 
-        const model = await this.game.vehicles.createModel(vehicle.id)
+        let model
+        try
+        {
+            model = await this.game.vehicles.createModel(vehicle.id)
+        }
+        catch(error)
+        {
+            // Yükleme başarısız: vitrin eski araçla kalır, kullanıcı başka araca geçebilir / tekrar deneyebilir
+            console.warn('Garage > vitrin aracı yüklenemedi:', vehicle.id, error)
+            if(token === this.showcase.loadToken)
+                this.game.notifications.show('Araç yüklenemedi. Bağlantını kontrol edip tekrar dene.', 'warning', 3)
+            return
+        }
+
         if(token !== this.showcase.loadToken)
             return
 
@@ -362,6 +412,9 @@ export class Garage
         const index = this.game.vehicles.items.findIndex(vehicle => vehicle.id === this.game.vehicles.currentId)
         this.setCandidate(index)
 
+        // Diğer araçlar arka planda yüklenir: seçimde bekleme olmasın
+        this.game.vehicles.preload()
+
         // Ses
         this.game.audio.groups.get('click')?.play(true)
     }
@@ -425,18 +478,37 @@ export class Garage
             return
         }
 
-        this.state = Garage.STATE_CLOSING
-        const switched = await this.game.vehicles.select(vehicle.id)
+        // OPEN → SWITCHING: araç yüklenirken girdiler kilitli, Esc yutulur. Yükleme başarısız olursa OPEN'a dönülür (eskiden CLOSING'de sonsuza dek kalıyordu)
+        this.state = Garage.STATE_SWITCHING
+        this.ui.element.classList.add('is-busy')
+
+        let switched = false
+        try
+        {
+            switched = await this.game.vehicles.select(vehicle.id)
+        }
+        catch(error)
+        {
+            console.warn('Garage > araç seçilemedi:', vehicle.id, error)
+        }
+
+        if(!switched)
+        {
+            this.state = Garage.STATE_OPEN
+            this.ui.element.classList.remove('is-busy')
+            this.game.notifications.show('Araç yüklenemedi. Bağlantını kontrol edip tekrar dene.', 'warning', 3)
+            return
+        }
 
         // Yeni araçla vitrin önünde başla (perde inerken yeniden doğ)
         this.game.player.respawn(this.prop.name, () =>
         {
+            this.ui.element.classList.remove('is-busy')
             this.state = Garage.STATE_OPEN
             this.finish()
         })
 
-        if(switched)
-            this.game.audio.groups.get('click')?.play(true)
+        this.game.audio.groups.get('click')?.play(true)
     }
 
     update()

@@ -51,6 +51,10 @@ export class KonamiCode
     // Araç listesinde bir sonrakine geçer (w140 → dogan → oldSchool → w140 …)
     async activate()
     {
+        // Garaj açıkken / geçiş sırasında araç değişimi garajın durum makinesiyle yarışır
+        if(this.game.world.garage?.isBusy)
+            return
+
         const vehicles = this.game.vehicles
         const index = vehicles.items.findIndex(vehicle => vehicle.id === vehicles.currentId)
         const next = vehicles.items[(index + 1) % vehicles.items.length]

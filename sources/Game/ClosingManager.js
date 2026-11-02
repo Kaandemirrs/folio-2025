@@ -37,6 +37,11 @@ export class ClosingManager
                 else if(this.game.world.projectBoard?.viewer?.isActive)
                     this.game.world.projectBoard.viewer.close()
 
+                // Garaj geçişte (araç yükleniyor / yeniden doğuyor / kapanıyor) => Esc yutulur: menü açılmasın, durum makinesi bozulmasın
+                else if(this.game.world.garage?.isTransitioning)
+                {
+                }
+
                 // Garaj => Kapat
                 else if(this.game.world.garage && (this.game.world.garage.state === Garage.STATE_OPEN || this.game.world.garage.state === Garage.STATE_OPENING))
                     this.game.world.garage.close()

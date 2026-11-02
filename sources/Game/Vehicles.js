@@ -37,6 +37,7 @@ export class Vehicles
         this.byId = vehiclesById
         this.currentId = initialId
         this.switching = false
+        this.loadings = new Map() // id → devam eden / biten yükleme (aynı GLB'yi aynı anda iki kez indirmemek için)
     }
 
     get current()
@@ -45,13 +46,29 @@ export class Vehicles
     }
 
     // Aracın saf (hiç değiştirilmemiş) glTF sahnesi; her kullanım kendi kopyasını alır
-    async load(id)
+    // Eşzamanlı çağrılar (önden yükleme + seçim + park yeri) tek istekte birleşir; başarısız yükleme sonraki denemeye engel olmaz
+    load(id)
     {
+        let promise = this.loadings.get(id)
+        if(promise)
+            return promise
+
         const vehicle = this.byId.get(id)
-        const resources = await this.game.resourcesLoader.load([
+        promise = this.game.resourcesLoader.load([
             [ `vehicle_${id}`, Vehicles.getFilePath(vehicle), 'gltf' ],
-        ])
-        return resources[`vehicle_${id}`].scene
+        ]).then(resources => resources[`vehicle_${id}`].scene)
+
+        promise.catch(() => { this.loadings.delete(id) })
+        this.loadings.set(id, promise)
+
+        return promise
+    }
+
+    // Henüz yüklenmemiş araçları arka planda yükler (garaj açılırken: seçimde bekleme olmasın). Hata sessizdir; seçimde yeniden denenir
+    preload()
+    {
+        for(const vehicle of this.items)
+            this.load(vehicle.id).catch((error) => { console.warn('Vehicles > önden yükleme başarısız:', vehicle.id, error) })
     }
 
     // Çizim için bağımsız kopya (geometri ve doku paylaşılır)
